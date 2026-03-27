@@ -12,6 +12,7 @@ import { FilterBar } from "@/components/filter-bar";
 import { SectionCard } from "@/components/section-card";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,8 @@ export default async function ReportsPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -64,8 +67,8 @@ export default async function ReportsPage({
   return (
     <WorkspaceShell
       activePage="reports"
-      pageTitle="Reports"
-      pageSubtitle="Monthly reporting, channel mix, and cost structure for the current business view."
+      pageTitle={t("page.reports.title")}
+      pageSubtitle={t("page.reports.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

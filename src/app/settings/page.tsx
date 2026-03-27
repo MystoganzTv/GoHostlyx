@@ -7,12 +7,15 @@ import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
 import { getBookings, getExpenses, getLatestImport, getUserSettings } from "@/lib/db";
 import { formatNumber } from "@/lib/format";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 import { getDefaultTaxRateByCountry } from "@/lib/tax";
 import { getMarketDefinition } from "@/lib/markets";
 
 export const runtime = "nodejs";
 
 export default async function SettingsPage() {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -32,8 +35,8 @@ export default async function SettingsPage() {
   return (
     <WorkspaceShell
       activePage="settings"
-      pageTitle="Settings"
-      pageSubtitle="Set the defaults Hostlyx uses for reporting, markets, and tax estimation."
+      pageTitle={t("settings.pageTitle")}
+      pageSubtitle={t("settings.pageSubtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}
@@ -42,8 +45,8 @@ export default async function SettingsPage() {
     >
       <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
         <SectionCard
-          title="Account Overview"
-          subtitle="This account is isolated from every other host workspace in the system."
+          title={t("settings.accountOverview")}
+          subtitle={t("settings.accountOverviewSubtitle")}
         >
           <div className="space-y-4">
             <div className="workspace-soft-card rounded-[24px] p-4">
@@ -65,7 +68,7 @@ export default async function SettingsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--workspace-text)]">{userSettings.businessName}</p>
-                  <p className="text-sm text-[var(--workspace-muted)]">Business name shown across the app</p>
+                  <p className="text-sm text-[var(--workspace-muted)]">{t("settings.businessNameShown")}</p>
                 </div>
               </div>
             </div>
@@ -80,7 +83,7 @@ export default async function SettingsPage() {
                     {primaryMarket.countryName} • {primaryMarket.currencyCode}
                   </p>
                   <p className="text-sm text-[var(--workspace-muted)]">
-                    Default market used when reports include several countries at once
+                    {t("settings.defaultMarket")}
                   </p>
                 </div>
               </div>
@@ -96,7 +99,7 @@ export default async function SettingsPage() {
                     {taxMarket.countryName} • {userSettings.taxRate}%
                   </p>
                   <p className="text-sm text-[var(--workspace-muted)]">
-                    {taxRateIsCustom ? "Custom tax default saved for Settings" : "Suggested tax default currently in use"}
+                    {taxRateIsCustom ? t("settings.customTaxDefault") : t("settings.defaultTaxEstimate")}
                   </p>
                 </div>
               </div>
@@ -109,10 +112,13 @@ export default async function SettingsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[var(--workspace-text)]">
-                    {formatNumber(bookings.length + expenses.length)} total saved records
+                    {t("settings.totalSavedRecords", { count: formatNumber(bookings.length + expenses.length) })}
                   </p>
                   <p className="text-sm text-[var(--workspace-muted)]">
-                    {formatNumber(bookings.length)} bookings and {formatNumber(expenses.length)} expenses in your workspace
+                    {t("settings.totalSavedBreakdown", {
+                      bookings: formatNumber(bookings.length),
+                      expenses: formatNumber(expenses.length),
+                    })}
                   </p>
                 </div>
               </div>

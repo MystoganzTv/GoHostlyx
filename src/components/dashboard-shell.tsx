@@ -26,6 +26,7 @@ import { ManualEntryPanel } from "@/components/manual-entry-panel";
 import { Modal } from "@/components/modal";
 import { SectionCard } from "@/components/section-card";
 import { UploadPanel } from "@/components/upload-panel";
+import { useLocale } from "@/components/locale-provider";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
 type DashboardShellProps = {
@@ -82,6 +83,7 @@ export function DashboardShell({
   currencyCode,
   properties,
 }: DashboardShellProps) {
+  const { t } = useLocale();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isEntryOpen, setIsEntryOpen] = useState(false);
   const profitMeta = profitState(view.metrics.netProfit);
@@ -90,8 +92,8 @@ export function DashboardShell({
     <>
       <WorkspaceShell
         activePage="dashboard"
-        pageTitle="Financial Command Center"
-        pageSubtitle="Know profit first, spot cost drag fast, and track how the business performs over time."
+        pageTitle={t("dashboard.pageTitle")}
+        pageSubtitle={t("dashboard.pageSubtitle")}
         businessName={businessName}
         userName={userName}
         userEmail={userEmail}
@@ -104,14 +106,14 @@ export function DashboardShell({
               onClick={() => setIsUploadOpen(true)}
               className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
             >
-              Upload data
+              {t("dashboard.uploadData")}
             </button>
             <button
               type="button"
               onClick={() => setIsEntryOpen(true)}
               className="workspace-button-primary rounded-2xl px-4 py-3 text-sm font-semibold transition"
             >
-              Add entry
+              {t("dashboard.addEntry")}
             </button>
           </>
         }
@@ -131,8 +133,8 @@ export function DashboardShell({
 
           {view.mixedCurrencyMode ? (
             <SectionCard
-              title="Portfolio View"
-              subtitle="All markets is useful for portfolio volume, but Hostlyx will not fake a converted profit total across mixed currencies."
+              title={t("dashboard.portfolioTitle")}
+              subtitle={t("dashboard.portfolioSubtitle")}
             >
               <div className="grid gap-4 xl:grid-cols-3">
                 {view.marketBreakdown.map((market) => {
@@ -146,23 +148,23 @@ export function DashboardShell({
                       </p>
                       <div className="mt-4 grid gap-3 sm:grid-cols-2">
                         <div>
-                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Revenue</p>
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.revenue")}</p>
                           <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
                             {formatCurrency(market.revenue, false, market.currencyCode)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Profit</p>
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.profit")}</p>
                           <p className={`mt-1 text-sm font-semibold ${market.profit >= 0 ? "text-emerald-300" : "text-rose-200"}`}>
                             {formatCurrency(market.profit, false, market.currencyCode)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Bookings</p>
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.bookings")}</p>
                           <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">{formatNumber(market.bookings)}</p>
                         </div>
                         <div>
-                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Expenses</p>
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.expenses")}</p>
                           <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
                             {formatCurrency(market.expenses, false, market.currencyCode)}
                           </p>
@@ -180,15 +182,25 @@ export function DashboardShell({
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100/80">
-                        Net Profit
+                        {t("dashboard.netProfit")}
                       </p>
                       <p className={`mt-5 text-4xl font-semibold tracking-tight sm:text-5xl ${profitMeta.valueClass}`}>
                         {formatCurrency(view.metrics.netProfit, false, currencyCode)}
                       </p>
-                      <p className="mt-3 max-w-md text-sm leading-7 text-slate-300">{profitMeta.helper}</p>
+                      <p className="mt-3 max-w-md text-sm leading-7 text-slate-300">
+                        {view.metrics.netProfit > 0
+                          ? t("dashboard.netProfitHelperPositive")
+                          : view.metrics.netProfit < 0
+                            ? t("dashboard.netProfitHelperNegative")
+                            : t("dashboard.netProfitHelperZero")}
+                      </p>
                     </div>
                     <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${profitMeta.chipClass}`}>
-                      {profitMeta.chip}
+                      {view.metrics.netProfit > 0
+                        ? t("dashboard.profitable")
+                        : view.metrics.netProfit < 0
+                          ? t("dashboard.losingMoney")
+                          : t("dashboard.breakEven")}
                     </span>
                   </div>
                 </article>
@@ -196,7 +208,7 @@ export function DashboardShell({
                 <article className="workspace-card rounded-[28px] p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">Total Revenue</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">{t("dashboard.grossIncome")}</p>
                       <p className="mt-4 text-3xl font-semibold tracking-tight text-[var(--workspace-text)]">
                         {formatCurrency(view.metrics.totalRevenue, false, currencyCode)}
                       </p>
@@ -210,7 +222,7 @@ export function DashboardShell({
                 <article className="workspace-card rounded-[28px] p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">Total Expenses</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">{t("dashboard.totalExpenses")}</p>
                       <p className="mt-4 text-3xl font-semibold tracking-tight text-[var(--workspace-text)]">
                         {formatCurrency(view.metrics.totalExpenses, false, currencyCode)}
                       </p>
@@ -224,7 +236,7 @@ export function DashboardShell({
                 <article className="workspace-card rounded-[28px] p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">Profit Margin</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">{t("dashboard.profitMargin")}</p>
                       <p className={`mt-4 text-3xl font-semibold tracking-tight ${view.metrics.profitMargin >= 0 ? "text-emerald-300" : "text-rose-200"}`}>
                         {(view.metrics.profitMargin * 100).toFixed(1)}%
                       </p>
@@ -243,7 +255,7 @@ export function DashboardShell({
                       <ArrowDownRight className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Net Payout</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.netIncome")}</p>
                       <p className="mt-1 text-xl font-semibold text-[var(--workspace-text)]">
                         {formatCurrency(view.metrics.totalPayout, false, currencyCode)}
                       </p>
@@ -256,7 +268,7 @@ export function DashboardShell({
                       <ReceiptText className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Estimated Taxes</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.estimatedTaxes")}</p>
                       <p className="mt-1 text-xl font-semibold text-[var(--workspace-text)]">
                         {formatCurrency(view.metrics.estimatedTaxes, false, currencyCode)}
                       </p>
@@ -275,7 +287,7 @@ export function DashboardShell({
                       <WalletCards className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Profit After Tax</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.profitAfterTax")}</p>
                       <p
                         className={`mt-1 text-xl font-semibold ${
                           view.metrics.profitAfterTax >= 0 ? "text-emerald-300" : "text-rose-200"
@@ -292,7 +304,7 @@ export function DashboardShell({
                       <CalendarDays className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Bookings</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.bookings")}</p>
                       <p className="mt-1 text-xl font-semibold text-[var(--workspace-text)]">{formatNumber(view.metrics.bookingsCount)}</p>
                     </div>
                   </div>
@@ -303,7 +315,7 @@ export function DashboardShell({
                       <TrendingUp className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">ADR</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.adr")}</p>
                       <p className="mt-1 text-xl font-semibold text-[var(--workspace-text)]">
                         {formatCurrency(view.metrics.adr, false, currencyCode)}
                       </p>
@@ -316,7 +328,7 @@ export function DashboardShell({
                       <ArrowUpRight className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Occupancy</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.occupancy")}</p>
                       <p className="mt-1 text-xl font-semibold text-[var(--workspace-text)]">
                         {(view.metrics.occupancyRate * 100).toFixed(1)}%
                       </p>
@@ -350,11 +362,11 @@ export function DashboardShell({
           />
 
           <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-            <SectionCard title="Recent Bookings" subtitle="Latest stays entering the business right now.">
+            <SectionCard title={t("dashboard.recentBookingsTitle")} subtitle={t("dashboard.recentBookingsSubtitle")}>
               <div className="space-y-3">
                 {view.recentBookings.length === 0 ? (
                   <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
-                    No bookings yet. Upload a workbook or add the first stay to start reading the business.
+                    {t("dashboard.recentBookingsEmpty")}
                   </div>
                 ) : (
                   view.recentBookings.map((booking, index) => (
@@ -378,15 +390,15 @@ export function DashboardShell({
 
                         <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[300px]">
                           <div className="workspace-card rounded-[18px] px-3 py-3">
-                            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Guests</p>
+                            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.guests")}</p>
                             <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">{formatNumber(booking.guestCount)}</p>
                           </div>
                           <div className="workspace-card rounded-[18px] px-3 py-3">
-                            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Nights</p>
+                            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.nights")}</p>
                             <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">{formatNumber(booking.nights)}</p>
                           </div>
                           <div className="workspace-card rounded-[18px] px-3 py-3">
-                            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Payout</p>
+                            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{t("dashboard.payout")}</p>
                             <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
                               {formatCurrency(booking.payout, false, currencyCode)}
                             </p>
@@ -399,11 +411,11 @@ export function DashboardShell({
               </div>
             </SectionCard>
 
-            <SectionCard title="Recent Expenses" subtitle="The latest places where money left the business.">
+            <SectionCard title={t("dashboard.recentExpensesTitle")} subtitle={t("dashboard.recentExpensesSubtitle")}>
               <div className="space-y-3">
                 {view.recentExpenses.length === 0 ? (
                   <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
-                    No expenses yet. Add costs to understand where money is going.
+                    {t("dashboard.recentExpensesEmpty")}
                   </div>
                 ) : (
                   view.recentExpenses.map((expense, index) => (
@@ -436,7 +448,7 @@ export function DashboardShell({
 
       <Modal
         open={isUploadOpen}
-        title="Upload Spreadsheet Data"
+        title={t("dashboard.uploadData")}
         onClose={() => setIsUploadOpen(false)}
       >
         <UploadPanel properties={properties} />
@@ -444,7 +456,7 @@ export function DashboardShell({
 
       <Modal
         open={isEntryOpen}
-        title="Add Booking or Expense"
+        title={t("dashboard.addEntry")}
         onClose={() => setIsEntryOpen(false)}
       >
         <ManualEntryPanel properties={properties} />

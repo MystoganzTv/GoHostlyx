@@ -18,6 +18,7 @@ import {
   getUserSettings,
 } from "@/lib/db";
 import { formatNumber } from "@/lib/format";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
@@ -28,6 +29,8 @@ export default async function BookingsPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -77,8 +80,8 @@ export default async function BookingsPage({
   return (
     <WorkspaceShell
       activePage="bookings"
-      pageTitle="Bookings"
-      pageSubtitle="Review guest stays, payouts, and property assignments."
+      pageTitle={t("page.bookings.title")}
+      pageSubtitle={t("page.bookings.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

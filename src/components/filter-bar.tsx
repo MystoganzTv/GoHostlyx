@@ -3,34 +3,11 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { startTransition, useEffect } from "react";
 import { Funnel } from "lucide-react";
+import { useLocale } from "@/components/locale-provider";
 import { WorkspaceDateField } from "@/components/workspace-date-field";
 import { WorkspaceSelect } from "@/components/workspace-select";
 import { getMarketDefinition } from "@/lib/markets";
 import type { CountryCode, DashboardDateRangePreset } from "@/lib/types";
-
-const monthOptions = [
-  { value: "all", label: "All months" },
-  { value: "1", label: "January" },
-  { value: "2", label: "February" },
-  { value: "3", label: "March" },
-  { value: "4", label: "April" },
-  { value: "5", label: "May" },
-  { value: "6", label: "June" },
-  { value: "7", label: "July" },
-  { value: "8", label: "August" },
-  { value: "9", label: "September" },
-  { value: "10", label: "October" },
-  { value: "11", label: "November" },
-  { value: "12", label: "December" },
-];
-
-const rangeOptions: Array<{ value: DashboardDateRangePreset; label: string }> = [
-  { value: "all-time", label: "All time" },
-  { value: "this-year", label: "This year" },
-  { value: "this-month", label: "This month" },
-  { value: "last-90-days", label: "Last 90 days" },
-  { value: "custom", label: "Custom" },
-];
 
 const rangeFilterStorageKey = "hostlyx:filters:range";
 const calendarFilterStorageKey = "hostlyx:filters:calendar";
@@ -65,6 +42,7 @@ type FilterBarProps = {
 );
 
 export function FilterBar(props: FilterBarProps) {
+  const { t } = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -72,6 +50,28 @@ export function FilterBar(props: FilterBarProps) {
   const rangeProps = mode === "range" ? (props as Extract<FilterBarProps, { mode?: "range" }>) : null;
   const calendarProps =
     mode === "calendar" ? (props as Extract<FilterBarProps, { mode: "calendar" }>) : null;
+  const monthOptions = [
+    { value: "all", label: t("filter.allMonths") },
+    { value: "1", label: t("filter.january") },
+    { value: "2", label: t("filter.february") },
+    { value: "3", label: t("filter.march") },
+    { value: "4", label: t("filter.april") },
+    { value: "5", label: t("filter.may") },
+    { value: "6", label: t("filter.june") },
+    { value: "7", label: t("filter.july") },
+    { value: "8", label: t("filter.august") },
+    { value: "9", label: t("filter.september") },
+    { value: "10", label: t("filter.october") },
+    { value: "11", label: t("filter.november") },
+    { value: "12", label: t("filter.december") },
+  ];
+  const rangeOptions: Array<{ value: DashboardDateRangePreset; label: string }> = [
+    { value: "all-time", label: t("filter.allTime") },
+    { value: "this-year", label: t("filter.thisYear") },
+    { value: "this-month", label: t("filter.thisMonth") },
+    { value: "last-90-days", label: t("filter.last90Days") },
+    { value: "custom", label: t("filter.custom") },
+  ];
 
   useEffect(() => {
     const hasExplicitFilters =
@@ -204,7 +204,7 @@ export function FilterBar(props: FilterBarProps) {
     <div className="flex flex-wrap items-center gap-3 rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-3 shadow-[0_12px_28px_rgba(15,23,42,0.04)]">
       <div className="flex items-center gap-2 px-2 text-sm font-semibold text-[var(--workspace-muted)]">
         <Funnel className="h-4 w-4 text-[var(--workspace-accent)]" />
-        Filters
+        {t("filter.filters")}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -221,7 +221,7 @@ export function FilterBar(props: FilterBarProps) {
               : "workspace-button-secondary"
           }`}
         >
-          All markets
+          {t("filter.allMarkets")}
         </button>
         {props.countries.map((countryCode) => {
           const market = getMarketDefinition(countryCode);

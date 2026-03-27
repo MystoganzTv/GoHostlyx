@@ -17,6 +17,7 @@ import {
   getPropertyDefinitions,
   getUserSettings,
 } from "@/lib/db";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 import { getCurrencyForCountry } from "@/lib/markets";
 
 export const runtime = "nodejs";
@@ -72,6 +73,8 @@ export default async function CalendarPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -146,8 +149,8 @@ export default async function CalendarPage({
   return (
     <WorkspaceShell
       activePage="calendar"
-      pageTitle="Calendar"
-      pageSubtitle="See bookings, check-ins, check-outs, and closed days laid out month by month."
+      pageTitle={t("page.calendar.title")}
+      pageSubtitle={t("page.calendar.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

@@ -9,6 +9,7 @@ import {
   getUserSettings,
 } from "@/lib/db";
 import { FilterBar } from "@/components/filter-bar";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 import { MonthlySummaryPanel } from "@/components/monthly-summary-panel";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
@@ -21,6 +22,8 @@ export default async function MonthlyPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -63,8 +66,8 @@ export default async function MonthlyPage({
   return (
     <WorkspaceShell
       activePage="monthly"
-      pageTitle="Monthly Performance"
-      pageSubtitle="Compare month-by-month results across the selected reporting window."
+      pageTitle={t("page.monthly.title")}
+      pageSubtitle={t("page.monthly.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

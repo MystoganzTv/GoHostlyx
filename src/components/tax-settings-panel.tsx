@@ -4,15 +4,10 @@ import { type FormEvent, useMemo, useState, useTransition } from "react";
 import { Landmark, Percent, ReceiptText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { WorkspaceSelect } from "@/components/workspace-select";
+import { useLocale } from "@/components/locale-provider";
 import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
 import { getDefaultTaxRateByCountry, normalizeTaxRate } from "@/lib/tax";
 import type { CountryCode } from "@/lib/types";
-
-const countryOptions = marketDefinitions.map((market) => ({
-  value: market.countryCode,
-  label: market.countryName,
-  description: `Suggested ${getDefaultTaxRateByCountry(market.countryCode)}%`,
-}));
 
 function inputClassName() {
   return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
@@ -25,6 +20,7 @@ export function TaxSettingsPanel({
   initialTaxCountryCode: CountryCode;
   initialTaxRate: number;
 }) {
+  const { t } = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [countryCode, setCountryCode] = useState<CountryCode>(initialTaxCountryCode);
@@ -35,6 +31,13 @@ export function TaxSettingsPanel({
   const market = getMarketDefinition(countryCode);
   const normalizedTaxRate = normalizeTaxRate(taxRate);
   const suggestedRate = getDefaultTaxRateByCountry(countryCode);
+  const countryOptions = marketDefinitions.map((definition) => ({
+    value: definition.countryCode,
+    label: definition.countryName,
+    description: t("settings.defaultEstimate", {
+      rate: getDefaultTaxRateByCountry(definition.countryCode),
+    }),
+  }));
   const hasCustomRate = normalizedTaxRate !== suggestedRate;
   const hasChanges =
     countryCode !== initialTaxCountryCode ||
@@ -42,21 +45,20 @@ export function TaxSettingsPanel({
   const behaviorCards = useMemo(
     () => [
       {
-        label: "Single-country view",
+        label: t("settings.singleCountryView"),
         value: market.countryName,
         description:
           hasCustomRate
-            ? `If you are viewing ${market.countryName}, Hostlyx uses your saved ${normalizedTaxRate}% rate.`
-            : `If you are viewing ${market.countryName}, Hostlyx uses the suggested ${suggestedRate}% rate.`,
+            ? t("settings.singleCountryCustom", { country: market.countryName, rate: normalizedTaxRate })
+            : t("settings.singleCountryDefault", { country: market.countryName, rate: suggestedRate }),
       },
       {
-        label: "All-countries fallback",
+        label: t("settings.allCountriesFallback"),
         value: `${market.shortLabel} • ${normalizedTaxRate}%`,
-        description:
-          "When the dashboard is not focused on one country, this becomes the baseline estimate Hostlyx shows.",
+        description: t("settings.allCountriesFallbackBody"),
       },
     ],
-    [hasCustomRate, market, normalizedTaxRate, suggestedRate],
+    [hasCustomRate, market, normalizedTaxRate, suggestedRate, t],
   );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -81,14 +83,14 @@ export function TaxSettingsPanel({
           };
 
           if (!response.ok) {
-            setError(payload.error ?? "The tax defaults could not be saved.");
+            setError(payload.error ?? t("settings.taxSaveError"));
             return;
           }
 
-          setMessage(payload.message ?? "Tax defaults saved.");
+          setMessage(payload.message ?? t("settings.taxSaved"));
           router.refresh();
         } catch {
-          setError("The tax defaults could not be saved.");
+          setError(t("settings.taxSaveError"));
         }
       })();
     });
@@ -99,10 +101,10 @@ export function TaxSettingsPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
-            Tax Defaults
+            {t("settings.taxDefaults")}
           </p>
           <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-            Set the market Hostlyx should use when it estimates what you need to set aside.
+            {t("settings.taxDefaultsSubtitle")}
           </p>
         </div>
         <div className="workspace-icon-chip rounded-3xl p-3">
@@ -115,7 +117,7 @@ export function TaxSettingsPanel({
           <div className="workspace-soft-card rounded-[24px] p-4">
             <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               <Landmark className="h-4 w-4 text-[var(--workspace-accent)]" />
-              Country
+              {t("settings.country")}
             </div>
             <WorkspaceSelect
               value={countryCode}
@@ -127,7 +129,7 @@ export function TaxSettingsPanel({
                 setError(null);
               }}
               options={countryOptions}
-              helper="Used for context and fallback estimates. Hostlyx uses the active market first, then falls back to this one when all countries are selected."
+              helper={t("settings.countryHelper")}
             />
           </div>
 
@@ -135,7 +137,7 @@ export function TaxSettingsPanel({
             <label className="space-y-2">
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 <Percent className="h-4 w-4 text-[var(--workspace-accent)]" />
-                Tax rate
+                {t("settings.taxRate")}
               </span>
               <div className="relative">
                 <input
@@ -158,7 +160,7 @@ export function TaxSettingsPanel({
               </div>
             </label>
             <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
-              Use your own estimated effective tax rate. This is only an estimate, never tax advice.
+              {t("settings.taxRateHelper")}
             </p>
           </div>
         </div>
@@ -166,13 +168,13 @@ export function TaxSettingsPanel({
         <div className="workspace-soft-card rounded-[24px] p-4">
           <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
             <div>
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">How Hostlyx uses this</p>
+              <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("settings.taxHowUsed")}</p>
               <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                Taxes stay lightweight: active market first, default market second.
+                {t("settings.taxHowUsedSubtitle")}
               </p>
             </div>
             <span className="rounded-full bg-white/[0.06] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
-              {hasCustomRate ? "Custom rate" : "Suggested rate"}
+              {hasCustomRate ? t("settings.customRate") : t("settings.defaultRate")}
             </span>
           </div>
 
@@ -194,7 +196,7 @@ export function TaxSettingsPanel({
           disabled={isPending || !hasChanges}
           className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? "Saving tax defaults..." : hasChanges ? `Save ${market.countryName} tax defaults` : "Tax defaults are up to date"}
+          {isPending ? t("common.saving") : hasChanges ? t("settings.saveTaxForCountry", { country: market.countryName }) : t("settings.taxUpToDate")}
         </button>
       </form>
 

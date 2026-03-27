@@ -9,6 +9,7 @@ import {
   getUserSettings,
 } from "@/lib/db";
 import { FilterBar } from "@/components/filter-bar";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 import { PerformancePanel } from "@/components/performance-panel";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
@@ -21,6 +22,8 @@ export default async function PerformancePage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -63,8 +66,8 @@ export default async function PerformancePage({
   return (
     <WorkspaceShell
       activePage="performance"
-      pageTitle="Performance"
-      pageSubtitle="Read demand, pricing quality, and booking efficiency across the selected period."
+      pageTitle={t("page.performance.title")}
+      pageSubtitle={t("page.performance.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

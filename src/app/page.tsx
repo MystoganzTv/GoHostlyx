@@ -12,24 +12,7 @@ import { getAuthSession } from "@/lib/auth";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { MarketingDashboardPreview } from "@/components/marketing-dashboard-preview";
 import { MarketingHeader } from "@/components/marketing-header";
-
-const blindSpots = [
-  {
-    title: "Revenue is not profit",
-    description:
-      "A €50K year in bookings could mean €15K in actual profit or even a loss. Most hosts have no idea.",
-  },
-  {
-    title: "Messy financial data everywhere",
-    description:
-      "Bank statements, invoices, receipts, and notes leave your money story spread across too many places.",
-  },
-  {
-    title: "No clarity on performance",
-    description:
-      "You end up making decisions on instinct, without clear occupancy, ADR, RevPAR, or margin visibility.",
-  },
-];
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 
 const featureGroups = [
   {
@@ -66,7 +49,23 @@ const featureGroups = [
 
 export default async function LandingPage() {
   const session = await getAuthSession();
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const signedIn = Boolean(session?.user?.email);
+  const blindSpots = [
+    {
+      title: t("landing.blind1Title"),
+      description: t("landing.blind1Body"),
+    },
+    {
+      title: t("landing.blind2Title"),
+      description: t("landing.blind2Body"),
+    },
+    {
+      title: t("landing.blind3Title"),
+      description: t("landing.blind3Body"),
+    },
+  ];
 
   return (
     <>
@@ -76,15 +75,13 @@ export default async function LandingPage() {
         <section className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
           <div className="max-w-3xl">
             <p className="text-xs uppercase tracking-[0.22em] text-[var(--accent-text)]/78">
-              The financial operating system for short-term rental hosts
+              {t("landing.eyebrow")}
             </p>
             <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-[-0.06em] text-slate-100 sm:text-6xl lg:text-7xl">
-              Run your rental business like a company.
+              {t("landing.heroTitle")}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              Gain total clarity over your bookings, expenses, and net profit.
-              Hostlyx turns scattered rental data into financial answers you can
-              actually act on.
+              {t("landing.heroBody")}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -92,14 +89,14 @@ export default async function LandingPage() {
                 href={signedIn ? "/dashboard" : "/login"}
                 className="brand-button inline-flex items-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
               >
-                Upload your data
+                {t("landing.ctaUpload")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/showcase"
                 className="brand-button-secondary rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
               >
-                View dashboard preview
+                {t("landing.ctaPreview")}
               </Link>
             </div>
 
@@ -125,7 +122,7 @@ export default async function LandingPage() {
             >
               <div className="relative z-[1] max-w-md">
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]/80">
-                  Most hosts are flying blind
+                  {t("landing.blind3Title")}
                 </p>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                   Spreadsheets were never built for rental businesses.

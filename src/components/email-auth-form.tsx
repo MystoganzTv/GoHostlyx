@@ -4,6 +4,7 @@ import { type FormEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { useLocale } from "@/components/locale-provider";
 
 type Mode = "sign-in" | "sign-up";
 
@@ -12,6 +13,7 @@ function inputClassName() {
 }
 
 export function EmailAuthForm() {
+  const { t } = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [mode, setMode] = useState<Mode>("sign-in");
@@ -45,11 +47,11 @@ export function EmailAuthForm() {
             };
 
             if (!registerResponse.ok) {
-              setError(registerPayload.error ?? "The account could not be created.");
+              setError(registerPayload.error ?? t("auth.accountCreateFailed"));
               return;
             }
 
-            setMessage(registerPayload.message ?? "Account created. Signing you in now.");
+            setMessage(registerPayload.message ?? t("auth.accountCreated"));
           }
 
           const result = await signIn("credentials", {
@@ -60,7 +62,7 @@ export function EmailAuthForm() {
           });
 
           if (!result || result.error) {
-            setError("Email or password is incorrect.");
+            setError(t("auth.invalidCredentials"));
             setMessage(null);
             return;
           }
@@ -70,8 +72,8 @@ export function EmailAuthForm() {
         } catch {
           setError(
             mode === "sign-up"
-              ? "The account could not be created."
-              : "Email sign-in could not be completed.",
+              ? t("auth.accountCreateFailed")
+              : t("auth.emailSignInFailed"),
           );
         }
       })();
@@ -94,7 +96,7 @@ export function EmailAuthForm() {
               : "text-slate-500 hover:text-slate-900"
           }`}
         >
-          Sign in
+          {t("auth.signIn")}
         </button>
         <button
           type="button"
@@ -109,7 +111,7 @@ export function EmailAuthForm() {
               : "text-slate-500 hover:text-slate-900"
           }`}
         >
-          Create account
+          {t("auth.createAccount")}
         </button>
       </div>
 
@@ -117,7 +119,7 @@ export function EmailAuthForm() {
         {mode === "sign-up" ? (
           <div>
             <label className="block text-center text-sm font-semibold text-slate-700">
-              Full name
+              {t("auth.fullName")}
             </label>
             <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
               <UserRound className="h-5 w-5 text-slate-400" />
@@ -125,7 +127,7 @@ export function EmailAuthForm() {
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
                 autoComplete="name"
-                placeholder="Your name"
+                placeholder={t("auth.yourName")}
                 className={inputClassName()}
                 required
               />
@@ -135,7 +137,7 @@ export function EmailAuthForm() {
 
         <div>
           <label className="block text-center text-sm font-semibold text-slate-700">
-            Email
+            {t("auth.email")}
           </label>
           <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
             <Mail className="h-5 w-5 text-slate-400" />
@@ -144,7 +146,7 @@ export function EmailAuthForm() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t("auth.yourEmail")}
               className={inputClassName()}
               required
             />
@@ -153,7 +155,7 @@ export function EmailAuthForm() {
 
         <div>
           <label className="block text-center text-sm font-semibold text-slate-700">
-            Password
+            {t("auth.password")}
           </label>
           <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
             <Lock className="h-5 w-5 text-slate-400" />
@@ -162,7 +164,7 @@ export function EmailAuthForm() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
-              placeholder={mode === "sign-up" ? "At least 8 characters" : "Enter your password"}
+              placeholder={mode === "sign-up" ? t("auth.passwordCreatePlaceholder") : t("auth.passwordSignInPlaceholder")}
               className={inputClassName()}
               required
             />
@@ -177,11 +179,11 @@ export function EmailAuthForm() {
           <ShieldCheck className="h-5 w-5" />
           {isPending
             ? mode === "sign-up"
-              ? "Creating account..."
-              : "Signing in..."
+              ? t("auth.creatingAccount")
+              : t("auth.signingIn")
             : mode === "sign-up"
-              ? "Create account"
-              : "Sign in"}
+              ? t("auth.createAccount")
+              : t("auth.signIn")}
         </button>
       </form>
 

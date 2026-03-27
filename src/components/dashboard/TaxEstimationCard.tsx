@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Landmark, ShieldAlert } from "lucide-react";
 import { SectionCard } from "@/components/section-card";
 import { TaxSummaryMetrics } from "@/components/dashboard/TaxSummaryMetrics";
+import { useLocale } from "@/components/locale-provider";
 import { getMarketDefinition } from "@/lib/markets";
 import type { CountryCode, CurrencyCode } from "@/lib/types";
 
@@ -30,29 +31,30 @@ export function TaxEstimationCard({
   usesSavedSettings: boolean;
   usesCustomRate: boolean;
 }) {
+  const { t } = useLocale();
   const market = getMarketDefinition(countryCode);
   const savedMarket = getMarketDefinition(savedCountryCode);
   const contextLabel = mixedCurrencyMode
-    ? `Choose a single market to estimate what you keep after taxes.`
+    ? t("tax.selectOneCountry")
     : usesSavedSettings
       ? usesCustomRate
-        ? `Using your saved ${savedMarket.countryName} rate of ${taxRate}% for this view.`
-        : `Using the saved ${savedMarket.countryName} baseline at ${taxRate}%.`
-      : `Using the active ${market.countryName} suggestion of ${suggestedTaxRate}%.`;
+        ? t("tax.usingSavedCustom", { country: savedMarket.countryName, rate: taxRate })
+        : t("tax.usingSavedBaseline", { country: savedMarket.countryName, rate: taxRate })
+      : t("tax.usingSuggestion", { country: market.countryName, rate: suggestedTaxRate });
   const settingsHint = mixedCurrencyMode
-    ? `Settings currently default to ${savedMarket.countryName}.`
+    ? t("tax.settingsDefault", { country: savedMarket.countryName })
     : usesSavedSettings
-      ? "Adjust your baseline in Settings if you want a different estimate."
-      : "Save a custom rate in Settings if you want something other than the suggested rate.";
+      ? t("tax.adjustBaseline")
+      : t("tax.saveCustomRate");
 
   return (
     <SectionCard
-      title="Tax Estimation"
-      subtitle="Estimate what to set aside and what you actually keep."
+      title={t("tax.title")}
+      subtitle={t("tax.subtitle")}
       action={
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
           <ShieldAlert className="h-4 w-4 text-[var(--workspace-accent)]" />
-          Estimate only
+          {t("tax.estimateOnly")}
         </div>
       }
     >
@@ -60,7 +62,7 @@ export function TaxEstimationCard({
         <div className="grid gap-4 xl:grid-cols-[0.85fr_0.85fr_auto]">
           <div className="workspace-soft-card rounded-[22px] p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              Market in view
+              {t("tax.marketInView")}
             </p>
             <div className="mt-3 flex items-center gap-3">
               <div className="workspace-icon-chip rounded-2xl p-3">
@@ -69,7 +71,7 @@ export function TaxEstimationCard({
               <div>
                 <p className="text-base font-semibold text-[var(--workspace-text)]">{market.countryName}</p>
                 <p className="text-xs text-[var(--workspace-muted)]">
-                  {mixedCurrencyMode ? "Select one country to estimate clearly" : `${market.currencyCode} reporting context`}
+                  {mixedCurrencyMode ? t("tax.selectOneCountry") : t("tax.reportingContext", { currency: market.currencyCode })}
                 </p>
               </div>
             </div>
@@ -77,7 +79,7 @@ export function TaxEstimationCard({
 
           <div className="workspace-soft-card rounded-[22px] p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              Rate applied
+              {t("tax.rateApplied")}
             </p>
             <p className="mt-4 text-3xl font-semibold tracking-tight text-[var(--workspace-text)]">
               {taxRate.toFixed(taxRate % 1 === 0 ? 0 : 1)}%
@@ -89,16 +91,16 @@ export function TaxEstimationCard({
             href="/settings"
             className="workspace-button-secondary inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition xl:self-end"
           >
-            Edit in Settings
+            {t("tax.editInSettings")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
         {mixedCurrencyMode ? (
           <div className="workspace-soft-card rounded-[24px] p-5">
-            <p className="text-sm font-semibold text-[var(--workspace-text)]">Pick one market for after-tax clarity</p>
+            <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("tax.pickOneMarketTitle")}</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-              Hostlyx will not estimate after-tax profit across mixed currencies. Filter to one country, or use Settings to choose the baseline market that should guide your estimate.
+              {t("tax.pickOneMarketBody")}
             </p>
           </div>
         ) : (
@@ -112,7 +114,7 @@ export function TaxEstimationCard({
         <div className="border-t border-white/8 pt-4">
           <p className="text-xs leading-6 text-[var(--workspace-muted)]">{settingsHint}</p>
           <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-            Tax values are estimates only and may not reflect your actual tax obligation.
+            {t("tax.disclaimer")}
           </p>
         </div>
       </div>

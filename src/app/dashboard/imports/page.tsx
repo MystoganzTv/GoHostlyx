@@ -11,10 +11,13 @@ import {
   getUserSettings,
 } from "@/lib/db";
 import { formatNumber } from "@/lib/format";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
 export default async function ImportsPage() {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -46,8 +49,8 @@ export default async function ImportsPage() {
   return (
     <WorkspaceShell
       activePage="imports"
-      pageTitle="Import History"
-      pageSubtitle="Excel files are treated as one-time intake. After import, your source of truth lives inside Hostlyx."
+      pageTitle={t("page.imports.title")}
+      pageSubtitle={t("page.imports.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

@@ -10,6 +10,7 @@ import {
 } from "@/lib/db";
 import { CashflowPanel } from "@/components/cashflow-panel";
 import { FilterBar } from "@/components/filter-bar";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 import { WorkspaceShell } from "@/components/workspace-shell";
 
 export const runtime = "nodejs";
@@ -21,6 +22,8 @@ export default async function CashflowPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -63,8 +66,8 @@ export default async function CashflowPage({
   return (
     <WorkspaceShell
       activePage="cashflow"
-      pageTitle="Cashflow"
-      pageSubtitle="See payout in, expenses out, and net movement across your reporting window."
+      pageTitle={t("page.cashflow.title")}
+      pageSubtitle={t("page.cashflow.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}

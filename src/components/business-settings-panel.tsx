@@ -3,6 +3,7 @@
 import { type FormEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Globe2, Settings2 } from "lucide-react";
+import { useLocale } from "@/components/locale-provider";
 import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
 import type { CountryCode } from "@/lib/types";
 
@@ -17,6 +18,7 @@ export function BusinessSettingsPanel({
   initialBusinessName: string;
   initialPrimaryCountryCode: CountryCode;
 }) {
+  const { t } = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [businessName, setBusinessName] = useState(initialBusinessName);
@@ -51,14 +53,14 @@ export function BusinessSettingsPanel({
           };
 
           if (!response.ok) {
-            setError(payload.error ?? "The business settings could not be saved.");
+            setError(payload.error ?? t("settings.saveError"));
             return;
           }
 
-          setMessage(payload.message ?? "Business settings saved.");
-          router.refresh();
+            setMessage(payload.message ?? t("settings.saved"));
+            router.refresh();
         } catch {
-          setError("The business settings could not be saved.");
+          setError(t("settings.saveError"));
         }
       })();
     });
@@ -69,10 +71,10 @@ export function BusinessSettingsPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
-            Business Settings
+            {t("settings.businessTitle")}
           </p>
           <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-            Each account keeps its own business identity, reporting market, imports, and manual entries.
+            {t("settings.businessSubtitle")}
           </p>
         </div>
         <div className="workspace-icon-chip rounded-3xl p-3">
@@ -83,7 +85,7 @@ export function BusinessSettingsPanel({
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <label className="space-y-2">
           <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-            Business name
+            {t("settings.businessName")}
           </span>
           <div className="relative">
             <Building2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
@@ -101,7 +103,7 @@ export function BusinessSettingsPanel({
 
         <div className="space-y-2">
           <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-            Primary reporting market
+            {t("settings.primaryMarket")}
           </span>
           <div className="grid gap-3 sm:grid-cols-3">
             {marketDefinitions.map((market) => {
@@ -136,16 +138,16 @@ export function BusinessSettingsPanel({
             })}
           </div>
           <p className="text-xs leading-5 text-[var(--workspace-muted)]">
-            This becomes the default market Hostlyx uses when your dashboard is showing all countries at once.
+            {t("settings.primaryMarketHint")}
           </p>
         </div>
 
         <div className="workspace-soft-card rounded-[24px] p-4">
           <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
             <div>
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">What changes when you save</p>
+              <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("settings.whatChanges")}</p>
               <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                Hostlyx will treat {selectedMarket.countryName} as your default reporting market.
+                {t("settings.marketDefault", { country: selectedMarket.countryName })}
               </p>
             </div>
             <span className="rounded-full bg-white/[0.06] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
@@ -156,37 +158,37 @@ export function BusinessSettingsPanel({
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-[18px] bg-white/[0.03] p-4">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                Default currency
+                {t("settings.defaultCurrency")}
               </p>
               <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
                 {selectedMarket.currencyCode} • {selectedMarket.currencyLabel}
               </p>
               <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
-                Dashboard, reports, cashflow, monthly, and performance use this as the fallback display currency.
+                {t("settings.defaultCurrencyBody")}
               </p>
             </div>
 
             <div className="rounded-[18px] bg-white/[0.03] p-4">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                All-countries view
+                {t("settings.allCountriesView")}
               </p>
               <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
                 {selectedMarket.countryName}
               </p>
               <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
-                When filters are on `All countries`, Hostlyx uses this market as the portfolio default for labels and summaries.
+                {t("settings.allCountriesBody")}
               </p>
             </div>
 
             <div className="rounded-[18px] bg-white/[0.03] p-4">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                New property default
+                {t("settings.newPropertyDefault")}
               </p>
               <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
                 Starts in {selectedMarket.shortLabel}
               </p>
               <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
-                New property setup will start from this market so your portfolio structure matches your reporting default.
+                {t("settings.newPropertyBody")}
               </p>
             </div>
           </div>
@@ -197,7 +199,7 @@ export function BusinessSettingsPanel({
           disabled={isPending || !hasChanges}
           className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending ? "Saving settings..." : hasChanges ? `Save settings for ${selectedMarket.countryName}` : "Settings are up to date"}
+          {isPending ? t("common.saving") : hasChanges ? t("settings.saveForCountry", { country: selectedMarket.countryName }) : t("settings.upToDate")}
         </button>
       </form>
 

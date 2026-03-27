@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { SignOutButton } from "@/components/auth-buttons";
+import { LanguageToggle } from "@/components/language-toggle";
+import { useLocale } from "@/components/locale-provider";
 import { formatDateLabel } from "@/lib/format";
 import type { CurrencyCode, ImportSummary } from "@/lib/types";
 
@@ -36,16 +38,16 @@ const sidebarStorageKey = "hostlyx:sidebar-collapsed";
 
 const navItems: Array<{
   id: ActivePage;
-  label: string;
+  labelKey: string;
   href: string;
   icon: typeof LayoutDashboard;
 }> = [
-  { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { id: "bookings", label: "Bookings", href: "/dashboard/bookings", icon: BookOpenText },
-  { id: "expenses", label: "Expenses", href: "/dashboard/expenses", icon: ReceiptText },
-  { id: "cashflow", label: "Cashflow", href: "/dashboard/cashflow", icon: Wallet },
-  { id: "performance", label: "Performance", href: "/dashboard/performance", icon: ChartNoAxesCombined },
-  { id: "reports", label: "Reports", href: "/dashboard/reports", icon: FileText },
+  { id: "dashboard", labelKey: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { id: "bookings", labelKey: "nav.bookings", href: "/dashboard/bookings", icon: BookOpenText },
+  { id: "expenses", labelKey: "nav.expenses", href: "/dashboard/expenses", icon: ReceiptText },
+  { id: "cashflow", labelKey: "nav.cashflow", href: "/dashboard/cashflow", icon: Wallet },
+  { id: "performance", labelKey: "nav.performance", href: "/dashboard/performance", icon: ChartNoAxesCombined },
+  { id: "reports", labelKey: "nav.reports", href: "/dashboard/reports", icon: FileText },
 ];
 
 function navClassName(active: boolean) {
@@ -77,6 +79,7 @@ export function WorkspaceShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
+  const { t } = useLocale();
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -107,9 +110,9 @@ export function WorkspaceShell({
               <button
                 type="button"
                 onClick={toggleSidebar}
-                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                aria-label={isCollapsed ? t("workspace.expandSidebar") : t("workspace.collapseSidebar")}
                 className="hidden xl:inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] p-2.5 text-white transition hover:bg-white/[0.08]"
-                title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                title={isCollapsed ? t("workspace.expandSidebar") : t("workspace.collapseSidebar")}
               >
                 {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
               </button>
@@ -118,7 +121,7 @@ export function WorkspaceShell({
               <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
                 <p className="text-sm font-medium text-white">{businessName}</p>
                 <p className="mt-1 text-xs text-[var(--workspace-sidebar-muted)]">
-                  {currencyCode} workspace
+                  {t("workspace.workspaceLabel", { currency: currencyCode })}
                 </p>
               </div>
             ) : null}
@@ -133,10 +136,10 @@ export function WorkspaceShell({
                   key={item.id}
                   href={item.href}
                   className={`${navClassName(activePage === item.id)} ${isCollapsed ? "justify-center px-3" : ""}`}
-                  title={item.label}
+                  title={t(item.labelKey)}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  {!isCollapsed ? <span className="min-w-0 truncate">{item.label}</span> : null}
+                  {!isCollapsed ? <span className="min-w-0 truncate">{t(item.labelKey)}</span> : null}
                   {activePage === item.id && !isCollapsed ? (
                     <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-[var(--workspace-accent)]" />
                   ) : null}
@@ -149,6 +152,7 @@ export function WorkspaceShell({
             {!isCollapsed ? (
               <>
                 <div className="flex flex-wrap gap-2">
+                  <LanguageToggle />
                   <Link
                     href="/dashboard/properties"
                     className={`workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold transition ${
@@ -156,7 +160,7 @@ export function WorkspaceShell({
                     }`}
                   >
                     <Building2 className="h-3.5 w-3.5" />
-                    Properties
+                    {t("workspace.properties")}
                   </Link>
                   <Link
                     href="/settings"
@@ -165,21 +169,21 @@ export function WorkspaceShell({
                     }`}
                   >
                     <Settings2 className="h-3.5 w-3.5" />
-                    Settings
+                    {t("workspace.settings")}
                   </Link>
                 </div>
 
                 <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--workspace-sidebar-muted)]">
-                    Last import
+                    {t("workspace.lastImport")}
                   </p>
                   <p className="mt-2 text-sm font-medium text-white">
-                    {latestImport?.fileName ?? "No workbook yet"}
+                    {latestImport?.fileName ?? t("workspace.noWorkbookYet")}
                   </p>
                   <p className="mt-1 text-xs text-[var(--workspace-sidebar-muted)]">
                     {latestImport
                       ? `${latestImport.propertyName} • ${formatDateLabel(latestImport.importedAt.slice(0, 10))}`
-                      : "Import a workbook if you need to bring old data in"}
+                      : t("workspace.importHint")}
                   </p>
                 </div>
 
@@ -190,13 +194,16 @@ export function WorkspaceShell({
                   </p>
                 </div>
 
-                <SignOutButton className="flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08]" />
+                <SignOutButton
+                  label={t("nav.signOut")}
+                  className="flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
+                />
               </>
             ) : (
               <div className="flex justify-center">
                 <SignOutButton
                   label=""
-                  ariaLabel="Sign out"
+                  ariaLabel={t("nav.signOut")}
                   icon={<LogOut className="h-4 w-4" />}
                   className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08]"
                 />

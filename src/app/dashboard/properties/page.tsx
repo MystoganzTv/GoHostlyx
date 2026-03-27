@@ -13,10 +13,13 @@ import {
   getUserSettings,
 } from "@/lib/db";
 import { formatNumber } from "@/lib/format";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
 export default async function PropertiesPage() {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -143,11 +146,11 @@ export default async function PropertiesPage() {
   return (
     <WorkspaceShell
       activePage="properties"
-      pageTitle="Properties"
+      pageTitle={t("page.properties.title")}
       pageSubtitle={
         isSetupMode
-          ? "Complete your first property setup before anything else in Hostlyx."
-          : "Organize the portfolio into properties and optional units."
+          ? t("page.properties.setupSubtitle")
+          : t("page.properties.subtitle")
       }
       businessName={userSettings.businessName}
       userName={userName}

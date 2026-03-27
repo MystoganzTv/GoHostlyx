@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { signIn, signOut } from "next-auth/react";
+import { useLocale } from "@/components/locale-provider";
 
 type SignInButtonProps = {
   disabled?: boolean;
@@ -16,6 +17,8 @@ export function SignInButton({
   icon,
   label,
 }: SignInButtonProps) {
+  const { t } = useLocale();
+
   return (
     <button
       type="button"
@@ -33,14 +36,14 @@ export function SignInButton({
       }
     >
       {icon}
-      {disabled ? "Google login not configured" : label ?? "Continue with Google"}
+      {disabled ? t("auth.googleLoginUnavailable") : label ?? t("auth.continueWithGoogle")}
     </button>
   );
 }
 
 export function SignOutButton({
   className,
-  label = "Sign out",
+  label,
   icon,
   ariaLabel,
 }: {
@@ -49,15 +52,18 @@ export function SignOutButton({
   icon?: ReactNode;
   ariaLabel?: string;
 } = {}) {
+  const { t } = useLocale();
+  const resolvedLabel = label ?? t("nav.signOut");
+
   return (
     <button
       type="button"
       onClick={() => void signOut({ callbackUrl: "/" })}
-      aria-label={ariaLabel ?? label}
+      aria-label={ariaLabel ?? resolvedLabel}
       className={className ?? "brand-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"}
     >
       {icon}
-      {label ? <span>{label}</span> : null}
+      {resolvedLabel ? <span>{resolvedLabel}</span> : null}
     </button>
   );
 }

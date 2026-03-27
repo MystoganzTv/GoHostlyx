@@ -18,6 +18,7 @@ import {
   getUserSettings,
 } from "@/lib/db";
 import { formatCurrency, formatNumber } from "@/lib/format";
+import { getServerLocale, getTranslations } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
@@ -28,6 +29,8 @@ export default async function ExpensesPage({
 }: {
   searchParams: SearchParams;
 }) {
+  const locale = await getServerLocale();
+  const t = getTranslations(locale);
   const session = await getAuthSession();
   const ownerEmail = session?.user?.email?.toLowerCase();
 
@@ -77,8 +80,8 @@ export default async function ExpensesPage({
   return (
     <WorkspaceShell
       activePage="expenses"
-      pageTitle="Expenses"
-      pageSubtitle="Track operating costs, categories, and property-level spend."
+      pageTitle={t("page.expenses.title")}
+      pageSubtitle={t("page.expenses.subtitle")}
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}
