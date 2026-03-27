@@ -237,10 +237,9 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
     case "bookings":
       return (
         <WidgetFrame title="Bookings" subtitle="Operational throughput.">
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <WidgetMetric label="Stays" value={formatNumber(view.metrics.bookingsCount)} icon={<CalendarDays className="h-4 w-4" />} />
-            <WidgetMetric label="Guests" value={formatNumber(view.metrics.guestsCount)} icon={<CalendarDays className="h-4 w-4" />} />
-            <WidgetMetric label="Nights" value={formatNumber(view.metrics.nightsBooked)} icon={<ArrowUpRight className="h-4 w-4" />} />
+            <WidgetMetric label="ADR" value={formatCurrency(view.metrics.adr, false, currencyCode)} icon={<ArrowUpRight className="h-4 w-4" />} />
           </div>
         </WidgetFrame>
       );
@@ -250,18 +249,9 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
         <WidgetFrame title="Channels" subtitle="Who is driving the business.">
           <div className="space-y-3">
             {view.revenueByChannel.slice(0, 3).map((channel) => (
-              <div key={channel.label} className="rounded-[18px] bg-white/[0.03] px-4 py-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-[var(--workspace-text)]">{channel.label}</p>
-                    <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                      {formatNumber(channel.bookings)} bookings
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-sm font-semibold text-[var(--workspace-text)]">
-                    {formatCurrency(channel.revenue, false, currencyCode)}
-                  </span>
-                </div>
+              <div key={channel.label} className="flex items-center justify-between gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3">
+                <span className="truncate text-sm text-[var(--workspace-text)]">{channel.label}</span>
+                <span className="text-sm font-semibold text-[var(--workspace-text)]">{formatCurrency(channel.revenue, false, currencyCode)}</span>
               </div>
             ))}
           </div>
@@ -273,41 +263,19 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
         <WidgetFrame title="Recent bookings" subtitle="Latest revenue-producing stays.">
           <div className="space-y-3">
             {view.recentBookings.slice(0, 5).map((booking) => (
-              <div
-                key={`${booking.id ?? booking.checkIn}-${booking.guestName}`}
-                className="rounded-[18px] bg-white/[0.03] px-4 py-3"
-              >
-                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                  <div className="min-w-0 xl:max-w-[44%]">
-                    <p className="truncate text-sm font-semibold text-[var(--workspace-text)]">{booking.guestName}</p>
-                    <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                      {booking.channel} • {booking.propertyName}
-                      {booking.unitName ? ` • ${booking.unitName}` : ""}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col gap-3 xl:min-w-[52%] xl:items-end">
-                    <p className="text-sm text-[var(--workspace-muted)] xl:text-right">
-                      {formatDateLabel(booking.checkIn)} to {formatDateLabel(booking.checkout)}
-                    </p>
-                    <div className="grid gap-2 sm:grid-cols-3 xl:w-full xl:max-w-[430px]">
-                      <div className="rounded-[16px] border border-white/8 bg-white/[0.03] px-3 py-2">
-                        <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Guests</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">{formatNumber(booking.guestCount)}</p>
-                      </div>
-                      <div className="rounded-[16px] border border-white/8 bg-white/[0.03] px-3 py-2">
-                        <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Nights</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">{formatNumber(booking.nights)}</p>
-                      </div>
-                      <div className="rounded-[16px] border border-emerald-300/14 bg-emerald-400/8 px-3 py-2">
-                        <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Payout</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
-                          {formatCurrency(booking.payout, false, currencyCode)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+              <div key={`${booking.id ?? booking.checkIn}-${booking.guestName}`} className="grid gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3 lg:grid-cols-[1.25fr_0.8fr_0.7fr]">
+                <div>
+                  <p className="text-sm font-semibold text-[var(--workspace-text)]">{booking.guestName}</p>
+                  <p className="mt-1 text-xs text-[var(--workspace-muted)]">
+                    {booking.channel} • {booking.propertyName}
+                  </p>
                 </div>
+                <p className="text-sm text-[var(--workspace-muted)]">
+                  {formatDateLabel(booking.checkIn)} to {formatDateLabel(booking.checkout)}
+                </p>
+                <p className="text-sm font-semibold text-[var(--workspace-text)]">
+                  {formatCurrency(booking.payout, false, currencyCode)}
+                </p>
               </div>
             ))}
           </div>
@@ -323,25 +291,21 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
                 key={`${expense.id ?? expense.date}-${expense.description}`}
                 className="rounded-[18px] bg-white/[0.03] px-4 py-3"
               >
-                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                  <div className="min-w-0 xl:max-w-[68%]">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-[var(--workspace-text)]">
                       {expense.description}
                     </p>
                     <p className="mt-1 truncate text-xs text-[var(--workspace-muted)]">
                       {expense.category} • {expense.propertyName}
-                      {expense.unitName ? ` • ${expense.unitName}` : ""}
                     </p>
                     <p className="mt-2 text-xs text-[var(--workspace-muted)]">
                       {formatDateLabel(expense.date)}
                     </p>
                   </div>
-                  <div className="rounded-[16px] border border-white/8 bg-white/[0.03] px-4 py-3 xl:min-w-[132px]">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Amount</p>
-                    <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
-                      {formatCurrency(expense.amount, false, currencyCode)}
-                    </p>
-                  </div>
+                  <span className="shrink-0 text-sm font-semibold text-[var(--workspace-text)]">
+                    {formatCurrency(expense.amount, false, currencyCode)}
+                  </span>
                 </div>
               </div>
             ))}
