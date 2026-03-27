@@ -237,7 +237,7 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
     case "bookings":
       return (
         <WidgetFrame title="Bookings" subtitle="Operational throughput.">
-          <div className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <WidgetMetric label="Stays" value={formatNumber(view.metrics.bookingsCount)} icon={<CalendarDays className="h-4 w-4" />} />
             <WidgetMetric label="ADR" value={formatCurrency(view.metrics.adr, false, currencyCode)} icon={<ArrowUpRight className="h-4 w-4" />} />
           </div>
@@ -250,7 +250,7 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
           <div className="space-y-3">
             {view.revenueByChannel.slice(0, 3).map((channel) => (
               <div key={channel.label} className="flex items-center justify-between gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3">
-                <span className="text-sm text-[var(--workspace-text)]">{channel.label}</span>
+                <span className="truncate text-sm text-[var(--workspace-text)]">{channel.label}</span>
                 <span className="text-sm font-semibold text-[var(--workspace-text)]">{formatCurrency(channel.revenue, false, currencyCode)}</span>
               </div>
             ))}
@@ -262,7 +262,7 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
       return (
         <WidgetFrame title="Recent bookings" subtitle="Latest revenue-producing stays.">
           <div className="space-y-3">
-            {view.recentBookings.slice(0, 4).map((booking) => (
+            {view.recentBookings.slice(0, 5).map((booking) => (
               <div key={`${booking.id ?? booking.checkIn}-${booking.guestName}`} className="grid gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3 lg:grid-cols-[1.25fr_0.8fr_0.7fr]">
                 <div>
                   <p className="text-sm font-semibold text-[var(--workspace-text)]">{booking.guestName}</p>
