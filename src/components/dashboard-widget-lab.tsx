@@ -305,7 +305,7 @@ function LayoutCustomizer({
         <div>
           <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">Layout tools</p>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-            Show or hide widgets, switch presets, and use drag plus resize directly on the canvas.
+            Show or hide widgets, switch presets, and move cards around the canvas while keeping each widget at a readable fixed size.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -552,6 +552,7 @@ function WidgetGridContent({
               margin={[18, 18]}
               containerPadding={[0, 0]}
               dragConfig={{ handle: ".widget-frame-handle" }}
+              resizeConfig={{ enabled: false }}
               onLayoutChange={(_, allLayouts) => {
                 setLayoutState((current) => mergeUpdatedLayouts(current, allLayouts));
               }}

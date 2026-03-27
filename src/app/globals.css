@@ -378,14 +378,5 @@ select {
 }
 
 .widget-grid-layout .react-resizable-handle {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 18px;
-  height: 18px;
-  cursor: se-resize;
-  border-right: 2px solid rgba(88, 196, 182, 0.5);
-  border-bottom: 2px solid rgba(88, 196, 182, 0.5);
-  border-bottom-right-radius: 6px;
-  opacity: 0.88;
+  display: none;
 }
