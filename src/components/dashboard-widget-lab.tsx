@@ -1,15 +1,21 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
+  ArrowDown,
+  ArrowUp,
   ArrowUpRight,
-  ChartNoAxesCombined,
   CalendarDays,
+  ChartNoAxesCombined,
+  Eye,
+  EyeOff,
   FileText,
   LayoutDashboard,
   Percent,
   ReceiptText,
+  RotateCcw,
+  SlidersHorizontal,
   Sparkles,
   Wallet,
   WalletCards,
@@ -18,11 +24,125 @@ import { BrandLogo } from "@/components/brand-logo";
 import { FilterBar } from "@/components/filter-bar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { formatCurrency, formatDateLabel, formatNumber, formatPercent } from "@/lib/format";
-import type {
-  CurrencyCode,
-  DashboardView,
-  ImportSummary,
-} from "@/lib/types";
+import type { CurrencyCode, DashboardView, ImportSummary } from "@/lib/types";
+
+type WidgetId =
+  | "net-profit"
+  | "revenue-pulse"
+  | "expense-pressure"
+  | "revenue-vs-expenses"
+  | "bookings"
+  | "channels"
+  | "recent-bookings";
+
+type WidgetLayoutItem = {
+  id: WidgetId;
+  visible: boolean;
+};
+
+type WidgetDefinition = {
+  id: WidgetId;
+  title: string;
+  label: string;
+  subtitle: string;
+  className: string;
+};
+
+const widgetLayoutStorageKey = "hostlyx:widget-grid-layout:v1";
+
+const widgetDefinitions: WidgetDefinition[] = [
+  {
+    id: "net-profit",
+    title: "Net Profit",
+    label: "Net profit hero",
+    subtitle: "What the business keeps after payout and expenses.",
+    className: "xl:col-span-4 xl:row-span-2",
+  },
+  {
+    id: "revenue-pulse",
+    title: "Revenue pulse",
+    label: "Revenue pulse",
+    subtitle: "Last 6 months, top-line movement.",
+    className: "xl:col-span-4",
+  },
+  {
+    id: "expense-pressure",
+    title: "Expense pressure",
+    label: "Expense pressure",
+    subtitle: "Where cost is clustering right now.",
+    className: "xl:col-span-4 xl:row-span-2",
+  },
+  {
+    id: "revenue-vs-expenses",
+    title: "Revenue vs expenses",
+    label: "Revenue vs expenses",
+    subtitle: "Quick monthly balance read.",
+    className: "xl:col-span-4",
+  },
+  {
+    id: "bookings",
+    title: "Bookings",
+    label: "Bookings",
+    subtitle: "Operational throughput.",
+    className: "xl:col-span-3",
+  },
+  {
+    id: "channels",
+    title: "Channels",
+    label: "Channels",
+    subtitle: "Who is driving the business.",
+    className: "xl:col-span-3",
+  },
+  {
+    id: "recent-bookings",
+    title: "Recent bookings",
+    label: "Recent bookings",
+    subtitle: "Latest revenue-producing stays.",
+    className: "xl:col-span-6",
+  },
+];
+
+function buildDefaultWidgetLayout(): WidgetLayoutItem[] {
+  return widgetDefinitions.map((widget) => ({
+    id: widget.id,
+    visible: true,
+  }));
+}
+
+function mergeWidgetLayout(rawLayout: WidgetLayoutItem[] | null | undefined) {
+  const defaults = buildDefaultWidgetLayout();
+
+  if (!rawLayout || rawLayout.length === 0) {
+    return defaults;
+  }
+
+  const byId = new Map(rawLayout.map((item) => [item.id, item]));
+  const knownIds = new Set(widgetDefinitions.map((widget) => widget.id));
+
+  const merged = rawLayout.filter((item) => knownIds.has(item.id));
+  const missing = defaults.filter((item) => !byId.has(item.id));
+
+  return [...merged, ...missing];
+}
+
+function readSavedWidgetLayout() {
+  if (typeof window === "undefined") {
+    return buildDefaultWidgetLayout();
+  }
+
+  const rawValue = window.localStorage.getItem(widgetLayoutStorageKey);
+
+  if (!rawValue) {
+    return buildDefaultWidgetLayout();
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as WidgetLayoutItem[];
+    return mergeWidgetLayout(parsed);
+  } catch {
+    return buildDefaultWidgetLayout();
+  }
+}
 
 function WidgetFrame({
   title,
@@ -123,7 +243,7 @@ function WidgetMetric({
 }: {
   label: string;
   value: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   accent?: "default" | "positive";
 }) {
   return (
@@ -149,32 +269,123 @@ function WidgetMetric({
   );
 }
 
-function WidgetGridContent({
-  view,
-  currencyCode,
+function LayoutCustomizer({
+  layout,
+  isOpen,
+  onClose,
+  onToggleVisibility,
+  onMove,
+  onReset,
 }: {
-  view: DashboardView;
-  currencyCode: CurrencyCode;
+  layout: WidgetLayoutItem[];
+  isOpen: boolean;
+  onClose: () => void;
+  onToggleVisibility: (id: WidgetId) => void;
+  onMove: (id: WidgetId, direction: "up" | "down") => void;
+  onReset: () => void;
 }) {
+  if (!isOpen) {
+    return null;
+  }
+
+  const visibleCount = layout.filter((item) => item.visible).length;
+
+  return (
+    <section className="workspace-card rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">Customize layout</p>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
+            Show or hide widgets, then change their order. This first version saves the layout in your browser for the lab.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onReset}
+            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
+          >
+            <span className="inline-flex items-center gap-2">
+              <RotateCcw className="h-3.5 w-3.5" />
+              Reset layout
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-3 text-xs uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+        {visibleCount} visible widgets · {layout.length - visibleCount} hidden
+      </div>
+
+      <div className="mt-4 grid gap-3 xl:grid-cols-2">
+        {layout.map((item, index) => {
+          const definition = widgetDefinitions.find((widget) => widget.id === item.id);
+
+          if (!definition) {
+            return null;
+          }
+
+          return (
+            <div key={item.id} className="flex items-center gap-3 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-[var(--workspace-text)]">{definition.label}</p>
+                <p className="mt-1 text-xs text-[var(--workspace-muted)]">{definition.subtitle}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onToggleVisibility(item.id)}
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border transition ${
+                    item.visible
+                      ? "border-emerald-300/20 bg-emerald-400/12 text-emerald-200"
+                      : "border-white/10 bg-white/[0.04] text-[var(--workspace-muted)]"
+                  }`}
+                  title={item.visible ? "Hide widget" : "Show widget"}
+                >
+                  {item.visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onMove(item.id, "up")}
+                  disabled={index === 0}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-35"
+                  title="Move up"
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onMove(item.id, "down")}
+                  disabled={index === layout.length - 1}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-35"
+                  title="Move down"
+                >
+                  <ArrowDown className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: CurrencyCode) {
   const monthlySlice = view.monthlySummary.slice(-6);
   const costSlice = view.expensesByCategory.slice(0, 5);
   const totalCost = costSlice.reduce((sum, item) => sum + item.value, 0) || 1;
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-end">
-        <FilterBar
-          channels={view.availableChannels}
-          countries={view.availableCountries}
-          selectedRangePreset={view.filters.rangePreset}
-          selectedStartDate={view.filters.startDate}
-          selectedEndDate={view.filters.endDate}
-          selectedChannel={view.filters.channel}
-          selectedCountryCode={view.filters.countryCode}
-        />
-      </div>
-
-      <div className="grid auto-rows-[minmax(160px,auto)] gap-5 xl:grid-cols-12">
+  switch (widgetId) {
+    case "net-profit":
+      return (
         <WidgetFrame
           title="Net Profit"
           subtitle="What the business keeps after payout and expenses."
@@ -188,11 +399,23 @@ function WidgetGridContent({
             Profit first, so the business reads like a company instead of a spreadsheet.
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <WidgetMetric label="After tax" value={formatCurrency(view.metrics.profitAfterTax, false, currencyCode)} icon={<WalletCards className="h-4 w-4" />} accent="positive" />
-            <WidgetMetric label="Margin" value={formatPercent(view.metrics.profitMargin)} icon={<Percent className="h-4 w-4" />} />
+            <WidgetMetric
+              label="After tax"
+              value={formatCurrency(view.metrics.profitAfterTax, false, currencyCode)}
+              icon={<WalletCards className="h-4 w-4" />}
+              accent="positive"
+            />
+            <WidgetMetric
+              label="Margin"
+              value={formatPercent(view.metrics.profitMargin)}
+              icon={<Percent className="h-4 w-4" />}
+            />
           </div>
         </WidgetFrame>
+      );
 
+    case "revenue-pulse":
+      return (
         <WidgetFrame title="Revenue pulse" subtitle="Last 6 months, top-line movement." className="xl:col-span-4">
           <SparkBars values={monthlySlice.map((month) => month.revenue)} />
           <div className="mt-3 grid grid-cols-6 gap-2 text-center text-[11px] uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
@@ -201,7 +424,10 @@ function WidgetGridContent({
             ))}
           </div>
         </WidgetFrame>
+      );
 
+    case "expense-pressure":
+      return (
         <WidgetFrame title="Expense pressure" subtitle="Where cost is clustering right now." className="xl:col-span-4 xl:row-span-2">
           <StackedCostBars
             items={costSlice.map((item) => ({
@@ -210,36 +436,69 @@ function WidgetGridContent({
             }))}
           />
         </WidgetFrame>
+      );
 
+    case "revenue-vs-expenses":
+      return (
         <WidgetFrame title="Revenue vs expenses" subtitle="Quick monthly balance read." className="xl:col-span-4">
           <div className="grid grid-cols-2 gap-3">
-            <WidgetMetric label="Revenue" value={formatCurrency(view.metrics.totalRevenue, false, currencyCode)} icon={<Wallet className="h-4 w-4" />} />
-            <WidgetMetric label="Expenses" value={formatCurrency(view.metrics.totalExpenses, false, currencyCode)} icon={<ReceiptText className="h-4 w-4" />} />
+            <WidgetMetric
+              label="Revenue"
+              value={formatCurrency(view.metrics.totalRevenue, false, currencyCode)}
+              icon={<Wallet className="h-4 w-4" />}
+            />
+            <WidgetMetric
+              label="Expenses"
+              value={formatCurrency(view.metrics.totalExpenses, false, currencyCode)}
+              icon={<ReceiptText className="h-4 w-4" />}
+            />
           </div>
         </WidgetFrame>
+      );
 
+    case "bookings":
+      return (
         <WidgetFrame title="Bookings" subtitle="Operational throughput." className="xl:col-span-3">
           <div className="space-y-3">
-            <WidgetMetric label="Stays" value={formatNumber(view.metrics.bookingsCount)} icon={<CalendarDays className="h-4 w-4" />} />
-            <WidgetMetric label="ADR" value={formatCurrency(view.metrics.adr, false, currencyCode)} icon={<ArrowUpRight className="h-4 w-4" />} />
+            <WidgetMetric
+              label="Stays"
+              value={formatNumber(view.metrics.bookingsCount)}
+              icon={<CalendarDays className="h-4 w-4" />}
+            />
+            <WidgetMetric
+              label="ADR"
+              value={formatCurrency(view.metrics.adr, false, currencyCode)}
+              icon={<ArrowUpRight className="h-4 w-4" />}
+            />
           </div>
         </WidgetFrame>
+      );
 
+    case "channels":
+      return (
         <WidgetFrame title="Channels" subtitle="Who is driving the business." className="xl:col-span-3">
           <div className="space-y-3">
             {view.revenueByChannel.slice(0, 3).map((channel) => (
               <div key={channel.label} className="flex items-center justify-between gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3">
                 <span className="text-sm text-[var(--workspace-text)]">{channel.label}</span>
-                <span className="text-sm font-semibold text-[var(--workspace-text)]">{formatCurrency(channel.revenue, false, currencyCode)}</span>
+                <span className="text-sm font-semibold text-[var(--workspace-text)]">
+                  {formatCurrency(channel.revenue, false, currencyCode)}
+                </span>
               </div>
             ))}
           </div>
         </WidgetFrame>
+      );
 
+    case "recent-bookings":
+      return (
         <WidgetFrame title="Recent bookings" subtitle="Latest revenue-producing stays." className="xl:col-span-6">
           <div className="space-y-3">
             {view.recentBookings.slice(0, 4).map((booking) => (
-              <div key={`${booking.id ?? booking.checkIn}-${booking.guestName}`} className="grid gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3 lg:grid-cols-[1.25fr_0.8fr_0.7fr]">
+              <div
+                key={`${booking.id ?? booking.checkIn}-${booking.guestName}`}
+                className="grid gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3 lg:grid-cols-[1.25fr_0.8fr_0.7fr]"
+              >
                 <div>
                   <p className="text-sm font-semibold text-[var(--workspace-text)]">{booking.guestName}</p>
                   <p className="mt-1 text-xs text-[var(--workspace-muted)]">
@@ -256,6 +515,116 @@ function WidgetGridContent({
             ))}
           </div>
         </WidgetFrame>
+      );
+  }
+}
+
+function WidgetGridContent({
+  view,
+  currencyCode,
+}: {
+  view: DashboardView;
+  currencyCode: CurrencyCode;
+}) {
+  const [layout, setLayout] = useState<WidgetLayoutItem[]>(() => readSavedWidgetLayout());
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+
+  useEffect(() => {
+    window.localStorage.setItem(widgetLayoutStorageKey, JSON.stringify(layout));
+  }, [layout]);
+
+  function toggleVisibility(id: WidgetId) {
+    setLayout((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, visible: !item.visible } : item,
+      ),
+    );
+  }
+
+  function moveWidget(id: WidgetId, direction: "up" | "down") {
+    setLayout((current) => {
+      const currentIndex = current.findIndex((item) => item.id === id);
+
+      if (currentIndex === -1) {
+        return current;
+      }
+
+      const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+      if (nextIndex < 0 || nextIndex >= current.length) {
+        return current;
+      }
+
+      const next = [...current];
+      const [item] = next.splice(currentIndex, 1);
+      next.splice(nextIndex, 0, item);
+      return next;
+    });
+  }
+
+  function resetLayout() {
+    const nextLayout = buildDefaultWidgetLayout();
+    setLayout(nextLayout);
+    window.localStorage.setItem(widgetLayoutStorageKey, JSON.stringify(nextLayout));
+  }
+
+  const visibleWidgets = layout.filter((item) => item.visible);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsCustomizerOpen((current) => !current)}
+            className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+              isCustomizerOpen ? "workspace-button-primary" : "workspace-button-secondary"
+            }`}
+          >
+            <span className="inline-flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4" />
+              Customize layout
+            </span>
+          </button>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+            {visibleWidgets.length} active widgets
+          </span>
+        </div>
+
+        <FilterBar
+          channels={view.availableChannels}
+          countries={view.availableCountries}
+          selectedRangePreset={view.filters.rangePreset}
+          selectedStartDate={view.filters.startDate}
+          selectedEndDate={view.filters.endDate}
+          selectedChannel={view.filters.channel}
+          selectedCountryCode={view.filters.countryCode}
+        />
+      </div>
+
+      <LayoutCustomizer
+        layout={layout}
+        isOpen={isCustomizerOpen}
+        onClose={() => setIsCustomizerOpen(false)}
+        onToggleVisibility={toggleVisibility}
+        onMove={moveWidget}
+        onReset={resetLayout}
+      />
+
+      <div className="grid auto-rows-[minmax(160px,auto)] gap-5 xl:grid-cols-12">
+        {visibleWidgets.map((item) => {
+          const definition = widgetDefinitions.find((widget) => widget.id === item.id);
+
+          if (!definition) {
+            return null;
+          }
+
+          return (
+            <div key={item.id} className={definition.className}>
+              {renderWidget(item.id, view, currencyCode)}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -296,9 +665,7 @@ function PublicPreviewShell({
                 <div
                   key={item.label}
                   className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${
-                    index === 0
-                      ? "workspace-sidebar-link-active"
-                      : "workspace-sidebar-link"
+                    index === 0 ? "workspace-sidebar-link-active" : "workspace-sidebar-link"
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
