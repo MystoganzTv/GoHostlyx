@@ -65,7 +65,7 @@ function WidgetFrame({
   children: ReactNode;
 }) {
   return (
-    <section className="workspace-card h-full overflow-hidden rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
+    <section className="workspace-card h-full select-none overflow-hidden rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
       <div className="widget-frame-handle -mx-1 -mt-1 mb-5 flex cursor-grab items-start justify-between gap-4 rounded-[18px] px-1 py-1 active:cursor-grabbing">
         <div>
           <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">{title}</p>
@@ -540,7 +540,7 @@ function WidgetGridContent({
           </p>
         </section>
       ) : (
-        <div ref={containerRef} className="widget-grid-shell rounded-[30px] border border-white/8 p-3 sm:p-4">
+        <div ref={containerRef} className="widget-grid-shell select-none rounded-[30px] border border-white/8 p-3 sm:p-4">
           {mounted ? (
             <ResponsiveGridLayout
               width={width}
