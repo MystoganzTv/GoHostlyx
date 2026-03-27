@@ -281,6 +281,37 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
           </div>
         </WidgetFrame>
       );
+
+    case "recent-expenses":
+      return (
+        <WidgetFrame title="Recent expenses" subtitle="Latest money-out activity.">
+          <div className="space-y-3">
+            {view.recentExpenses.slice(0, 5).map((expense) => (
+              <div
+                key={`${expense.id ?? expense.date}-${expense.description}`}
+                className="rounded-[18px] bg-white/[0.03] px-4 py-3"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-[var(--workspace-text)]">
+                      {expense.description}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-[var(--workspace-muted)]">
+                      {expense.category} • {expense.propertyName}
+                    </p>
+                    <p className="mt-2 text-xs text-[var(--workspace-muted)]">
+                      {formatDateLabel(expense.date)}
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-sm font-semibold text-[var(--workspace-text)]">
+                    {formatCurrency(expense.amount, false, currencyCode)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </WidgetFrame>
+      );
   }
 }
 
@@ -490,6 +521,7 @@ function WidgetGridContent({
     .map((widget) => widget.id)
     .filter((widgetId) => !hiddenIdSet.has(widgetId));
   const { width, containerRef, mounted } = useContainerWidth({ initialWidth: 1280 });
+  const isLayoutMode = isCustomizerOpen;
 
   return (
     <div className="space-y-6">
@@ -540,7 +572,12 @@ function WidgetGridContent({
           </p>
         </section>
       ) : (
-        <div ref={containerRef} className="widget-grid-shell select-none rounded-[30px] border border-white/8 p-3 sm:p-4">
+        <div
+          ref={containerRef}
+          className={`widget-grid-shell rounded-[30px] border border-white/8 p-3 sm:p-4 ${
+            isLayoutMode ? "select-none" : ""
+          }`}
+        >
           {mounted ? (
             <ResponsiveGridLayout
               width={width}

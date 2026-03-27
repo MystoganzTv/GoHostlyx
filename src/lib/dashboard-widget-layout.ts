@@ -7,7 +7,8 @@ export type DashboardWidgetId =
   | "revenue-vs-expenses"
   | "bookings"
   | "channels"
-  | "recent-bookings";
+  | "recent-bookings"
+  | "recent-expenses";
 
 export type DashboardWidgetPresetId =
   | "executive"
@@ -82,7 +83,14 @@ export const dashboardWidgetCatalog: DashboardWidgetCatalogItem[] = [
     title: "Recent bookings",
     subtitle: "Latest revenue-producing stays.",
     minW: 5,
-    minH: 5,
+    minH: 7,
+  },
+  {
+    id: "recent-expenses",
+    title: "Recent expenses",
+    subtitle: "Latest money-out activity.",
+    minW: 5,
+    minH: 7,
   },
 ];
 
@@ -92,31 +100,34 @@ const widgetIdSet = new Set<DashboardWidgetId>(
 
 const baseExecutiveLayouts: DashboardGridLayouts = {
   lg: [
-    { i: "net-profit", x: 0, y: 0, w: 4, h: 8 },
+    { i: "net-profit", x: 0, y: 0, w: 4, h: 7 },
     { i: "revenue-pulse", x: 4, y: 0, w: 4, h: 4 },
-    { i: "expense-pressure", x: 8, y: 0, w: 4, h: 8 },
-    { i: "revenue-vs-expenses", x: 4, y: 4, w: 4, h: 4 },
-    { i: "bookings", x: 0, y: 8, w: 3, h: 5 },
-    { i: "channels", x: 3, y: 8, w: 3, h: 5 },
-    { i: "recent-bookings", x: 6, y: 8, w: 6, h: 5 },
+    { i: "expense-pressure", x: 8, y: 0, w: 4, h: 7 },
+    { i: "revenue-vs-expenses", x: 4, y: 4, w: 4, h: 3 },
+    { i: "bookings", x: 0, y: 7, w: 4, h: 5 },
+    { i: "channels", x: 4, y: 7, w: 4, h: 5 },
+    { i: "recent-bookings", x: 0, y: 12, w: 7, h: 7 },
+    { i: "recent-expenses", x: 7, y: 12, w: 5, h: 7 },
   ],
   md: [
     { i: "net-profit", x: 0, y: 0, w: 6, h: 6 },
     { i: "revenue-pulse", x: 6, y: 0, w: 6, h: 4 },
     { i: "expense-pressure", x: 0, y: 6, w: 6, h: 6 },
     { i: "revenue-vs-expenses", x: 6, y: 4, w: 6, h: 4 },
-    { i: "bookings", x: 6, y: 8, w: 3, h: 5 },
-    { i: "channels", x: 9, y: 8, w: 3, h: 5 },
-    { i: "recent-bookings", x: 0, y: 13, w: 12, h: 5 },
+    { i: "bookings", x: 0, y: 12, w: 6, h: 5 },
+    { i: "channels", x: 6, y: 12, w: 6, h: 5 },
+    { i: "recent-bookings", x: 0, y: 17, w: 12, h: 7 },
+    { i: "recent-expenses", x: 0, y: 24, w: 12, h: 7 },
   ],
   sm: [
     { i: "net-profit", x: 0, y: 0, w: 4, h: 6 },
     { i: "revenue-pulse", x: 0, y: 5, w: 4, h: 4 },
     { i: "expense-pressure", x: 0, y: 9, w: 4, h: 5 },
     { i: "revenue-vs-expenses", x: 0, y: 14, w: 4, h: 4 },
-    { i: "bookings", x: 0, y: 18, w: 2, h: 5 },
-    { i: "channels", x: 2, y: 18, w: 2, h: 5 },
-    { i: "recent-bookings", x: 0, y: 23, w: 4, h: 5 },
+    { i: "bookings", x: 0, y: 18, w: 4, h: 5 },
+    { i: "channels", x: 0, y: 23, w: 4, h: 5 },
+    { i: "recent-bookings", x: 0, y: 28, w: 4, h: 7 },
+    { i: "recent-expenses", x: 0, y: 35, w: 4, h: 7 },
   ],
 };
 
@@ -124,26 +135,28 @@ const presetLayouts: Record<Exclude<DashboardWidgetPresetId, "custom">, Dashboar
   executive: baseExecutiveLayouts,
   finance: {
     lg: [
-      { i: "net-profit", x: 0, y: 0, w: 5, h: 8 },
-      { i: "expense-pressure", x: 5, y: 0, w: 4, h: 8 },
+      { i: "net-profit", x: 0, y: 0, w: 4, h: 7 },
+      { i: "expense-pressure", x: 8, y: 0, w: 4, h: 7 },
       { i: "revenue-vs-expenses", x: 9, y: 0, w: 3, h: 4 },
       { i: "revenue-pulse", x: 9, y: 4, w: 3, h: 4 },
-      { i: "channels", x: 0, y: 8, w: 3, h: 5 },
-      { i: "bookings", x: 3, y: 8, w: 3, h: 5 },
-      { i: "recent-bookings", x: 6, y: 8, w: 6, h: 5 },
+      { i: "channels", x: 0, y: 7, w: 4, h: 5 },
+      { i: "bookings", x: 4, y: 7, w: 4, h: 5 },
+      { i: "recent-bookings", x: 0, y: 12, w: 7, h: 7 },
+      { i: "recent-expenses", x: 7, y: 12, w: 5, h: 7 },
     ],
     md: baseExecutiveLayouts.md,
     sm: baseExecutiveLayouts.sm,
   },
   operations: {
     lg: [
-      { i: "recent-bookings", x: 0, y: 0, w: 6, h: 6 },
-      { i: "bookings", x: 6, y: 0, w: 3, h: 5 },
-      { i: "channels", x: 9, y: 0, w: 3, h: 5 },
-      { i: "net-profit", x: 6, y: 5, w: 6, h: 5 },
-      { i: "revenue-pulse", x: 0, y: 6, w: 4, h: 4 },
-      { i: "revenue-vs-expenses", x: 4, y: 6, w: 4, h: 4 },
-      { i: "expense-pressure", x: 8, y: 10, w: 4, h: 5 },
+      { i: "recent-bookings", x: 0, y: 0, w: 7, h: 7 },
+      { i: "recent-expenses", x: 7, y: 0, w: 5, h: 7 },
+      { i: "bookings", x: 0, y: 7, w: 4, h: 5 },
+      { i: "channels", x: 4, y: 7, w: 4, h: 5 },
+      { i: "net-profit", x: 8, y: 7, w: 4, h: 5 },
+      { i: "revenue-pulse", x: 0, y: 12, w: 4, h: 4 },
+      { i: "revenue-vs-expenses", x: 4, y: 12, w: 4, h: 4 },
+      { i: "expense-pressure", x: 8, y: 12, w: 4, h: 5 },
     ],
     md: baseExecutiveLayouts.md,
     sm: baseExecutiveLayouts.sm,
