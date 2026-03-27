@@ -67,6 +67,12 @@ export default async function ShowcasePage() {
               >
                 View pricing
               </Link>
+              <Link
+                href="/showcase/widget-lab"
+                className="brand-button-secondary rounded-2xl px-5 py-3 text-sm font-semibold transition"
+              >
+                View widget-grid lab
+              </Link>
             </div>
           </div>
 
