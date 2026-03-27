@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { ResponsiveGridLayout, useContainerWidth } from "react-grid-layout";
 import {
-  ArrowDown,
-  ArrowUp,
   ArrowUpRight,
   CalendarDays,
   ChartNoAxesCombined,
@@ -23,145 +22,53 @@ import {
 import { BrandLogo } from "@/components/brand-logo";
 import { FilterBar } from "@/components/filter-bar";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import {
+  buildPresetWidgetLayout,
+  dashboardWidgetCatalog,
+  type DashboardGridLayouts,
+  type DashboardWidgetId,
+  type DashboardWidgetLayoutState,
+  type DashboardWidgetPresetId,
+  mergeUpdatedLayouts,
+  normalizeWidgetLayoutState,
+} from "@/lib/dashboard-widget-layout";
 import { formatCurrency, formatDateLabel, formatNumber, formatPercent } from "@/lib/format";
 import type { CurrencyCode, DashboardView, ImportSummary } from "@/lib/types";
 
-type WidgetId =
-  | "net-profit"
-  | "revenue-pulse"
-  | "expense-pressure"
-  | "revenue-vs-expenses"
-  | "bookings"
-  | "channels"
-  | "recent-bookings";
+const previewStorageKey = "hostlyx:widget-grid-preview-layout:v2";
 
-type WidgetLayoutItem = {
-  id: WidgetId;
-  visible: boolean;
-};
-
-type WidgetDefinition = {
-  id: WidgetId;
-  title: string;
-  label: string;
-  subtitle: string;
-  className: string;
-};
-
-const widgetLayoutStorageKey = "hostlyx:widget-grid-layout:v1";
-
-const widgetDefinitions: WidgetDefinition[] = [
-  {
-    id: "net-profit",
-    title: "Net Profit",
-    label: "Net profit hero",
-    subtitle: "What the business keeps after payout and expenses.",
-    className: "xl:col-span-4 xl:row-span-2",
-  },
-  {
-    id: "revenue-pulse",
-    title: "Revenue pulse",
-    label: "Revenue pulse",
-    subtitle: "Last 6 months, top-line movement.",
-    className: "xl:col-span-4",
-  },
-  {
-    id: "expense-pressure",
-    title: "Expense pressure",
-    label: "Expense pressure",
-    subtitle: "Where cost is clustering right now.",
-    className: "xl:col-span-4 xl:row-span-2",
-  },
-  {
-    id: "revenue-vs-expenses",
-    title: "Revenue vs expenses",
-    label: "Revenue vs expenses",
-    subtitle: "Quick monthly balance read.",
-    className: "xl:col-span-4",
-  },
-  {
-    id: "bookings",
-    title: "Bookings",
-    label: "Bookings",
-    subtitle: "Operational throughput.",
-    className: "xl:col-span-3",
-  },
-  {
-    id: "channels",
-    title: "Channels",
-    label: "Channels",
-    subtitle: "Who is driving the business.",
-    className: "xl:col-span-3",
-  },
-  {
-    id: "recent-bookings",
-    title: "Recent bookings",
-    label: "Recent bookings",
-    subtitle: "Latest revenue-producing stays.",
-    className: "xl:col-span-6",
-  },
-];
-
-function buildDefaultWidgetLayout(): WidgetLayoutItem[] {
-  return widgetDefinitions.map((widget) => ({
-    id: widget.id,
-    visible: true,
-  }));
-}
-
-function mergeWidgetLayout(rawLayout: WidgetLayoutItem[] | null | undefined) {
-  const defaults = buildDefaultWidgetLayout();
-
-  if (!rawLayout || rawLayout.length === 0) {
-    return defaults;
-  }
-
-  const byId = new Map(rawLayout.map((item) => [item.id, item]));
-  const knownIds = new Set(widgetDefinitions.map((widget) => widget.id));
-
-  const merged = rawLayout.filter((item) => knownIds.has(item.id));
-  const missing = defaults.filter((item) => !byId.has(item.id));
-
-  return [...merged, ...missing];
-}
-
-function readSavedWidgetLayout() {
+function readPreviewLayoutState() {
   if (typeof window === "undefined") {
-    return buildDefaultWidgetLayout();
+    return buildPresetWidgetLayout("executive");
   }
 
-  const rawValue = window.localStorage.getItem(widgetLayoutStorageKey);
+  const rawValue = window.localStorage.getItem(previewStorageKey);
 
   if (!rawValue) {
-    return buildDefaultWidgetLayout();
+    return buildPresetWidgetLayout("executive");
   }
 
   try {
-    const parsed = JSON.parse(rawValue) as WidgetLayoutItem[];
-    return mergeWidgetLayout(parsed);
+    return normalizeWidgetLayoutState(JSON.parse(rawValue));
   } catch {
-    return buildDefaultWidgetLayout();
+    return buildPresetWidgetLayout("executive");
   }
 }
 
 function WidgetFrame({
   title,
   subtitle,
-  className = "",
   action,
   children,
 }: {
   title: string;
   subtitle?: string;
-  className?: string;
   action?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <section
-      className={`workspace-card rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)] ${className}`}
-    >
-      <div className="mb-5 flex items-start justify-between gap-4">
+    <section className="workspace-card h-full rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
+      <div className="widget-frame-handle -mx-1 -mt-1 mb-5 flex cursor-grab items-start justify-between gap-4 rounded-[18px] px-1 py-1 active:cursor-grabbing">
         <div>
           <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">{title}</p>
           {subtitle ? <p className="mt-1 text-xs leading-5 text-[var(--workspace-muted)]">{subtitle}</p> : null}
@@ -269,116 +176,7 @@ function WidgetMetric({
   );
 }
 
-function LayoutCustomizer({
-  layout,
-  isOpen,
-  onClose,
-  onToggleVisibility,
-  onMove,
-  onReset,
-}: {
-  layout: WidgetLayoutItem[];
-  isOpen: boolean;
-  onClose: () => void;
-  onToggleVisibility: (id: WidgetId) => void;
-  onMove: (id: WidgetId, direction: "up" | "down") => void;
-  onReset: () => void;
-}) {
-  if (!isOpen) {
-    return null;
-  }
-
-  const visibleCount = layout.filter((item) => item.visible).length;
-
-  return (
-    <section className="workspace-card rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">Customize layout</p>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-            Show or hide widgets, then change their order. This first version saves the layout in your browser for the lab.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={onReset}
-            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
-          >
-            <span className="inline-flex items-center gap-2">
-              <RotateCcw className="h-3.5 w-3.5" />
-              Reset layout
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
-          >
-            Done
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-5 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-3 text-xs uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-        {visibleCount} visible widgets · {layout.length - visibleCount} hidden
-      </div>
-
-      <div className="mt-4 grid gap-3 xl:grid-cols-2">
-        {layout.map((item, index) => {
-          const definition = widgetDefinitions.find((widget) => widget.id === item.id);
-
-          if (!definition) {
-            return null;
-          }
-
-          return (
-            <div key={item.id} className="flex items-center gap-3 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-[var(--workspace-text)]">{definition.label}</p>
-                <p className="mt-1 text-xs text-[var(--workspace-muted)]">{definition.subtitle}</p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => onToggleVisibility(item.id)}
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border transition ${
-                    item.visible
-                      ? "border-emerald-300/20 bg-emerald-400/12 text-emerald-200"
-                      : "border-white/10 bg-white/[0.04] text-[var(--workspace-muted)]"
-                  }`}
-                  title={item.visible ? "Hide widget" : "Show widget"}
-                >
-                  {item.visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onMove(item.id, "up")}
-                  disabled={index === 0}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-35"
-                  title="Move up"
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onMove(item.id, "down")}
-                  disabled={index === layout.length - 1}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-35"
-                  title="Move down"
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: CurrencyCode) {
+function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currencyCode: CurrencyCode) {
   const monthlySlice = view.monthlySummary.slice(-6);
   const costSlice = view.expensesByCategory.slice(0, 5);
   const totalCost = costSlice.reduce((sum, item) => sum + item.value, 0) || 1;
@@ -389,7 +187,6 @@ function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: Cur
         <WidgetFrame
           title="Net Profit"
           subtitle="What the business keeps after payout and expenses."
-          className="xl:col-span-4 xl:row-span-2"
           action={<span className="rounded-full bg-emerald-400/14 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">Core KPI</span>}
         >
           <p className={`text-5xl font-semibold tracking-tight ${view.metrics.netProfit >= 0 ? "text-white" : "text-rose-200"}`}>
@@ -399,24 +196,15 @@ function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: Cur
             Profit first, so the business reads like a company instead of a spreadsheet.
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <WidgetMetric
-              label="After tax"
-              value={formatCurrency(view.metrics.profitAfterTax, false, currencyCode)}
-              icon={<WalletCards className="h-4 w-4" />}
-              accent="positive"
-            />
-            <WidgetMetric
-              label="Margin"
-              value={formatPercent(view.metrics.profitMargin)}
-              icon={<Percent className="h-4 w-4" />}
-            />
+            <WidgetMetric label="After tax" value={formatCurrency(view.metrics.profitAfterTax, false, currencyCode)} icon={<WalletCards className="h-4 w-4" />} accent="positive" />
+            <WidgetMetric label="Margin" value={formatPercent(view.metrics.profitMargin)} icon={<Percent className="h-4 w-4" />} />
           </div>
         </WidgetFrame>
       );
 
     case "revenue-pulse":
       return (
-        <WidgetFrame title="Revenue pulse" subtitle="Last 6 months, top-line movement." className="xl:col-span-4">
+        <WidgetFrame title="Revenue pulse" subtitle="Last 6 months, top-line movement.">
           <SparkBars values={monthlySlice.map((month) => month.revenue)} />
           <div className="mt-3 grid grid-cols-6 gap-2 text-center text-[11px] uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
             {monthlySlice.map((month) => (
@@ -428,7 +216,7 @@ function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: Cur
 
     case "expense-pressure":
       return (
-        <WidgetFrame title="Expense pressure" subtitle="Where cost is clustering right now." className="xl:col-span-4 xl:row-span-2">
+        <WidgetFrame title="Expense pressure" subtitle="Where cost is clustering right now.">
           <StackedCostBars
             items={costSlice.map((item) => ({
               label: item.label,
@@ -440,50 +228,32 @@ function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: Cur
 
     case "revenue-vs-expenses":
       return (
-        <WidgetFrame title="Revenue vs expenses" subtitle="Quick monthly balance read." className="xl:col-span-4">
+        <WidgetFrame title="Revenue vs expenses" subtitle="Quick monthly balance read.">
           <div className="grid grid-cols-2 gap-3">
-            <WidgetMetric
-              label="Revenue"
-              value={formatCurrency(view.metrics.totalRevenue, false, currencyCode)}
-              icon={<Wallet className="h-4 w-4" />}
-            />
-            <WidgetMetric
-              label="Expenses"
-              value={formatCurrency(view.metrics.totalExpenses, false, currencyCode)}
-              icon={<ReceiptText className="h-4 w-4" />}
-            />
+            <WidgetMetric label="Revenue" value={formatCurrency(view.metrics.totalRevenue, false, currencyCode)} icon={<Wallet className="h-4 w-4" />} />
+            <WidgetMetric label="Expenses" value={formatCurrency(view.metrics.totalExpenses, false, currencyCode)} icon={<ReceiptText className="h-4 w-4" />} />
           </div>
         </WidgetFrame>
       );
 
     case "bookings":
       return (
-        <WidgetFrame title="Bookings" subtitle="Operational throughput." className="xl:col-span-3">
+        <WidgetFrame title="Bookings" subtitle="Operational throughput.">
           <div className="space-y-3">
-            <WidgetMetric
-              label="Stays"
-              value={formatNumber(view.metrics.bookingsCount)}
-              icon={<CalendarDays className="h-4 w-4" />}
-            />
-            <WidgetMetric
-              label="ADR"
-              value={formatCurrency(view.metrics.adr, false, currencyCode)}
-              icon={<ArrowUpRight className="h-4 w-4" />}
-            />
+            <WidgetMetric label="Stays" value={formatNumber(view.metrics.bookingsCount)} icon={<CalendarDays className="h-4 w-4" />} />
+            <WidgetMetric label="ADR" value={formatCurrency(view.metrics.adr, false, currencyCode)} icon={<ArrowUpRight className="h-4 w-4" />} />
           </div>
         </WidgetFrame>
       );
 
     case "channels":
       return (
-        <WidgetFrame title="Channels" subtitle="Who is driving the business." className="xl:col-span-3">
+        <WidgetFrame title="Channels" subtitle="Who is driving the business.">
           <div className="space-y-3">
             {view.revenueByChannel.slice(0, 3).map((channel) => (
               <div key={channel.label} className="flex items-center justify-between gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3">
                 <span className="text-sm text-[var(--workspace-text)]">{channel.label}</span>
-                <span className="text-sm font-semibold text-[var(--workspace-text)]">
-                  {formatCurrency(channel.revenue, false, currencyCode)}
-                </span>
+                <span className="text-sm font-semibold text-[var(--workspace-text)]">{formatCurrency(channel.revenue, false, currencyCode)}</span>
               </div>
             ))}
           </div>
@@ -492,13 +262,10 @@ function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: Cur
 
     case "recent-bookings":
       return (
-        <WidgetFrame title="Recent bookings" subtitle="Latest revenue-producing stays." className="xl:col-span-6">
+        <WidgetFrame title="Recent bookings" subtitle="Latest revenue-producing stays.">
           <div className="space-y-3">
             {view.recentBookings.slice(0, 4).map((booking) => (
-              <div
-                key={`${booking.id ?? booking.checkIn}-${booking.guestName}`}
-                className="grid gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3 lg:grid-cols-[1.25fr_0.8fr_0.7fr]"
-              >
+              <div key={`${booking.id ?? booking.checkIn}-${booking.guestName}`} className="grid gap-3 rounded-[18px] bg-white/[0.03] px-4 py-3 lg:grid-cols-[1.25fr_0.8fr_0.7fr]">
                 <div>
                   <p className="text-sm font-semibold text-[var(--workspace-text)]">{booking.guestName}</p>
                   <p className="mt-1 text-xs text-[var(--workspace-muted)]">
@@ -519,56 +286,227 @@ function renderWidget(widgetId: WidgetId, view: DashboardView, currencyCode: Cur
   }
 }
 
+function LayoutCustomizer({
+  layoutState,
+  saveState,
+  isOpen,
+  onClose,
+  onToggleVisibility,
+  onApplyPreset,
+  onReset,
+}: {
+  layoutState: DashboardWidgetLayoutState;
+  saveState: "idle" | "saving" | "saved" | "error";
+  isOpen: boolean;
+  onClose: () => void;
+  onToggleVisibility: (id: DashboardWidgetId) => void;
+  onApplyPreset: (presetId: Exclude<DashboardWidgetPresetId, "custom">) => void;
+  onReset: () => void;
+}) {
+  if (!isOpen) {
+    return null;
+  }
+
+  const visibleCount = dashboardWidgetCatalog.length - layoutState.hiddenIds.length;
+
+  return (
+    <section className="workspace-card rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">Customize layout</p>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
+            Drag widgets directly on the grid, resize them from the corner, and use presets as quick starting points.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+            {saveState === "saving"
+              ? "Saving"
+              : saveState === "saved"
+                ? "Saved"
+                : saveState === "error"
+                  ? "Save failed"
+                  : "Ready"}
+          </span>
+          <button
+            type="button"
+            onClick={onReset}
+            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
+          >
+            <span className="inline-flex items-center gap-2">
+              <RotateCcw className="h-3.5 w-3.5" />
+              Reset
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        {([
+          "executive",
+          "finance",
+          "operations",
+        ] as Array<Exclude<DashboardWidgetPresetId, "custom">>).map((presetId) => (
+          <button
+            key={presetId}
+            type="button"
+            onClick={() => onApplyPreset(presetId)}
+            className={`rounded-2xl px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+              layoutState.presetId === presetId
+                ? "workspace-button-primary"
+                : "workspace-button-secondary"
+            }`}
+          >
+            {presetId}
+          </button>
+        ))}
+        <span className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
+          {layoutState.presetId === "custom" ? "Custom layout" : `${visibleCount} visible`}
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-3 xl:grid-cols-2">
+        {dashboardWidgetCatalog.map((widget) => {
+          const visible = !layoutState.hiddenIds.includes(widget.id);
+
+          return (
+            <div key={widget.id} className="flex items-center gap-3 rounded-[22px] border border-white/8 bg-white/[0.03] px-4 py-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-[var(--workspace-text)]">{widget.title}</p>
+                <p className="mt-1 text-xs text-[var(--workspace-muted)]">{widget.subtitle}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onToggleVisibility(widget.id)}
+                className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border transition ${
+                  visible
+                    ? "border-emerald-300/20 bg-emerald-400/12 text-emerald-200"
+                    : "border-white/10 bg-white/[0.04] text-[var(--workspace-muted)]"
+                }`}
+                title={visible ? "Hide widget" : "Show widget"}
+              >
+                {visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function WidgetGridContent({
   view,
   currencyCode,
+  initialLayoutState,
+  previewMode = false,
 }: {
   view: DashboardView;
   currencyCode: CurrencyCode;
+  initialLayoutState?: DashboardWidgetLayoutState;
+  previewMode?: boolean;
 }) {
-  const [layout, setLayout] = useState<WidgetLayoutItem[]>(() => readSavedWidgetLayout());
+  const [layoutState, setLayoutState] = useState<DashboardWidgetLayoutState>(() =>
+    previewMode ? readPreviewLayoutState() : normalizeWidgetLayoutState(initialLayoutState),
+  );
   const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   useEffect(() => {
-    window.localStorage.setItem(widgetLayoutStorageKey, JSON.stringify(layout));
-  }, [layout]);
+    if (!previewMode) {
+      return;
+    }
 
-  function toggleVisibility(id: WidgetId) {
-    setLayout((current) =>
-      current.map((item) =>
-        item.id === id ? { ...item, visible: !item.visible } : item,
-      ),
-    );
+    window.localStorage.setItem(previewStorageKey, JSON.stringify(layoutState));
+  }, [layoutState, previewMode]);
+
+  useEffect(() => {
+    if (previewMode) {
+      return;
+    }
+
+    setSaveState("saving");
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const response = await fetch("/api/dashboard-layout", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ layoutState }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Could not save the widget layout.");
+        }
+
+        setSaveState("saved");
+      } catch {
+        setSaveState("error");
+      }
+    }, 450);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [layoutState, previewMode]);
+
+  function applyPreset(presetId: Exclude<DashboardWidgetPresetId, "custom">) {
+    setLayoutState(buildPresetWidgetLayout(presetId));
   }
 
-  function moveWidget(id: WidgetId, direction: "up" | "down") {
-    setLayout((current) => {
-      const currentIndex = current.findIndex((item) => item.id === id);
+  function toggleVisibility(id: DashboardWidgetId) {
+    setLayoutState((current) => {
+      const nextHiddenIds = current.hiddenIds.includes(id)
+        ? current.hiddenIds.filter((hiddenId) => hiddenId !== id)
+        : [...current.hiddenIds, id];
 
-      if (currentIndex === -1) {
-        return current;
-      }
-
-      const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-
-      if (nextIndex < 0 || nextIndex >= current.length) {
-        return current;
-      }
-
-      const next = [...current];
-      const [item] = next.splice(currentIndex, 1);
-      next.splice(nextIndex, 0, item);
-      return next;
+      return {
+        ...current,
+        presetId: "custom",
+        hiddenIds: nextHiddenIds,
+      };
     });
   }
 
   function resetLayout() {
-    const nextLayout = buildDefaultWidgetLayout();
-    setLayout(nextLayout);
-    window.localStorage.setItem(widgetLayoutStorageKey, JSON.stringify(nextLayout));
+    const resetState = buildPresetWidgetLayout("executive");
+    setLayoutState(resetState);
+
+    if (previewMode) {
+      window.localStorage.setItem(previewStorageKey, JSON.stringify(resetState));
+    }
   }
 
-  const visibleWidgets = layout.filter((item) => item.visible);
+  const hiddenIdSet = useMemo(
+    () => new Set(layoutState.hiddenIds),
+    [layoutState.hiddenIds],
+  );
+
+  const visibleLayouts = useMemo(() => {
+    const nextLayouts: DashboardGridLayouts = {};
+
+    for (const [breakpoint, items] of Object.entries(layoutState.layouts)) {
+      nextLayouts[breakpoint] = (items ?? []).filter(
+        (item) => !hiddenIdSet.has(item.i as DashboardWidgetId),
+      );
+    }
+
+    return nextLayouts;
+  }, [layoutState.layouts, hiddenIdSet]);
+
+  const visibleWidgetIds = dashboardWidgetCatalog
+    .map((widget) => widget.id)
+    .filter((widgetId) => !hiddenIdSet.has(widgetId));
+  const { width, containerRef, mounted } = useContainerWidth({ initialWidth: 1280 });
 
   return (
     <div className="space-y-6">
@@ -587,7 +525,7 @@ function WidgetGridContent({
             </span>
           </button>
           <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-            {visibleWidgets.length} active widgets
+            Drag + resize enabled
           </span>
         </div>
 
@@ -603,29 +541,48 @@ function WidgetGridContent({
       </div>
 
       <LayoutCustomizer
-        layout={layout}
+        layoutState={layoutState}
+        saveState={saveState}
         isOpen={isCustomizerOpen}
         onClose={() => setIsCustomizerOpen(false)}
         onToggleVisibility={toggleVisibility}
-        onMove={moveWidget}
+        onApplyPreset={applyPreset}
         onReset={resetLayout}
       />
 
-      <div className="grid auto-rows-[minmax(160px,auto)] gap-5 xl:grid-cols-12">
-        {visibleWidgets.map((item) => {
-          const definition = widgetDefinitions.find((widget) => widget.id === item.id);
-
-          if (!definition) {
-            return null;
-          }
-
-          return (
-            <div key={item.id} className={definition.className}>
-              {renderWidget(item.id, view, currencyCode)}
-            </div>
-          );
-        })}
-      </div>
+      {visibleWidgetIds.length === 0 ? (
+        <section className="workspace-card rounded-[26px] p-8 text-center">
+          <p className="text-lg font-semibold text-[var(--workspace-text)]">No widgets visible</p>
+          <p className="mt-2 text-sm text-[var(--workspace-muted)]">
+            Turn at least one widget back on in Customize layout.
+          </p>
+        </section>
+      ) : (
+        <div ref={containerRef} className="widget-grid-shell rounded-[30px] border border-white/8 p-3 sm:p-4">
+          {mounted ? (
+            <ResponsiveGridLayout
+              width={width}
+              className="widget-grid-layout"
+              layouts={visibleLayouts}
+              breakpoints={{ lg: 1200, md: 840, sm: 0 }}
+              cols={{ lg: 12, md: 12, sm: 4 }}
+              rowHeight={34}
+              margin={[18, 18]}
+              containerPadding={[0, 0]}
+              dragConfig={{ handle: ".widget-frame-handle" }}
+              onLayoutChange={(_, allLayouts) => {
+                setLayoutState((current) => mergeUpdatedLayouts(current, allLayouts));
+              }}
+            >
+              {visibleWidgetIds.map((widgetId) => (
+                <div key={widgetId} className="widget-grid-item">
+                  {renderWidget(widgetId, view, currencyCode)}
+                </div>
+              ))}
+            </ResponsiveGridLayout>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }
@@ -731,6 +688,7 @@ export function DashboardWidgetLab({
   userEmail,
   businessName,
   currencyCode,
+  initialLayoutState,
   previewMode = false,
 }: {
   view: DashboardView;
@@ -739,12 +697,18 @@ export function DashboardWidgetLab({
   userEmail: string;
   businessName: string;
   currencyCode: CurrencyCode;
+  initialLayoutState?: DashboardWidgetLayoutState;
   previewMode?: boolean;
 }) {
   if (previewMode) {
     return (
       <PublicPreviewShell>
-        <WidgetGridContent view={view} currencyCode={currencyCode} />
+        <WidgetGridContent
+          view={view}
+          currencyCode={currencyCode}
+          initialLayoutState={initialLayoutState}
+          previewMode
+        />
       </PublicPreviewShell>
     );
   }
@@ -767,7 +731,11 @@ export function DashboardWidgetLab({
         </div>
       }
     >
-      <WidgetGridContent view={view} currencyCode={currencyCode} />
+      <WidgetGridContent
+        view={view}
+        currencyCode={currencyCode}
+        initialLayoutState={initialLayoutState}
+      />
     </WorkspaceShell>
   );
 }

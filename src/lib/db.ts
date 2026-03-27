@@ -13,6 +13,7 @@ import type {
   PropertyUnit,
   UserSettings,
 } from "./types";
+import type { DashboardWidgetLayoutState } from "./dashboard-widget-layout";
 import { normalizeExpenseFields } from "./expense-normalization";
 import {
   getCountryForCurrency,
@@ -67,6 +68,13 @@ type StoredPropertyUnit = {
   name: string;
 };
 
+type StoredDashboardLayout = {
+  ownerEmail: string;
+  layoutKey: string;
+  layoutJson: string;
+  updatedAt: string;
+};
+
 type MemoryStore = {
   nextImportId: number;
   nextBookingId: number;
@@ -82,6 +90,7 @@ type MemoryStore = {
   authUsers: StoredAuthUser[];
   properties: StoredProperty[];
   propertyUnits: StoredPropertyUnit[];
+  dashboardLayouts: StoredDashboardLayout[];
 };
 
 const require = createRequire(import.meta.url);
@@ -151,6 +160,7 @@ function getMemoryStore() {
       authUsers: [],
       properties: [],
       propertyUnits: [],
+      dashboardLayouts: [],
     };
   }
 
@@ -278,6 +288,14 @@ function initializeSQLiteSchema(db: SQLiteDatabase) {
       created_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS dashboard_layouts (
+      owner_email TEXT NOT NULL,
+      layout_key TEXT NOT NULL,
+      layout_json TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (owner_email, layout_key)
+    );
+
     CREATE INDEX IF NOT EXISTS idx_imports_owner_email ON imports(owner_email);
     CREATE INDEX IF NOT EXISTS idx_bookings_owner_check_in ON bookings(owner_email, check_in);
     CREATE INDEX IF NOT EXISTS idx_bookings_owner_channel ON bookings(owner_email, channel);
@@ -286,6 +304,7 @@ function initializeSQLiteSchema(db: SQLiteDatabase) {
     CREATE INDEX IF NOT EXISTS idx_auth_users_owner_email ON auth_users(owner_email);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_properties_owner_name ON properties(owner_email, name);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_property_units_property_name ON property_units(property_id, name);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_dashboard_layouts_owner_key ON dashboard_layouts(owner_email, layout_key);
   `);
 
   if (!hasColumn(db, "imports", "owner_email")) {
@@ -545,6 +564,14 @@ async function initializePostgresSchema() {
           created_at TIMESTAMPTZ NOT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS dashboard_layouts (
+          owner_email TEXT NOT NULL,
+          layout_key TEXT NOT NULL,
+          layout_json TEXT NOT NULL,
+          updated_at TIMESTAMPTZ NOT NULL,
+          PRIMARY KEY (owner_email, layout_key)
+        );
+
         CREATE INDEX IF NOT EXISTS idx_imports_owner_email ON imports(owner_email);
         CREATE INDEX IF NOT EXISTS idx_bookings_owner_check_in ON bookings(owner_email, check_in);
         CREATE INDEX IF NOT EXISTS idx_bookings_owner_channel ON bookings(owner_email, channel);
@@ -553,6 +580,7 @@ async function initializePostgresSchema() {
         CREATE INDEX IF NOT EXISTS idx_auth_users_owner_email ON auth_users(owner_email);
         CREATE UNIQUE INDEX IF NOT EXISTS idx_properties_owner_name ON properties(owner_email, name);
         CREATE UNIQUE INDEX IF NOT EXISTS idx_property_units_property_name ON property_units(property_id, name);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_dashboard_layouts_owner_key ON dashboard_layouts(owner_email, layout_key);
       `);
 
       await pool.query(`
@@ -3650,6 +3678,150 @@ export async function upsertUserSettings({
     normalizedTaxRate,
     updatedAt,
   );
+}
+
+export async function getDashboardLayoutState(
+  ownerEmail: string,
+  layoutKey: string,
+): Promise<DashboardWidgetLayoutState | null> {
+  await ensureDatabase();
+  const normalizedEmail = normalizeOwnerEmail(ownerEmail);
+
+  if (isPostgresConfigured()) {
+    const pool = getPostgresPool();
+    const result = await pool.query(
+      `
+        SELECT layout_json AS layoutJson
+        FROM dashboard_layouts
+        WHERE owner_email = $1
+          AND layout_key = $2
+      `,
+      [normalizedEmail, layoutKey],
+    );
+
+    if (!result.rows[0]) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(String(result.rows[0].layoutjson ?? result.rows[0].layoutJson));
+    } catch {
+      return null;
+    }
+  }
+
+  if (shouldUseMemoryFallback()) {
+    const store = getMemoryStore();
+    const layout = store.dashboardLayouts.find(
+      (entry) => entry.ownerEmail === normalizedEmail && entry.layoutKey === layoutKey,
+    );
+
+    if (!layout) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(layout.layoutJson);
+    } catch {
+      return null;
+    }
+  }
+
+  const db = getSQLiteDatabase();
+  const row = db
+    .prepare(
+      `
+        SELECT layout_json AS layoutJson
+        FROM dashboard_layouts
+        WHERE owner_email = ?
+          AND layout_key = ?
+      `,
+    )
+    .get(normalizedEmail, layoutKey) as Record<string, unknown> | undefined;
+
+  if (!row) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(String(getRowValue(row, "layoutJson", "layoutjson") ?? ""));
+  } catch {
+    return null;
+  }
+}
+
+export async function upsertDashboardLayoutState({
+  ownerEmail,
+  layoutKey,
+  layoutState,
+}: {
+  ownerEmail: string;
+  layoutKey: string;
+  layoutState: DashboardWidgetLayoutState;
+}) {
+  await ensureDatabase();
+  const normalizedEmail = normalizeOwnerEmail(ownerEmail);
+  const layoutJson = JSON.stringify(layoutState);
+  const updatedAt = new Date().toISOString();
+
+  if (isPostgresConfigured()) {
+    const pool = getPostgresPool();
+    await pool.query(
+      `
+        INSERT INTO dashboard_layouts (
+          owner_email,
+          layout_key,
+          layout_json,
+          updated_at
+        )
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (owner_email, layout_key)
+        DO UPDATE SET
+          layout_json = EXCLUDED.layout_json,
+          updated_at = EXCLUDED.updated_at
+      `,
+      [normalizedEmail, layoutKey, layoutJson, updatedAt],
+    );
+
+    return;
+  }
+
+  if (shouldUseMemoryFallback()) {
+    const store = getMemoryStore();
+    const existingIndex = store.dashboardLayouts.findIndex(
+      (entry) => entry.ownerEmail === normalizedEmail && entry.layoutKey === layoutKey,
+    );
+    const nextEntry: StoredDashboardLayout = {
+      ownerEmail: normalizedEmail,
+      layoutKey,
+      layoutJson,
+      updatedAt,
+    };
+
+    if (existingIndex >= 0) {
+      store.dashboardLayouts[existingIndex] = nextEntry;
+    } else {
+      store.dashboardLayouts.push(nextEntry);
+    }
+
+    return;
+  }
+
+  const db = getSQLiteDatabase();
+  db.prepare(
+    `
+      INSERT INTO dashboard_layouts (
+        owner_email,
+        layout_key,
+        layout_json,
+        updated_at
+      )
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(owner_email, layout_key) DO UPDATE SET
+        layout_json = excluded.layout_json,
+        updated_at = excluded.updated_at
+    `,
+  ).run(normalizedEmail, layoutKey, layoutJson, updatedAt);
 }
 
 export async function getAuthUserByEmail(email: string) {

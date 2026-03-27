@@ -3,7 +3,12 @@ import { DashboardWidgetLab } from "@/components/dashboard-widget-lab";
 import { getAuthSession } from "@/lib/auth";
 import { buildDashboardView, getDashboardFilters } from "@/lib/dashboard";
 import {
+  dashboardWidgetLayoutKey,
+  normalizeWidgetLayoutState,
+} from "@/lib/dashboard-widget-layout";
+import {
   getBookings,
+  getDashboardLayoutState,
   getExpenses,
   getLatestImport,
   getPropertyDefinitions,
@@ -54,6 +59,9 @@ export default async function DashboardLabPage({
     taxCountryCode: userSettings.taxCountryCode,
     taxRate: userSettings.taxRate,
   });
+  const initialLayoutState = normalizeWidgetLayoutState(
+    await getDashboardLayoutState(ownerEmail, dashboardWidgetLayoutKey),
+  );
 
   return (
     <DashboardWidgetLab
@@ -63,6 +71,7 @@ export default async function DashboardLabPage({
       userEmail={ownerEmail}
       businessName={userSettings.businessName}
       currencyCode={view.displayCurrencyCode}
+      initialLayoutState={initialLayoutState}
     />
   );
 }
