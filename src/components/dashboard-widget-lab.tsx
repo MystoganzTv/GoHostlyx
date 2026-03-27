@@ -6,11 +6,8 @@ import { ResponsiveGridLayout, useContainerWidth } from "react-grid-layout";
 import {
   ArrowUpRight,
   CalendarDays,
-  ChartNoAxesCombined,
   Eye,
   EyeOff,
-  FileText,
-  LayoutDashboard,
   Percent,
   ReceiptText,
   RotateCcw,
@@ -21,6 +18,7 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { FilterBar } from "@/components/filter-bar";
+import { Modal } from "@/components/modal";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import {
   buildPresetWidgetLayout,
@@ -67,7 +65,7 @@ function WidgetFrame({
   children: ReactNode;
 }) {
   return (
-    <section className="workspace-card h-full rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
+    <section className="workspace-card h-full overflow-hidden rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
       <div className="widget-frame-handle -mx-1 -mt-1 mb-5 flex cursor-grab items-start justify-between gap-4 rounded-[18px] px-1 py-1 active:cursor-grabbing">
         <div>
           <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">{title}</p>
@@ -289,33 +287,25 @@ function renderWidget(widgetId: DashboardWidgetId, view: DashboardView, currency
 function LayoutCustomizer({
   layoutState,
   saveState,
-  isOpen,
-  onClose,
   onToggleVisibility,
   onApplyPreset,
   onReset,
 }: {
   layoutState: DashboardWidgetLayoutState;
   saveState: "idle" | "saving" | "saved" | "error";
-  isOpen: boolean;
-  onClose: () => void;
   onToggleVisibility: (id: DashboardWidgetId) => void;
   onApplyPreset: (presetId: Exclude<DashboardWidgetPresetId, "custom">) => void;
   onReset: () => void;
 }) {
-  if (!isOpen) {
-    return null;
-  }
-
   const visibleCount = dashboardWidgetCatalog.length - layoutState.hiddenIds.length;
 
   return (
-    <section className="workspace-card rounded-[26px] border border-white/8 bg-[linear-gradient(180deg,rgba(16,28,46,0.95)_0%,rgba(9,18,31,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(2,6,23,0.22)]">
+    <div className="space-y-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">Customize layout</p>
+          <p className="text-sm font-semibold tracking-tight text-[var(--workspace-text)]">Layout tools</p>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-            Drag widgets directly on the grid, resize them from the corner, and use presets as quick starting points.
+            Show or hide widgets, switch presets, and use drag plus resize directly on the canvas.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -337,13 +327,6 @@ function LayoutCustomizer({
               <RotateCcw className="h-3.5 w-3.5" />
               Reset
             </span>
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="workspace-button-secondary rounded-2xl px-3 py-2 text-xs font-semibold transition"
-          >
-            Done
           </button>
         </div>
       </div>
@@ -398,7 +381,7 @@ function LayoutCustomizer({
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -514,19 +497,14 @@ function WidgetGridContent({
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
-            onClick={() => setIsCustomizerOpen((current) => !current)}
-            className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-              isCustomizerOpen ? "workspace-button-primary" : "workspace-button-secondary"
-            }`}
+            onClick={() => setIsCustomizerOpen(true)}
+            className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
           >
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4" />
-              Customize layout
+              Layout tools
             </span>
           </button>
-          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-            Drag + resize enabled
-          </span>
         </div>
 
         <FilterBar
@@ -540,15 +518,19 @@ function WidgetGridContent({
         />
       </div>
 
-      <LayoutCustomizer
-        layoutState={layoutState}
-        saveState={saveState}
-        isOpen={isCustomizerOpen}
+      <Modal
+        open={isCustomizerOpen}
+        title="Layout tools"
         onClose={() => setIsCustomizerOpen(false)}
-        onToggleVisibility={toggleVisibility}
-        onApplyPreset={applyPreset}
-        onReset={resetLayout}
-      />
+      >
+        <LayoutCustomizer
+          layoutState={layoutState}
+          saveState={saveState}
+          onToggleVisibility={toggleVisibility}
+          onApplyPreset={applyPreset}
+          onReset={resetLayout}
+        />
+      </Modal>
 
       {visibleWidgetIds.length === 0 ? (
         <section className="workspace-card rounded-[26px] p-8 text-center">
@@ -594,62 +576,23 @@ function PublicPreviewShell({
 }) {
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-4 py-4 sm:px-6 xl:px-8">
-      <div className="mx-auto grid w-full max-w-[1680px] gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="rounded-[30px] border border-[var(--workspace-sidebar-border)] bg-[var(--workspace-sidebar)] p-5 shadow-[0_20px_40px_rgba(15,23,42,0.16)]">
-          <div className="border-b border-white/8 pb-5">
-            <div className="flex items-center justify-between gap-3">
-              <BrandLogo href="/showcase" compact />
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-sidebar-muted)]">
-                Lab
-              </span>
-            </div>
-            <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
-              <p className="text-sm font-medium text-white">MystoDev concept</p>
-              <p className="mt-1 text-xs text-[var(--workspace-sidebar-muted)]">
-                Public preview of a widget-grid direction for Hostlyx.
-              </p>
-            </div>
+      <div className="mx-auto w-full max-w-[1680px]">
+        <div className="mb-4 flex flex-col gap-4 rounded-[30px] border border-white/8 bg-[rgba(10,19,33,0.72)] px-5 py-4 shadow-[0_20px_40px_rgba(2,6,23,0.18)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="flex items-center gap-3">
+            <BrandLogo href="/showcase" compact />
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+              Mystodev lab
+            </span>
           </div>
-
-          <nav className="mt-6 space-y-2">
-            {[
-              { label: "Dashboard", icon: LayoutDashboard },
-              { label: "Performance", icon: ChartNoAxesCombined },
-              { label: "Reports", icon: FileText },
-            ].map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${
-                    index === 0 ? "workspace-sidebar-link-active" : "workspace-sidebar-link"
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span>{item.label}</span>
-                  {index === 0 ? <span className="ml-auto h-2 w-2 rounded-full bg-[var(--workspace-accent)]" /> : null}
-                </div>
-              );
-            })}
-          </nav>
-
-          <div className="mt-10 space-y-4 border-t border-white/8 pt-8">
-            <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--workspace-sidebar-muted)]">
-                Why this exists
-              </p>
-              <p className="mt-2 text-sm leading-6 text-white/90">
-                To test a denser, more modular command-center direction without replacing the main dashboard.
-              </p>
-            </div>
-            <Link
-              href="/showcase"
-              className="flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
-            >
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-sm text-[var(--workspace-muted)]">
+              Experimental grid canvas for testing widget-based dashboard layouts.
+            </p>
+            <Link href="/showcase" className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition">
               Back to showcase
             </Link>
           </div>
-        </aside>
+        </div>
 
         <div className="rounded-[34px] border border-[var(--workspace-border)] bg-[rgba(9,17,29,0.7)] shadow-[0_20px_40px_rgba(2,6,23,0.28)]">
           <div className="rounded-[34px] bg-[linear-gradient(180deg,rgba(11,22,38,0.92)_0%,rgba(7,17,29,0.98)_100%)] p-5 sm:p-6 xl:p-8">
@@ -666,11 +609,9 @@ function PublicPreviewShell({
                   Same financial signals, reorganized into modular widgets so we can test a denser operating surface for Hostlyx.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <Link href="/dashboard" className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition">
-                  Open live app
-                </Link>
-              </div>
+              <Link href="/dashboard" className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition">
+                Open live app
+              </Link>
             </div>
 
             {children}
