@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowDownRight, ArrowUpRight, Landmark, Wallet } from "lucide-react";
 import { useLocale } from "@/components/locale-provider";
 import { MetricCard } from "@/components/metric-card";

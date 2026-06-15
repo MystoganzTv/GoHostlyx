@@ -1,3 +1,5 @@
+"use client";
+
 import { SectionCard } from "@/components/section-card";
 import { useLocale } from "@/components/locale-provider";
 import { MetricCard } from "@/components/metric-card";

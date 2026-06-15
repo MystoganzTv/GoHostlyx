@@ -1,3 +1,5 @@
+"use client";
+
 import { BarChart3, CalendarDays, House, Percent, TrendingUp, Users } from "lucide-react";
 import { useLocale } from "@/components/locale-provider";
 import { MetricCard } from "@/components/metric-card";
