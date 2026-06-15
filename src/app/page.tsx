@@ -250,7 +250,7 @@ export default async function LandingPage() {
       <MarketingHeader activePage="home" signedIn={signedIn} primaryHref={dashboardHref} locale={locale} />
 
       <main className="pb-16">
-        <section id="hero" className="relative min-h-screen overflow-hidden">
+        <section id="hero" className="relative overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(88,196,182,0.22),transparent_34%),radial-gradient(circle_at_85%_18%,rgba(125,224,211,0.14),transparent_20%),linear-gradient(135deg,rgba(7,17,28,0.98)_0%,rgba(9,19,32,0.96)_45%,rgba(13,27,44,0.92)_100%)]" />
             <div className="absolute right-[-8rem] top-[-4rem] h-[24rem] w-[24rem] rounded-full bg-[var(--accent-soft)] blur-3xl lg:h-[30rem] lg:w-[30rem]" />
@@ -259,7 +259,7 @@ export default async function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-[rgba(7,17,28,0.96)] via-transparent to-[rgba(7,17,28,0.24)]" />
           </div>
 
-          <div className="relative z-[1] mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 pb-20 pt-32 sm:px-6 xl:px-8">
+          <div className="relative z-[1] mx-auto flex min-h-[calc(100svh-4.5rem)] w-full max-w-7xl items-center px-4 pb-24 pt-16 sm:px-6 sm:pt-20 xl:px-8">
             <div className="grid w-full gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] xl:items-center xl:gap-14 2xl:grid-cols-[minmax(0,1.02fr)_minmax(360px,500px)] 2xl:gap-16">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-1.5">
@@ -269,7 +269,7 @@ export default async function LandingPage() {
                   </span>
                 </div>
 
-                <h1 className="mt-8 max-w-[12ch] text-4xl font-bold leading-[1.05] tracking-tight text-slate-100 sm:text-5xl lg:text-6xl xl:text-[5.25rem]">
+                <h1 className="mt-6 max-w-[15ch] text-balance text-4xl font-bold leading-[1.08] tracking-tight text-slate-100 sm:text-5xl lg:text-6xl xl:text-[4.5rem]">
                   {isSpanish ? "¿Cuánto te queda realmente de tu Airbnb?" : "How much does your Airbnb actually leave you?"}
                 </h1>
 
@@ -279,7 +279,7 @@ export default async function LandingPage() {
                     : "Stop staring at revenue. Start seeing what you actually keep after expenses and taxes."}
                 </p>
 
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                   <Link
                     href={dashboardHref}
                     className="brand-button inline-flex h-13 items-center justify-center gap-2 rounded-2xl px-8 text-base font-semibold transition"
@@ -296,7 +296,7 @@ export default async function LandingPage() {
                   </Link>
                 </div>
 
-                <div className="mt-12 flex items-center gap-6">
+                <div className="mt-10 flex items-center gap-6">
                   <div className="flex -space-x-2">
                     {hostInitials.map((initials) => (
                       <div
