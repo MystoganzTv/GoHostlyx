@@ -8,11 +8,22 @@ import {
   sendVerificationEmail,
 } from "@/lib/email-verification";
 import { hashPassword, isValidPassword, normalizeAuthEmail } from "@/lib/password";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request.headers);
+    const limit = await rateLimit({ key: `register:ip:${ip}`, limit: 5, windowSec: 3600 });
+
+    if (!limit.success) {
+      return NextResponse.json(
+        { error: "Too many sign-up attempts. Please try again later." },
+        { status: 429 },
+      );
+    }
+
     const formData = await request.formData();
     const fullName = String(formData.get("fullName") ?? "").trim();
     const email = normalizeAuthEmail(String(formData.get("email") ?? ""));

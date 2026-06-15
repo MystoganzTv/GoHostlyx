@@ -885,14 +885,34 @@ function getSQLiteDatabase() {
   return sqliteDatabase;
 }
 
+function getPostgresSslConfig() {
+  // Outside production we connect without TLS settings (local/dev databases).
+  if (process.env.NODE_ENV !== "production") {
+    return undefined;
+  }
+
+  // Preferred: validate the server certificate against a provided CA.
+  const ca = process.env.DATABASE_CA_CERT;
+  if (ca) {
+    return { ca, rejectUnauthorized: true };
+  }
+
+  // Escape hatch for managed providers whose certs aren't in Node's trust
+  // store. Set DATABASE_SSL_INSECURE=true only if the connection otherwise
+  // fails — it disables certificate validation (MITM risk).
+  if (process.env.DATABASE_SSL_INSECURE === "true") {
+    return { rejectUnauthorized: false };
+  }
+
+  // Secure default: validate against the system CA bundle.
+  return { rejectUnauthorized: true };
+}
+
 function getPostgresPool() {
   if (!postgresPool) {
     postgresPool = new Pool({
       connectionString: getDatabaseConnectionString(),
-      ssl:
-        process.env.NODE_ENV === "production"
-          ? { rejectUnauthorized: false }
-          : undefined,
+      ssl: getPostgresSslConfig(),
     });
   }
 

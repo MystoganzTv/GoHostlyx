@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+
+export const runtime = "nodejs";
 
 type ContactPayload = {
   name?: string;
@@ -23,6 +26,16 @@ function escapeHtml(value: string) {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request.headers);
+  const limit = await rateLimit({ key: `contact:ip:${ip}`, limit: 5, windowSec: 3600 });
+
+  if (!limit.success) {
+    return NextResponse.json(
+      { error: "Too many messages. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   const body = (await request.json().catch(() => null)) as ContactPayload | null;
 
   if (!body) {

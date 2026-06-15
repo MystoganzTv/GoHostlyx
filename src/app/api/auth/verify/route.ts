@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthUserByEmail, markAuthUserVerified } from "@/lib/db";
 import { hashVerificationCode } from "@/lib/email-verification";
 import { normalizeAuthEmail } from "@/lib/password";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,21 @@ export async function POST(request: Request) {
 
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+    }
+
+    // Throttle code guesses hard: a 6-digit code must not be brute-forceable
+    // within its 10-minute lifetime. Limit per email and per IP.
+    const ip = getClientIp(request.headers);
+    const [byEmail, byIp] = await Promise.all([
+      rateLimit({ key: `verify:email:${email}`, limit: 8, windowSec: 600 }),
+      rateLimit({ key: `verify:ip:${ip}`, limit: 30, windowSec: 600 }),
+    ]);
+
+    if (!byEmail.success || !byIp.success) {
+      return NextResponse.json(
+        { error: "Too many attempts. Wait a few minutes and try again." },
+        { status: 429 },
+      );
     }
 
     if (!/^\d{6}$/.test(code)) {

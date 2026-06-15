@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { getAuthUserByEmail } from "./db";
 import { normalizeAuthEmail, verifyPassword } from "./password";
+import { getClientIp, rateLimit } from "./rate-limit";
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID ?? "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
@@ -11,7 +12,11 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
 export const hasGoogleAuthConfig = Boolean(googleClientId && googleClientSecret);
 export const hasAuthSecretConfig = Boolean(process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET);
 
-const allowedEmails = (process.env.ADMIN_EMAILS ?? "")
+// Sign-up / sign-in allowlist. Uses the dedicated ALLOWED_EMAILS var, falling
+// back to the legacy ADMIN_EMAILS for backward compatibility. NOTE: when the
+// list is empty, registration is OPEN to anyone (intended for public SaaS).
+// Trial abuse is mitigated by rate limiting on /api/auth/register.
+const allowedEmails = (process.env.ALLOWED_EMAILS ?? process.env.ADMIN_EMAILS ?? "")
   .split(",")
   .map((email) => email.trim().toLowerCase())
   .filter(Boolean);
@@ -32,12 +37,23 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         const email = normalizeAuthEmail(credentials?.email ?? "");
         const password = String(credentials?.password ?? "");
 
         if (!email || !password) {
           return null;
+        }
+
+        // Throttle credential stuffing / password brute force by IP and email.
+        const ip = getClientIp(req?.headers ?? {});
+        const [byIp, byEmail] = await Promise.all([
+          rateLimit({ key: `login:ip:${ip}`, limit: 20, windowSec: 600 }),
+          rateLimit({ key: `login:email:${email}`, limit: 10, windowSec: 600 }),
+        ]);
+
+        if (!byIp.success || !byEmail.success) {
+          throw new Error("Too many sign-in attempts. Please wait a few minutes.");
         }
 
         const authUser = await getAuthUserByEmail(email);
