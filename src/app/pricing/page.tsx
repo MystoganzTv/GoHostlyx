@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { getAuthSession } from "@/lib/auth";
@@ -7,6 +8,21 @@ import { MarketingFooter } from "@/components/marketing-footer";
 import { MarketingHeader } from "@/components/marketing-header";
 import { SubscriptionPlanButton } from "@/components/subscription-plan-button";
 import { getRequestLocale } from "@/lib/server-locale";
+
+export const metadata: Metadata = {
+  title: "Pricing | GoHostlyx",
+  description:
+    "Simple, transparent pricing for short-term rental hosts. Choose Starter, Pro, or Portfolio and see your real profit after expenses and taxes. Cancel anytime.",
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    title: "Pricing | GoHostlyx",
+    description:
+      "Simple, transparent pricing for short-term rental hosts. Choose the plan that fits your portfolio. Cancel anytime.",
+    url: "/pricing",
+    siteName: "GoHostlyx",
+    type: "website",
+  },
+};
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 

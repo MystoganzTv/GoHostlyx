@@ -62,8 +62,11 @@ export function MarketingHeader({
         </div>
 
         <details className="relative ml-auto lg:hidden">
-          <summary className="flex list-none items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-slate-200 transition hover:bg-white/[0.08] [&::-webkit-details-marker]:hidden">
-            <Menu className="h-5 w-5" />
+          <summary
+            aria-label={isSpanish ? "Abrir menú" : "Open menu"}
+            className="flex list-none items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-slate-200 transition hover:bg-white/[0.08] [&::-webkit-details-marker]:hidden"
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </summary>
 
           <div className="absolute right-0 top-[calc(100%+0.75rem)] w-72 rounded-[24px] border border-white/10 bg-[rgba(9,16,28,0.96)] p-4 shadow-[0_24px_60px_rgba(2,6,23,0.32)] backdrop-blur-xl">
