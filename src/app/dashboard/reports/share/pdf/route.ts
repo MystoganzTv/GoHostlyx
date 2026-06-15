@@ -36,7 +36,7 @@ function createFileName(businessName: string, generatedAt: string) {
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "hostlyx-report";
+    .replace(/^-+|-+$/g, "") || "gohostlyx-report";
 
   return `${slug}-financial-summary-${generatedAt}.pdf`;
 }

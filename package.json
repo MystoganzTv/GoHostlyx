@@ -1,7 +1,16 @@
 {
-  "name": "hostlyx",
+  "name": "gohostlyx",
   "version": "0.1.0",
+  "description": "Financial command center for short-term rental operators.",
   "private": true,
+  "homepage": "https://gohostlyx.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MystoganzTv/GoHostlyx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MystoganzTv/GoHostlyx/issues"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

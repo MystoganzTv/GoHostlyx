@@ -150,7 +150,7 @@ let postgresPool: Pool | null = null;
 let postgresInitialization: Promise<void> | null = null;
 
 declare global {
-  var __hostlyxMemoryStore: MemoryStore | undefined;
+  var __gohostlyxMemoryStore: MemoryStore | undefined;
 }
 
 function isPostgresConfigured() {
@@ -158,7 +158,7 @@ function isPostgresConfigured() {
 }
 
 function getDatabaseConnectionString() {
-  return process.env.DATABASE_URL ?? process.env.NETLIFY_DATABASE_URL ?? "";
+  return process.env.DATABASE_URL ?? "";
 }
 
 function shouldUseSQLiteFallback() {
@@ -193,8 +193,8 @@ function getSQLiteModule() {
 }
 
 function getMemoryStore() {
-  if (!globalThis.__hostlyxMemoryStore) {
-    globalThis.__hostlyxMemoryStore = {
+  if (!globalThis.__gohostlyxMemoryStore) {
+    globalThis.__gohostlyxMemoryStore = {
       nextImportId: 1,
       nextBookingId: 1,
       nextExpenseId: 1,
@@ -219,39 +219,39 @@ function getMemoryStore() {
     };
   }
 
-  if (!globalThis.__hostlyxMemoryStore.authUsers) {
-    globalThis.__hostlyxMemoryStore.authUsers = [];
+  if (!globalThis.__gohostlyxMemoryStore.authUsers) {
+    globalThis.__gohostlyxMemoryStore.authUsers = [];
   }
 
-  if (!globalThis.__hostlyxMemoryStore.subscriptions) {
-    globalThis.__hostlyxMemoryStore.subscriptions = [];
+  if (!globalThis.__gohostlyxMemoryStore.subscriptions) {
+    globalThis.__gohostlyxMemoryStore.subscriptions = [];
   }
 
-  if (!globalThis.__hostlyxMemoryStore.financialDocuments) {
-    globalThis.__hostlyxMemoryStore.financialDocuments = [];
+  if (!globalThis.__gohostlyxMemoryStore.financialDocuments) {
+    globalThis.__gohostlyxMemoryStore.financialDocuments = [];
   }
 
-  if (!globalThis.__hostlyxMemoryStore.calendarEvents) {
-    globalThis.__hostlyxMemoryStore.calendarEvents = [];
+  if (!globalThis.__gohostlyxMemoryStore.calendarEvents) {
+    globalThis.__gohostlyxMemoryStore.calendarEvents = [];
   }
 
-  if (!globalThis.__hostlyxMemoryStore.icalFeeds) {
-    globalThis.__hostlyxMemoryStore.icalFeeds = [];
+  if (!globalThis.__gohostlyxMemoryStore.icalFeeds) {
+    globalThis.__gohostlyxMemoryStore.icalFeeds = [];
   }
 
-  if (!globalThis.__hostlyxMemoryStore.nextCalendarEventId) {
-    globalThis.__hostlyxMemoryStore.nextCalendarEventId = 1;
+  if (!globalThis.__gohostlyxMemoryStore.nextCalendarEventId) {
+    globalThis.__gohostlyxMemoryStore.nextCalendarEventId = 1;
   }
 
-  if (!globalThis.__hostlyxMemoryStore.nextIcalFeedId) {
-    globalThis.__hostlyxMemoryStore.nextIcalFeedId = 1;
+  if (!globalThis.__gohostlyxMemoryStore.nextIcalFeedId) {
+    globalThis.__gohostlyxMemoryStore.nextIcalFeedId = 1;
   }
 
-  if (!globalThis.__hostlyxMemoryStore.nextFinancialDocumentId) {
-    globalThis.__hostlyxMemoryStore.nextFinancialDocumentId = 1;
+  if (!globalThis.__gohostlyxMemoryStore.nextFinancialDocumentId) {
+    globalThis.__gohostlyxMemoryStore.nextFinancialDocumentId = 1;
   }
 
-  return globalThis.__hostlyxMemoryStore;
+  return globalThis.__gohostlyxMemoryStore;
 }
 
 function hasColumn(db: SQLiteDatabase, tableName: string, columnName: string) {
@@ -265,7 +265,7 @@ function hasColumn(db: SQLiteDatabase, tableName: string, columnName: string) {
 function getSQLiteDatabasePath() {
   const directory = path.join(process.cwd(), "data");
   mkdirSync(directory, { recursive: true });
-  return path.join(directory, "hostlyx.sqlite");
+  return path.join(directory, "gohostlyx.sqlite");
 }
 
 function initializeSQLiteSchema(db: SQLiteDatabase) {

@@ -100,11 +100,11 @@ export function normalizeGeneric(workbook: ParsedImportWorkbook): ImportNormaliz
   const expenseHeaderRowIndex = findHeaderRowIndex(expensesSheet.rows, genericExpenseRequiredColumns);
 
   if (bookingHeaderRowIndex < 0) {
-    throw new Error("Hostlyx could not find the Bookings header row.");
+    throw new Error("GoHostlyx could not find the Bookings header row.");
   }
 
   if (expenseHeaderRowIndex < 0) {
-    throw new Error("Hostlyx could not find the Expenses header row.");
+    throw new Error("GoHostlyx could not find the Expenses header row.");
   }
 
   const bookingHeaders = bookingsSheet.rows[bookingHeaderRowIndex];

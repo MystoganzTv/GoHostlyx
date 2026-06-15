@@ -98,7 +98,7 @@ export function TaxEstimationCard({
           <div className="workspace-soft-card rounded-[24px] p-5">
             <p className="text-sm font-semibold text-[var(--workspace-text)]">Pick one market for after-tax clarity</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-              Hostlyx will not estimate after-tax profit across mixed currencies. Filter to one country, or use Settings to choose the baseline market that should guide your estimate.
+              GoHostlyx will not estimate after-tax profit across mixed currencies. Filter to one country, or use Settings to choose the baseline market that should guide your estimate.
             </p>
           </div>
         ) : (

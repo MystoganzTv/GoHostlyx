@@ -179,7 +179,7 @@ export function validateBookingRow({
       buildIssue(
         {
           code: "malformed_money",
-          message: `Hostlyx could not read these financial values clearly: ${malformedRequiredMoneyFields.join(", ")}.`,
+          message: `GoHostlyx could not read these financial values clearly: ${malformedRequiredMoneyFields.join(", ")}.`,
           severity: "error",
         },
         "booking",

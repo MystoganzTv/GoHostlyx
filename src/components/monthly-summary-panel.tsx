@@ -103,8 +103,8 @@ export function MonthlySummaryPanel({
             </p>
             <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
               {isSpanish
-                ? "Hostlyx agrupa tus reservas y gastos guardados mes a mes para que puedas comparar estacionalidad, ritmo y rentabilidad."
-                : "Hostlyx groups your saved bookings and expenses month by month so you can compare seasonality, pace, and profitability."}
+                ? "GoHostlyx agrupa tus reservas y gastos guardados mes a mes para que puedas comparar estacionalidad, ritmo y rentabilidad."
+                : "GoHostlyx groups your saved bookings and expenses month by month so you can compare seasonality, pace, and profitability."}
             </p>
           </div>
           <div className="workspace-soft-card rounded-[22px] p-5">
@@ -144,8 +144,8 @@ export function MonthlySummaryPanel({
         >
           <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
             {isSpanish
-              ? "`All markets` mezcla monedas reales, así que Hostlyx solo muestra aquí datos mensuales no monetarios hasta que elijas un mercado."
-              : "`All markets` mixes real currencies, so Hostlyx only shows non-monetary monthly data here until you choose one market."}
+              ? "`All markets` mezcla monedas reales, así que GoHostlyx solo muestra aquí datos mensuales no monetarios hasta que elijas un mercado."
+              : "`All markets` mixes real currencies, so GoHostlyx only shows non-monetary monthly data here until you choose one market."}
           </div>
         </SectionCard>
       ) : null}

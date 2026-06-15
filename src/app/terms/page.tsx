@@ -3,8 +3,8 @@ import { LegalPageShell } from "@/components/legal-page-shell";
 import { getRequestLocale } from "@/lib/server-locale";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Hostlyx",
-  description: "Terms of Service for Hostlyx.",
+  title: "Terms of Service | GoHostlyx",
+  description: "Terms of Service for GoHostlyx.",
 };
 
 export default async function TermsPage() {
@@ -18,18 +18,18 @@ export default async function TermsPage() {
       title={isSpanish ? "Términos del servicio" : "Terms of Service"}
       description={
         isSpanish
-          ? "Estos términos rigen el uso de Hostlyx y las herramientas financieras que ofrecemos a operadores de alquiler vacacional."
-          : "These terms govern the use of Hostlyx and the financial reporting tools we provide to short-term rental operators."
+          ? "Estos términos rigen el uso de GoHostlyx y las herramientas financieras que ofrecemos a operadores de alquiler vacacional."
+          : "These terms govern the use of GoHostlyx and the financial reporting tools we provide to short-term rental operators."
       }
     >
       <section>
         <h2 className="text-xl font-semibold text-slate-100">
-          {isSpanish ? "Uso de Hostlyx" : "Use of Hostlyx"}
+          {isSpanish ? "Uso de GoHostlyx" : "Use of GoHostlyx"}
         </h2>
         <p className="mt-3">
           {isSpanish
-            ? "Hostlyx se ofrece para ayudar a los hosts a organizar reservas, gastos, estimaciones fiscales y reporting. Aceptas usar el producto de forma legal y proporcionar información de cuenta precisa."
-            : "Hostlyx is provided to help hosts organize bookings, expenses, tax estimates, and reporting. You agree to use the product lawfully and to provide accurate account information."}
+            ? "GoHostlyx se ofrece para ayudar a los hosts a organizar reservas, gastos, estimaciones fiscales y reporting. Aceptas usar el producto de forma legal y proporcionar información de cuenta precisa."
+            : "GoHostlyx is provided to help hosts organize bookings, expenses, tax estimates, and reporting. You agree to use the product lawfully and to provide accurate account information."}
         </p>
       </section>
 
@@ -50,8 +50,8 @@ export default async function TermsPage() {
         </h2>
         <p className="mt-3">
           {isSpanish
-            ? "Conservas la propiedad de las reservas, archivos de gastos y datos del negocio que subas a Hostlyx. Eres responsable de revisar los reportes antes de compartirlos con contables, socios o inversores."
-            : "You retain ownership of the bookings, expense files, and business data you upload to Hostlyx. You are responsible for reviewing reports before sharing them with accountants, partners, or investors."}
+            ? "Conservas la propiedad de las reservas, archivos de gastos y datos del negocio que subas a GoHostlyx. Eres responsable de revisar los reportes antes de compartirlos con contables, socios o inversores."
+            : "You retain ownership of the bookings, expense files, and business data you upload to GoHostlyx. You are responsible for reviewing reports before sharing them with accountants, partners, or investors."}
         </p>
       </section>
 

@@ -104,7 +104,7 @@ export function classifyImportRow(
     return {
       status: "blocked",
       reason: getDecisionReason(
-        "This booking already exists in Hostlyx and will stay blocked to avoid duplicates.",
+        "This booking already exists in GoHostlyx and will stay blocked to avoid duplicates.",
         row.duplicate,
       ),
       matchScore,
@@ -175,7 +175,7 @@ export function classifyImportRow(
   if (matchScore >= 40 && matchScore < 70) {
     return {
       status: "needs-review",
-      reason: "This row looks close to a synced calendar stay, so Hostlyx will import it and mark it for review.",
+      reason: "This row looks close to a synced calendar stay, so GoHostlyx will import it and mark it for review.",
       matchScore,
       matchType,
       isConflict: false,
@@ -672,8 +672,8 @@ export function buildImportPreview(
   if (source === "financial_statement") {
     const statement = extractFinancialStatement(workbook);
     const blockMessage = statement
-      ? "This looks like a payout statement. Hostlyx will save it for Payouts instead of creating booking rows."
-      : "This looks like a payout statement, but Hostlyx still needs a readable payout total before it can save it to Payouts.";
+      ? "This looks like a payout statement. GoHostlyx will save it for Payouts instead of creating booking rows."
+      : "This looks like a payout statement, but GoHostlyx still needs a readable payout total before it can save it to Payouts.";
 
     return {
       source,
@@ -1025,7 +1025,7 @@ export function mapDetectedSourceToStoredSource(source: ImportDetectedSource): I
   }
 }
 
-export function mapPreviewToHostlyxRecords(
+export function mapPreviewToGoHostlyxRecords(
   preview: ImportPreview,
   propertyName: string,
 ): {

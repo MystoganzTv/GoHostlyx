@@ -294,8 +294,8 @@ export function BookingsManager({
         {reviewCounts.needsReview > 0 ? (
           <div className="rounded-[20px] border border-amber-300/18 bg-amber-300/[0.08] px-4 py-3 text-sm text-amber-100">
             {isSpanish
-              ? "Las reservas con revisión pendiente ya están dentro de Hostlyx. Puedes corregirlas aquí y marcarlas como revisadas sin volver al modal de importación."
-              : "Bookings that need review are already inside Hostlyx. You can fix them here and mark them as reviewed without going back to the import modal."}
+              ? "Las reservas con revisión pendiente ya están dentro de GoHostlyx. Puedes corregirlas aquí y marcarlas como revisadas sin volver al modal de importación."
+              : "Bookings that need review are already inside GoHostlyx. You can fix them here and mark them as reviewed without going back to the import modal."}
           </div>
         ) : null}
 
@@ -489,8 +489,8 @@ export function BookingsManager({
                 ) : null}
                 <p className="mt-2 text-amber-100/85">
                   {isSpanish
-                    ? "Cuando guardes los cambios, Hostlyx la marcará como revisada."
-                    : "When you save your changes, Hostlyx will mark it as reviewed."}
+                    ? "Cuando guardes los cambios, GoHostlyx la marcará como revisada."
+                    : "When you save your changes, GoHostlyx will mark it as reviewed."}
                 </p>
               </div>
             ) : null}

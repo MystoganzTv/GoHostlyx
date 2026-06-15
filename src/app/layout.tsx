@@ -4,7 +4,7 @@ import { LocaleProvider } from "@/components/locale-provider";
 import { getRequestLocale } from "@/lib/server-locale";
 import "./globals.css";
 
-const defaultSiteUrl = "https://hostlyxone.netlify.app";
+const defaultSiteUrl = "https://gohostlyx.vercel.app";
 const siteUrl = process.env.NEXTAUTH_URL ?? defaultSiteUrl;
 
 const manrope = Manrope({
@@ -20,23 +20,23 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Hostlyx | Short-Term Rental Accounting Dashboard",
+  title: "GoHostlyx | Short-Term Rental Accounting Dashboard",
   description:
     "Upload short-term rental booking and expense workbooks, normalize the data, and explore revenue, payout, and profitability in one clean dashboard.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Hostlyx | Short-Term Rental Accounting Dashboard",
+    title: "GoHostlyx | Short-Term Rental Accounting Dashboard",
     description:
       "Upload short-term rental booking and expense workbooks, normalize the data, and explore revenue, payout, and profitability in one clean dashboard.",
     url: siteUrl,
-    siteName: "Hostlyx",
+    siteName: "GoHostlyx",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hostlyx | Short-Term Rental Accounting Dashboard",
+    title: "GoHostlyx | Short-Term Rental Accounting Dashboard",
     description:
       "Upload short-term rental booking and expense workbooks, normalize the data, and explore revenue, payout, and profitability in one clean dashboard.",
   },

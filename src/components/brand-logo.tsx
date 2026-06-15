@@ -60,7 +60,7 @@ export function BrandLogo({
       {!hideWordmark ? (
         <span className="min-w-0">
           <span className={`${compact ? "text-base" : "text-lg"} block font-semibold tracking-[-0.05em] text-slate-100`}>
-            Hostlyx
+            GoHostlyx
           </span>
           {showTagline ? (
             <span className="block text-[11px] uppercase tracking-[0.22em] text-slate-500">

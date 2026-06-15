@@ -51,19 +51,19 @@ export function TaxSettingsPanel({
         description:
           hasCustomRate
             ? isSpanish
-              ? `Si estás viendo ${market.countryName}, Hostlyx usa tu tipo guardado de ${normalizedTaxRate}%.`
-              : `If you are viewing ${market.countryName}, Hostlyx uses your saved ${normalizedTaxRate}% rate.`
+              ? `Si estás viendo ${market.countryName}, GoHostlyx usa tu tipo guardado de ${normalizedTaxRate}%.`
+              : `If you are viewing ${market.countryName}, GoHostlyx uses your saved ${normalizedTaxRate}% rate.`
             : isSpanish
-              ? `Si estás viendo ${market.countryName}, Hostlyx usa la estimación por defecto de ${suggestedRate}%.`
-              : `If you are viewing ${market.countryName}, Hostlyx uses the default estimate of ${suggestedRate}%.`,
+              ? `Si estás viendo ${market.countryName}, GoHostlyx usa la estimación por defecto de ${suggestedRate}%.`
+              : `If you are viewing ${market.countryName}, GoHostlyx uses the default estimate of ${suggestedRate}%.`,
       },
       {
         label: isSpanish ? "Fallback todos los países" : "All-countries fallback",
         value: `${market.shortLabel} • ${normalizedTaxRate}%`,
         description:
           isSpanish
-            ? "Cuando el dashboard no está enfocado en un país, esta se convierte en la estimación base que muestra Hostlyx."
-            : "When the dashboard is not focused on one country, this becomes the baseline estimate Hostlyx shows.",
+            ? "Cuando el dashboard no está enfocado en un país, esta se convierte en la estimación base que muestra GoHostlyx."
+            : "When the dashboard is not focused on one country, this becomes the baseline estimate GoHostlyx shows.",
       },
     ],
     [hasCustomRate, isSpanish, market, normalizedTaxRate, suggestedRate],
@@ -113,8 +113,8 @@ export function TaxSettingsPanel({
           </p>
           <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
             {isSpanish
-              ? "Define el mercado que Hostlyx debe usar cuando estime lo que necesitas apartar."
-              : "Set the market Hostlyx should use when it estimates what you need to set aside."}
+              ? "Define el mercado que GoHostlyx debe usar cuando estime lo que necesitas apartar."
+              : "Set the market GoHostlyx should use when it estimates what you need to set aside."}
           </p>
         </div>
         <div className="workspace-icon-chip rounded-3xl p-3">
@@ -141,8 +141,8 @@ export function TaxSettingsPanel({
               options={countryOptions}
               helper={
                 isSpanish
-                  ? "Se usa para contexto y estimaciones fallback. Hostlyx usa primero el mercado activo y luego este cuando están seleccionados todos los países."
-                  : "Used for context and fallback estimates. Hostlyx uses the active market first, then falls back to this one when all countries are selected."
+                  ? "Se usa para contexto y estimaciones fallback. GoHostlyx usa primero el mercado activo y luego este cuando están seleccionados todos los países."
+                  : "Used for context and fallback estimates. GoHostlyx uses the active market first, then falls back to this one when all countries are selected."
               }
             />
           </div>
@@ -185,7 +185,7 @@ export function TaxSettingsPanel({
           <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
             <div>
               <p className="text-sm font-semibold text-[var(--workspace-text)]">
-                {isSpanish ? "Cómo usa esto Hostlyx" : "How Hostlyx uses this"}
+                {isSpanish ? "Cómo usa esto GoHostlyx" : "How GoHostlyx uses this"}
               </p>
               <p className="mt-1 text-xs text-[var(--workspace-muted)]">
                 {isSpanish

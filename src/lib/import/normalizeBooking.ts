@@ -60,7 +60,7 @@ export function normalizeBooking(workbook: ParsedImportWorkbook): ImportNormaliz
   }
 
   if (selectedHeaderRowIndex < 0 || !selectedIndexes) {
-    throw new Error("Hostlyx could not find recognizable Booking.com columns in this file.");
+    throw new Error("GoHostlyx could not find recognizable Booking.com columns in this file.");
   }
 
   const headers = selectedSheet.rows[selectedHeaderRowIndex];

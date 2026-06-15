@@ -388,8 +388,8 @@ export function ReconcilePanel({
             </p>
           <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
             {isSpanish
-              ? "Hostlyx mantiene separadas las reservas y los statements de payout del canal para que esta comparación siga anclada en documentos fuente importados."
-              : "Hostlyx keeps bookings and channel payout statements separate so this comparison stays grounded in imported source documents."}
+              ? "GoHostlyx mantiene separadas las reservas y los statements de payout del canal para que esta comparación siga anclada en documentos fuente importados."
+              : "GoHostlyx keeps bookings and channel payout statements separate so this comparison stays grounded in imported source documents."}
           </p>
           </div>
         </div>

@@ -2,8 +2,8 @@ import { enUS, es } from "date-fns/locale";
 
 export type AppLocale = "en" | "es";
 
-export const localeCookieName = "hostlyx-locale";
-export const localeStorageKey = "hostlyx-locale";
+export const localeCookieName = "gohostlyx-locale";
+export const localeStorageKey = "gohostlyx-locale";
 
 export function normalizeLocale(value: string | null | undefined): AppLocale {
   return value === "es" ? "es" : "en";

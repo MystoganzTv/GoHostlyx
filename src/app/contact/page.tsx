@@ -4,8 +4,8 @@ import { LegalPageShell } from "@/components/legal-page-shell";
 import { getRequestLocale } from "@/lib/server-locale";
 
 export const metadata: Metadata = {
-  title: "Contact | Hostlyx",
-  description: "Contact Hostlyx for support, billing, or product questions.",
+  title: "Contact | GoHostlyx",
+  description: "Contact GoHostlyx for support, billing, or product questions.",
 };
 
 export default async function ContactPage() {
@@ -19,8 +19,8 @@ export default async function ContactPage() {
       title={isSpanish ? "Contacto" : "Contact"}
       description={
         isSpanish
-          ? "Escríbenos para dudas de facturación, problemas con datos, feedback de producto o soporte operativo relacionado con tu workspace de Hostlyx."
-          : "Reach out for billing questions, data issues, product feedback, or operational support related to your Hostlyx workspace."
+          ? "Escríbenos para dudas de facturación, problemas con datos, feedback de producto o soporte operativo relacionado con tu workspace de GoHostlyx."
+          : "Reach out for billing questions, data issues, product feedback, or operational support related to your GoHostlyx workspace."
       }
     >
       <ContactForm />

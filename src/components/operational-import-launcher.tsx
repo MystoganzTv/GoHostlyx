@@ -9,7 +9,7 @@ import { useLocale } from "@/components/locale-provider";
 import type { PropertyDefinition } from "@/lib/types";
 
 type OperationalImportContext = "bookings" | "expenses";
-const rangeFilterStorageKey = "hostlyx:filters:range";
+const rangeFilterStorageKey = "gohostlyx:filters:range";
 
 function getContextCopy(context: OperationalImportContext, isSpanish: boolean) {
   if (context === "bookings") {
@@ -17,8 +17,8 @@ function getContextCopy(context: OperationalImportContext, isSpanish: boolean) {
       buttonLabel: isSpanish ? "Importar reservas" : "Import bookings",
       title: isSpanish ? "Importa tus reservas" : "Import your bookings",
       subtitle: isSpanish
-        ? "Sube exports de reservas de Airbnb, Booking.com o Excel. Si el archivo también trae gastos, Hostlyx los enrutará al lugar correcto."
-        : "Upload Airbnb, Booking.com, or Excel booking exports. If the file also carries expenses, Hostlyx will route them to the right place.",
+        ? "Sube exports de reservas de Airbnb, Booking.com o Excel. Si el archivo también trae gastos, GoHostlyx los enrutará al lugar correcto."
+        : "Upload Airbnb, Booking.com, or Excel booking exports. If the file also carries expenses, GoHostlyx will route them to the right place.",
     };
   }
 
@@ -26,8 +26,8 @@ function getContextCopy(context: OperationalImportContext, isSpanish: boolean) {
     buttonLabel: isSpanish ? "Importar gastos" : "Import expenses",
     title: isSpanish ? "Importa tus gastos" : "Import your expenses",
     subtitle: isSpanish
-      ? "Sube tu archivo de gastos o un workbook mixto. Hostlyx separará los gastos y mantendrá las reservas en su capa operativa."
-      : "Upload your expense file or a mixed workbook. Hostlyx will separate the expenses and keep bookings in their operating layer.",
+      ? "Sube tu archivo de gastos o un workbook mixto. GoHostlyx separará los gastos y mantendrá las reservas en su capa operativa."
+      : "Upload your expense file or a mixed workbook. GoHostlyx will separate the expenses and keep bookings in their operating layer.",
   };
 }
 

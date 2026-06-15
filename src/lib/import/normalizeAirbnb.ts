@@ -64,7 +64,7 @@ export function normalizeAirbnb(workbook: ParsedImportWorkbook): ImportNormaliza
   }
 
   if (selectedHeaderRowIndex < 0 || !selectedIndexes) {
-    throw new Error("Hostlyx could not find recognizable Airbnb columns in this file.");
+    throw new Error("GoHostlyx could not find recognizable Airbnb columns in this file.");
   }
 
   const headers = selectedSheet.rows[selectedHeaderRowIndex];

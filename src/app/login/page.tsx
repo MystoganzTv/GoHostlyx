@@ -58,7 +58,7 @@ export default async function LoginPage() {
 
         <div className="mt-8 text-center">
           <h1 className="text-4xl font-semibold tracking-[-0.06em] text-slate-950">
-            {isSpanish ? "Bienvenido a Hostlyx" : "Welcome to Hostlyx"}
+            {isSpanish ? "Bienvenido a GoHostlyx" : "Welcome to GoHostlyx"}
           </h1>
           <p className="mt-3 text-lg text-slate-500">{isSpanish ? "Inicia sesión para continuar" : "Sign in to continue"}</p>
         </div>
@@ -84,14 +84,14 @@ export default async function LoginPage() {
           {!authReady ? (
             <div className="rounded-[18px] border border-amber-400/25 bg-amber-400/12 px-4 py-3 text-sm leading-6 text-amber-900">
               {isSpanish
-                ? "La autenticacion no esta configurada todavia en produccion. Añade `NEXTAUTH_SECRET` en Netlify para habilitar login y dashboard."
-                : "Authentication is not configured in production yet. Add `NEXTAUTH_SECRET` in Netlify to enable login and the dashboard."}
+                ? "La autenticacion no esta configurada todavia en produccion. Añade `NEXTAUTH_SECRET` en Vercel para habilitar login y dashboard."
+                : "Authentication is not configured in production yet. Add `NEXTAUTH_SECRET` in Vercel to enable login and the dashboard."}
             </div>
           ) : !hasGoogleAuthConfig ? (
             <div className="rounded-[18px] border border-amber-400/25 bg-amber-400/12 px-4 py-3 text-sm leading-6 text-amber-900">
               {isSpanish
-                ? "Google login todavía no está configurado en producción. Añade `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en Netlify y vuelve a desplegar."
-                : "Google login is not configured in production yet. Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Netlify, then redeploy."}
+                ? "Google login todavía no está configurado en producción. Añade `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en Vercel y vuelve a desplegar."
+                : "Google login is not configured in production yet. Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Vercel, then redeploy."}
             </div>
           ) : (
             <p className="text-center text-sm leading-6 text-slate-500">
@@ -112,8 +112,8 @@ export default async function LoginPage() {
 
         <div className="mt-8 rounded-[22px] bg-slate-950 px-5 py-4 text-sm text-slate-300">
           {isSpanish
-            ? "Los datos de producción persisten cuando Netlify DB o `DATABASE_URL` están configurados."
-            : "Production data persists when Netlify DB or `DATABASE_URL` is configured."}
+            ? "Los datos de producción persisten cuando `DATABASE_URL` está configurado."
+            : "Production data persists when `DATABASE_URL` is configured."}
         </div>
       </div>
     </main>

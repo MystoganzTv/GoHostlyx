@@ -45,7 +45,7 @@ async function fetchIcalText(feedUrl: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Hostlyx could not fetch that iCal feed right now.");
+    throw new Error("GoHostlyx could not fetch that iCal feed right now.");
   }
 
   return response.text();

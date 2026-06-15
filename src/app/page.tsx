@@ -20,7 +20,7 @@ import { MarketingDashboardPreview } from "@/components/marketing-dashboard-prev
 import { MarketingHeader } from "@/components/marketing-header";
 import { getRequestLocale } from "@/lib/server-locale";
 
-const siteUrlLabel = "hostlyxone.netlify.app";
+const siteUrlLabel = "gohostlyx.vercel.app";
 const hostInitials = ["AR", "MS", "JP", "LC"];
 
 function getLandingCollections(isSpanish: boolean) {
@@ -356,8 +356,8 @@ export default async function LandingPage() {
                   </h2>
                   <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-300">
                     {isSpanish
-                      ? "Hostlyx compara lo que deberías recibir con lo que realmente te llega y te muestra exactamente dónde se va el dinero."
-                      : "Hostlyx compares what you should receive with what you actually get and shows exactly where the money goes."}
+                      ? "GoHostlyx compara lo que deberías recibir con lo que realmente te llega y te muestra exactamente dónde se va el dinero."
+                      : "GoHostlyx compares what you should receive with what you actually get and shows exactly where the money goes."}
                   </p>
                   <p className="mt-5 text-base leading-7 text-slate-400">
                     {isSpanish ? "Comisiones, impuestos y ajustes. Por fin explicados." : "Fees, taxes, and adjustments. Finally explained."}
@@ -408,7 +408,7 @@ export default async function LandingPage() {
                   {isSpanish ? "Deja de adivinar. Empieza a saber qué corregir." : "Stop guessing. Start knowing what to fix."}
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-slate-300">
-                  {isSpanish ? "Hostlyx resalta lo que importa para que puedas actuar." : "Hostlyx highlights what matters so you can act."}
+                  {isSpanish ? "GoHostlyx resalta lo que importa para que puedas actuar." : "GoHostlyx highlights what matters so you can act."}
                 </p>
               </div>
 
@@ -481,8 +481,8 @@ export default async function LandingPage() {
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-slate-300">
                 {isSpanish
-                  ? "Hostlyx convierte tus ingresos, gastos e impuestos en una sola cifra clara: tu beneficio real y por qué tu dinero no siempre coincide."
-                  : "Hostlyx turns your revenue, expenses, and taxes into one clear number: your real profit and why your money does not always match."}
+                  ? "GoHostlyx convierte tus ingresos, gastos e impuestos en una sola cifra clara: tu beneficio real y por qué tu dinero no siempre coincide."
+                  : "GoHostlyx turns your revenue, expenses, and taxes into one clear number: your real profit and why your money does not always match."}
               </p>
               <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-slate-400">
                 {isSpanish ? "Sin hojas de cálculo. Sin suposiciones. Sin autoengaños." : "No spreadsheets. No guessing. No self-deception."}

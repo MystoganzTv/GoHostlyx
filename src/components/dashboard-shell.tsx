@@ -436,8 +436,8 @@ export function DashboardShell({
                 title={isSpanish ? "Vista portfolio" : "Portfolio View"}
                 subtitle={
                   isSpanish
-                    ? "All markets sirve para ver volumen de cartera, pero Hostlyx no fingirá un beneficio total convertido entre monedas mixtas."
-                    : "All markets is useful for portfolio volume, but Hostlyx will not fake a converted profit total across mixed currencies."
+                    ? "All markets sirve para ver volumen de cartera, pero GoHostlyx no fingirá un beneficio total convertido entre monedas mixtas."
+                    : "All markets is useful for portfolio volume, but GoHostlyx will not fake a converted profit total across mixed currencies."
                 }
               >
                 <div className="grid gap-4 xl:grid-cols-3">

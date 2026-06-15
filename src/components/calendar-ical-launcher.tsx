@@ -124,8 +124,8 @@ export function CalendarIcalLauncher({
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Pega la URL pública `.ics` de Airbnb, Booking.com, Vrbo u otro canal. Hostlyx guardará ese feed en el listing seleccionado y lo sincronizará en eventos del calendario."
-                  : "Paste the public `.ics` URL from Airbnb, Booking.com, Vrbo, or another channel. Hostlyx will save that feed on the selected listing and sync it into calendar events."}
+                  ? "Pega la URL pública `.ics` de Airbnb, Booking.com, Vrbo u otro canal. GoHostlyx guardará ese feed en el listing seleccionado y lo sincronizará en eventos del calendario."
+                  : "Paste the public `.ics` URL from Airbnb, Booking.com, Vrbo, or another channel. GoHostlyx will save that feed on the selected listing and sync it into calendar events."}
               </p>
             </div>
 

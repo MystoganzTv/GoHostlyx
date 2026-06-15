@@ -297,13 +297,13 @@ function getSourcePresentation(source: ImportPreviewPayload["source"]) {
         icon: CircleDollarSign,
         badge: "Payout statement",
         description:
-          "This file is for Payouts. Hostlyx can save payout totals, fees, and taxes from it when the payout amount is readable.",
+          "This file is for Payouts. GoHostlyx can save payout totals, fees, and taxes from it when the payout amount is readable.",
       };
     default:
       return {
         icon: Sparkles,
         badge: "Mapped file",
-        description: "Your file needed a quick column mapping, and Hostlyx prepared it for review.",
+        description: "Your file needed a quick column mapping, and GoHostlyx prepared it for review.",
       };
   }
 }
@@ -568,7 +568,7 @@ export function UploadPanel({
       const payload = await parseResponse(response);
 
       if (!response.ok || !payload.preview) {
-        throw new Error(payload.error ?? "Hostlyx could not preview this file.");
+        throw new Error(payload.error ?? "GoHostlyx could not preview this file.");
       }
 
       setPreview(payload.preview);
@@ -615,7 +615,7 @@ export function UploadPanel({
     if (!selectedFile) {
       setToast({
         tone: "error",
-        message: "Choose an Airbnb, Booking.com, or Hostlyx file before previewing the import.",
+        message: "Choose an Airbnb, Booking.com, or GoHostlyx file before previewing the import.",
       });
       return;
     }
@@ -629,7 +629,7 @@ export function UploadPanel({
     if (!selectedFile) {
       setToast({
         tone: "error",
-        message: "Choose a file first so Hostlyx can review it before importing.",
+        message: "Choose a file first so GoHostlyx can review it before importing.",
       });
       return;
     }
@@ -657,7 +657,7 @@ export function UploadPanel({
       setToast({
         tone: "error",
         message: needsFocusedMapping
-          ? "We need a quick column check before Hostlyx can continue."
+          ? "We need a quick column check before GoHostlyx can continue."
           : "There are no usable rows left to import from this file.",
       });
       return;
@@ -1123,7 +1123,7 @@ export function UploadPanel({
                   <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                     {selectedFile
                       ? `${formatFileSize(selectedFile.size)} uploaded${phase === "previewing" ? " • Analyzing your data..." : ""}`
-                      : "Upload your Airbnb, Booking.com, or Hostlyx Excel export. Hostlyx will preview everything before saving anything."}
+                      : "Upload your Airbnb, Booking.com, or GoHostlyx Excel export. GoHostlyx will preview everything before saving anything."}
                   </p>
                   {!selectedFile ? (
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -1215,7 +1215,7 @@ export function UploadPanel({
                         {preview.blocksImport
                           ? preview.blockMessage
                           : preview.source === "financial_statement"
-                          ? "This file is a payout statement. Hostlyx will save payout totals for Payouts, but it will not create booking rows from it."
+                          ? "This file is a payout statement. GoHostlyx will save payout totals for Payouts, but it will not create booking rows from it."
                           : preview.requiresManualMapping
                           ? preview.manualMapping?.message
                           : getSourcePresentation(preview.source).description}
@@ -1308,7 +1308,7 @@ export function UploadPanel({
                     }`}
                   >
                     {isBlockedFinancialStatement
-                      ? "Hostlyx recognized a payout statement, but the payout total is still missing or unreadable."
+                      ? "GoHostlyx recognized a payout statement, but the payout total is still missing or unreadable."
                       : "This file is useful for invoices and VAT records, but it is not the right source for bookings."}
                   </p>
                   <p
@@ -1337,7 +1337,7 @@ export function UploadPanel({
                       <p className="text-sm font-medium text-[var(--workspace-text)]">Map your columns</p>
                       <p className="text-sm leading-6 text-[var(--workspace-muted)]">
                         {needsFocusedMapping
-                          ? "Hostlyx read the file, but key columns still need your review before we can show a clean preview."
+                          ? "GoHostlyx read the file, but key columns still need your review before we can show a clean preview."
                           : preview.manualMapping?.message}
                       </p>
                     </div>
@@ -1466,7 +1466,7 @@ export function UploadPanel({
                         {preview.financialStatement.period.label}
                       </p>
                       <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                        Hostlyx will save this document as a payout statement, separate from bookings, and use it in Payouts.
+                        GoHostlyx will save this document as a payout statement, separate from bookings, and use it in Payouts.
                       </p>
 
                       <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -1483,7 +1483,7 @@ export function UploadPanel({
                             Why bookings stay at 0
                           </p>
                           <p className="mt-2 text-sm leading-6 text-[var(--workspace-text)]">
-                            Hostlyx will not create bookings from this file or mix it into operational calendar events.
+                            GoHostlyx will not create bookings from this file or mix it into operational calendar events.
                           </p>
                         </div>
                       </div>
@@ -1496,7 +1496,7 @@ export function UploadPanel({
                                 Statement rows sampled
                               </p>
                               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                                These are raw statement lines Hostlyx used to calculate payout, fees, and taxes.
+                                These are raw statement lines GoHostlyx used to calculate payout, fees, and taxes.
                               </p>
                             </div>
                             {financialStatementPreviewData.sheetName ? (
@@ -1642,7 +1642,7 @@ export function UploadPanel({
                     {hasBookingPreview ? (
                       <div className="mt-5 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
                         <p>
-                          Hostlyx read <span className="font-medium text-[var(--workspace-text)]">{preview.totalRowsRead}</span> rows from this file.
+                          GoHostlyx read <span className="font-medium text-[var(--workspace-text)]">{preview.totalRowsRead}</span> rows from this file.
                           <span className="font-medium text-[var(--workspace-text)]"> {importableBookingRows}</span> can be imported right now.
                           <span className="font-medium text-[var(--workspace-text)]"> {reviewAfterImportBookingRows}</span> will land in Bookings with a review note, and
                           <span className="font-medium text-[var(--workspace-text)]"> {blockedBookingRows}</span> are blocked, including
@@ -1674,8 +1674,8 @@ export function UploadPanel({
                       </p>
                       <p className="mt-2 text-sm leading-6 text-teal-100/80">
                         {isSpanish
-                          ? "Reservas utilizables que Hostlyx puede guardar ya mismo."
-                          : "Usable bookings Hostlyx can save right away."}
+                          ? "Reservas utilizables que GoHostlyx puede guardar ya mismo."
+                          : "Usable bookings GoHostlyx can save right away."}
                       </p>
                     </div>
                     <div className="rounded-[24px] border border-amber-300/18 bg-amber-300/[0.08] p-5">
@@ -1713,8 +1713,8 @@ export function UploadPanel({
                     <div className="mt-4 grid gap-3 lg:grid-cols-3">
                       <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
-                          ? "1. Hostlyx importará todas las filas utilizables sin obligarte a aprobar una por una."
-                          : "1. Hostlyx will import every usable row without forcing you to approve them one by one."}
+                          ? "1. GoHostlyx importará todas las filas utilizables sin obligarte a aprobar una por una."
+                          : "1. GoHostlyx will import every usable row without forcing you to approve them one by one."}
                       </div>
                       <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish

@@ -31,12 +31,12 @@ export function normalizeManual(
   const sheet = workbook.sheets.find((entry) => entry.name === mapping.sheetName);
 
   if (!sheet) {
-    throw new Error("Hostlyx could not find the selected sheet for manual mapping.");
+    throw new Error("GoHostlyx could not find the selected sheet for manual mapping.");
   }
 
   const headers = sheet.rows[mapping.headerRowIndex];
   if (!headers) {
-    throw new Error("Hostlyx could not find the selected header row for manual mapping.");
+    throw new Error("GoHostlyx could not find the selected header row for manual mapping.");
   }
 
   const warnings: ImportValidationWarning[] = [];

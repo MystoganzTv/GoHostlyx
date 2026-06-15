@@ -68,7 +68,7 @@ export function ImportCenterLauncher({
               {[
                 isSpanish ? "Reservas Airbnb" : "Airbnb bookings",
                 isSpanish ? "Reservas Booking.com" : "Booking.com bookings",
-                "Hostlyx Excel",
+                "GoHostlyx Excel",
                 isSpanish ? "Statements de payout" : "Payout statements",
               ].map((item) => (
                 <span
@@ -94,8 +94,8 @@ export function ImportCenterLauncher({
           title={isSpanish ? "Importa reservas o gastos" : "Import bookings or expenses"}
           subtitle={
             isSpanish
-              ? "Sube tus archivos de Airbnb, Booking.com o Excel para traer reservas y gastos a Hostlyx."
-              : "Upload your Airbnb, Booking.com, or Excel files to bring bookings and expenses into Hostlyx."
+              ? "Sube tus archivos de Airbnb, Booking.com o Excel para traer reservas y gastos a GoHostlyx."
+              : "Upload your Airbnb, Booking.com, or Excel files to bring bookings and expenses into GoHostlyx."
           }
           onCancel={() => setIsUploadOpen(false)}
         />

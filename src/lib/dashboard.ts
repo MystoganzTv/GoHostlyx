@@ -288,8 +288,8 @@ function buildReconcileInsights({
     insights.push({
       title: isSpanish ? "Los payouts se ven alineados" : "Payouts look aligned",
       body: isSpanish
-        ? "El statement coincide en líneas generales con lo que Hostlyx esperaba según los datos de reservas."
-        : "The statement is broadly matching what Hostlyx expected from the booking data.",
+        ? "El statement coincide en líneas generales con lo que GoHostlyx esperaba según los datos de reservas."
+        : "The statement is broadly matching what GoHostlyx expected from the booking data.",
       tone: "positive",
     });
   }

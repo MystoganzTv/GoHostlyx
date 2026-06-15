@@ -63,7 +63,7 @@ export function PerformancePanel({
           currencyCode={currencyCode}
           locale={locale}
           helper={
-            isSpanish ? "Noches reservadas capturadas en Hostlyx" : "Booked nights captured in Hostlyx"
+            isSpanish ? "Noches reservadas capturadas en GoHostlyx" : "Booked nights captured in GoHostlyx"
           }
           icon={<House className="h-5 w-5" />}
         />

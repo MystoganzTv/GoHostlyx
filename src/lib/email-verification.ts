@@ -32,7 +32,7 @@ export async function sendVerificationEmail({
 }) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const fromEmail =
-    process.env.AUTH_VERIFICATION_FROM_EMAIL ?? "Hostlyx <onboarding@resend.dev>";
+    process.env.AUTH_VERIFICATION_FROM_EMAIL ?? "GoHostlyx <onboarding@resend.dev>";
 
   if (!resendApiKey) {
     throw new Error(
@@ -52,7 +52,7 @@ export async function sendVerificationEmail({
         <div style="padding: 32px;">
           <p style="margin-top: 0; font-size: 18px; font-weight: 500;">Hey ${safeName},</p>
           <p style="font-size: 18px; margin-bottom: 24px;">
-            Welcome to Hostlyx. Please verify your email address to complete your registration.
+            Welcome to GoHostlyx. Please verify your email address to complete your registration.
           </p>
           <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 24px; text-align: center;">
             <p style="margin: 0; font-size: 18px;">Your verification code</p>
@@ -61,7 +61,7 @@ export async function sendVerificationEmail({
           <p style="margin: 28px 0 0; font-size: 17px;">
             This code will expire in <strong>10 minutes</strong>, so be sure to use it soon.
           </p>
-          <p style="margin: 28px 0 0; font-size: 17px;">See you there,<br />The Hostlyx team</p>
+          <p style="margin: 28px 0 0; font-size: 17px;">See you there,<br />The GoHostlyx team</p>
         </div>
       </div>
     </div>
@@ -72,13 +72,13 @@ export async function sendVerificationEmail({
     "",
     `Hey ${fullName || email},`,
     "",
-    "Welcome to Hostlyx. Please verify your email address to complete your registration.",
+    "Welcome to GoHostlyx. Please verify your email address to complete your registration.",
     "",
     `Your verification code: ${code}`,
     "",
     "This code expires in 10 minutes.",
     "",
-    "The Hostlyx team",
+    "The GoHostlyx team",
   ].join("\n");
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -90,7 +90,7 @@ export async function sendVerificationEmail({
     body: JSON.stringify({
       from: fromEmail,
       to: [email],
-      subject: "Verify your Hostlyx email",
+      subject: "Verify your GoHostlyx email",
       html,
       text,
     }),
@@ -99,6 +99,6 @@ export async function sendVerificationEmail({
   if (!response.ok) {
     const errorText = await response.text().catch(() => "");
     console.error("Verification email failed", errorText);
-    throw new Error("Hostlyx could not send the verification email right now.");
+    throw new Error("GoHostlyx could not send the verification email right now.");
   }
 }

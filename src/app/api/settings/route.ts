@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      message: `Saved ${businessName}. Hostlyx will now use ${primaryCountryCode} as the default reporting market when all countries are selected.`,
+      message: `Saved ${businessName}. GoHostlyx will now use ${primaryCountryCode} as the default reporting market when all countries are selected.`,
     });
   } catch (error) {
     return NextResponse.json(

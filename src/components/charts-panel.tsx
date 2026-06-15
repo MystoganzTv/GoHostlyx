@@ -92,7 +92,7 @@ export function ChartsPanel({
     return (
       <SectionCard
         title="Portfolio View"
-        subtitle="All markets mixes real currencies, so Hostlyx pauses converted amount charts until you focus on one market."
+        subtitle="All markets mixes real currencies, so GoHostlyx pauses converted amount charts until you focus on one market."
       >
         <EmptyChartState label="Select a single market to unlock profit-over-time, revenue-vs-expenses, and cost charts." />
       </SectionCard>

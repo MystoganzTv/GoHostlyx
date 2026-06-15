@@ -150,8 +150,8 @@ export default async function PropertiesPage() {
       pageSubtitle={
         isSetupMode
           ? isSpanish
-            ? "Completa tu primera configuración de propiedad y listing antes de cualquier otra cosa en Hostlyx."
-            : "Complete your first property and listing setup before anything else in Hostlyx."
+            ? "Completa tu primera configuración de propiedad y listing antes de cualquier otra cosa en GoHostlyx."
+            : "Complete your first property and listing setup before anything else in GoHostlyx."
           : isSpanish
             ? "Organiza la cartera en propiedades y los listings que pertenecen a cada una."
             : "Organize the portfolio into properties and the listings that belong to them."
@@ -168,8 +168,8 @@ export default async function PropertiesPage() {
             title={isSpanish ? "Empieza con tu primer setup de listing" : "Start With Your First Listing Setup"}
             subtitle={
               isSpanish
-                ? "Hostlyx abre el modal de setup automáticamente porque cada reserva, gasto, sync de calendario e importación debe pertenecer primero a una estructura real de propiedad y listing."
-                : "Hostlyx opens the setup modal automatically because every booking, expense, calendar sync, and import must belong to a real property and listing structure first."
+                ? "GoHostlyx abre el modal de setup automáticamente porque cada reserva, gasto, sync de calendario e importación debe pertenecer primero a una estructura real de propiedad y listing."
+                : "GoHostlyx opens the setup modal automatically because every booking, expense, calendar sync, and import must belong to a real property and listing structure first."
             }
           >
             <div className="grid gap-4 lg:grid-cols-3">
@@ -185,8 +185,8 @@ export default async function PropertiesPage() {
                 <p className="text-sm font-semibold text-[var(--workspace-text)]">{isSpanish ? "Propiedad con varios listings" : "Multi-listing property"}</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                   {isSpanish
-                    ? "Dile a Hostlyx cuántos listings operas ahí y los crearemos automáticamente por ti."
-                    : "Tell Hostlyx how many listings you operate there, and we will create them automatically for you."}
+                    ? "Dile a GoHostlyx cuántos listings operas ahí y los crearemos automáticamente por ti."
+                    : "Tell GoHostlyx how many listings you operate there, and we will create them automatically for you."}
                 </p>
               </div>
               <div className="workspace-soft-card rounded-[24px] p-4">
@@ -236,8 +236,8 @@ export default async function PropertiesPage() {
           subtitle={
             isSetupMode
               ? isSpanish
-                ? "Dile a Hostlyx si esto es un alquiler de casa completa o una propiedad con varios listings."
-                : "Tell Hostlyx whether this is a single-home rental or a property with several listings."
+                ? "Dile a GoHostlyx si esto es un alquiler de casa completa o una propiedad con varios listings."
+                : "Tell GoHostlyx whether this is a single-home rental or a property with several listings."
               : isSpanish
                 ? "Crea primero la estructura de la cartera y luego asigna reservas y gastos a la propiedad y listing correctos."
                 : "Create the portfolio structure first, then assign bookings and expenses to the right property and listing."

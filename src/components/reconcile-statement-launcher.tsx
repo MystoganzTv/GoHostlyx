@@ -54,8 +54,8 @@ export function ReconcileStatementLauncher({
           title={isSpanish ? "Añade un estado de payout" : "Add a payout statement"}
           subtitle={
             isSpanish
-              ? "Sube un statement de payout de Airbnb o Booking.com. Hostlyx lo mantendrá separado de las reservas y lo usará en Payouts."
-              : "Upload an Airbnb or Booking.com payout statement. Hostlyx will keep it separate from bookings and use it in Payouts."
+              ? "Sube un statement de payout de Airbnb o Booking.com. GoHostlyx lo mantendrá separado de las reservas y lo usará en Payouts."
+              : "Upload an Airbnb or Booking.com payout statement. GoHostlyx will keep it separate from bookings and use it in Payouts."
           }
           appearance="compact"
           onCancel={() => setIsOpen(false)}

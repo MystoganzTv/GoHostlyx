@@ -105,8 +105,8 @@ export default async function PricingPage({
           {billingState === "success" ? (
             <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-emerald-400/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
               {isSpanish
-                ? "El checkout de Stripe se completó. Tu plan se actualizará en Hostlyx en cuanto el webhook de facturación confirme la suscripción."
-                : "Stripe checkout completed. Your plan will refresh in Hostlyx as soon as the billing webhook confirms the subscription."}
+                ? "El checkout de Stripe se completó. Tu plan se actualizará en GoHostlyx en cuanto el webhook de facturación confirme la suscripción."
+                : "Stripe checkout completed. Your plan will refresh in GoHostlyx as soon as the billing webhook confirms the subscription."}
             </div>
           ) : null}
           {billingState === "cancelled" ? (

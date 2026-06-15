@@ -53,7 +53,7 @@ export function ImportsManager({
   if (importSummaries.length === 0) {
     return (
       <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
-        No imports yet. When you upload Excel files, Hostlyx will keep the history here for backup context and traceability.
+        No imports yet. When you upload Excel files, GoHostlyx will keep the history here for backup context and traceability.
       </div>
     );
   }
@@ -137,7 +137,7 @@ export function ImportsManager({
               Deleting <span className="font-medium text-[var(--workspace-text)]">{importToDelete.fileName}</span> will remove the import from history and permanently delete{" "}
               {importToDelete.importedSource === "financial_statement"
                 ? "the payout statement saved by that batch."
-                : "the data that batch created inside Hostlyx."}
+                : "the data that batch created inside GoHostlyx."}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">

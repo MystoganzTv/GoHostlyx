@@ -3,8 +3,8 @@ import { LegalPageShell } from "@/components/legal-page-shell";
 import { getRequestLocale } from "@/lib/server-locale";
 
 export const metadata: Metadata = {
-  title: "Refund Policy | Hostlyx",
-  description: "Refund Policy for Hostlyx.",
+  title: "Refund Policy | GoHostlyx",
+  description: "Refund Policy for GoHostlyx.",
 };
 
 export default async function RefundPage() {
@@ -18,8 +18,8 @@ export default async function RefundPage() {
       title={isSpanish ? "Política de reembolsos" : "Refund Policy"}
       description={
         isSpanish
-          ? "Esta política explica cómo gestiona Hostlyx los reembolsos de suscripción, disputas de cobro y mejoras canceladas."
-          : "This policy explains how Hostlyx handles subscription refunds, billing disputes, and cancelled upgrades."
+          ? "Esta política explica cómo gestiona GoHostlyx los reembolsos de suscripción, disputas de cobro y mejoras canceladas."
+          : "This policy explains how GoHostlyx handles subscription refunds, billing disputes, and cancelled upgrades."
       }
     >
       <section>
@@ -28,8 +28,8 @@ export default async function RefundPage() {
         </h2>
         <p className="mt-3">
           {isSpanish
-            ? "Los planes de pago se cobran a través de Stripe usando el precio mostrado dentro de Hostlyx. Cuando termina una prueba y mejoras de plan, la facturación empieza según la suscripción creada en checkout."
-            : "Paid plans are billed through Stripe using the pricing shown inside Hostlyx. When a trial ends and you upgrade, billing starts according to the subscription created at checkout."}
+            ? "Los planes de pago se cobran a través de Stripe usando el precio mostrado dentro de GoHostlyx. Cuando termina una prueba y mejoras de plan, la facturación empieza según la suscripción creada en checkout."
+            : "Paid plans are billed through Stripe using the pricing shown inside GoHostlyx. When a trial ends and you upgrade, billing starts according to the subscription created at checkout."}
         </p>
       </section>
 

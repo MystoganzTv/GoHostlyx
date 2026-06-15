@@ -52,8 +52,8 @@ export function ContactForm() {
         throw new Error(
           result?.error ??
             (isSpanish
-              ? "Hostlyx no pudo enviar tu mensaje ahora mismo."
-              : "Hostlyx could not send your message right now."),
+              ? "GoHostlyx no pudo enviar tu mensaje ahora mismo."
+              : "GoHostlyx could not send your message right now."),
         );
       }
 
@@ -65,8 +65,8 @@ export function ContactForm() {
         error instanceof Error
           ? error.message
           : isSpanish
-            ? "Hostlyx no pudo enviar tu mensaje ahora mismo."
-            : "Hostlyx could not send your message right now.",
+            ? "GoHostlyx no pudo enviar tu mensaje ahora mismo."
+            : "GoHostlyx could not send your message right now.",
       );
     }
   }
@@ -80,7 +80,7 @@ export function ContactForm() {
           <div className="inline-flex items-center gap-2 rounded-full border border-[var(--workspace-accent)]/20 bg-[var(--workspace-accent)]/10 px-3 py-1.5">
             <MessageSquareText className="h-3.5 w-3.5 text-[var(--workspace-accent)]" />
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--accent-text)]">
-              {isSpanish ? "Contactar con Hostlyx" : "Contact Hostlyx"}
+              {isSpanish ? "Contactar con GoHostlyx" : "Contact GoHostlyx"}
             </p>
           </div>
 
@@ -89,8 +89,8 @@ export function ContactForm() {
           </h2>
           <p className="mt-4 max-w-xl text-[15px] leading-8 text-slate-300">
             {isSpanish
-              ? "Escríbenos por facturación, importaciones, dudas del dashboard, partnerships o cualquier otra cosa relacionada con tu workspace de Hostlyx."
-              : "Reach out for billing, imports, dashboard questions, partnerships, or anything else related to your Hostlyx workspace."}
+              ? "Escríbenos por facturación, importaciones, dudas del dashboard, partnerships o cualquier otra cosa relacionada con tu workspace de GoHostlyx."
+              : "Reach out for billing, imports, dashboard questions, partnerships, or anything else related to your GoHostlyx workspace."}
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -220,7 +220,7 @@ export function ContactForm() {
                 {isSpanish ? "Email directo" : "Direct email"}
               </p>
               <p className="mt-3 text-xl font-semibold tracking-[-0.03em] text-slate-100">
-                hello@hostlyx.com
+                hello@gohostlyx.com
               </p>
               <p className="mt-3 text-sm leading-7 text-slate-300">
                 {isSpanish ? "¿Prefieres ir directo al inbox? También puedes escribirnos directamente." : "Prefer inbox-to-inbox? You can still contact us directly."}

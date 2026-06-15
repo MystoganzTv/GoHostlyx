@@ -98,7 +98,7 @@ export function BusinessSettingsPanel({
               name="businessName"
               value={businessName}
               onChange={(event) => setBusinessName(event.target.value)}
-              placeholder={isSpanish ? "PinarSabroso, Demo Hostlyx, Beach Loft..." : "PinarSabroso, Hostlyx Demo, Beach Loft..."}
+              placeholder={isSpanish ? "PinarSabroso, Demo GoHostlyx, Beach Loft..." : "PinarSabroso, GoHostlyx Demo, Beach Loft..."}
               required
             />
           </div>
@@ -142,8 +142,8 @@ export function BusinessSettingsPanel({
           </div>
           <p className="text-xs leading-5 text-[var(--workspace-muted)]">
             {isSpanish
-              ? "Este pasa a ser el mercado por defecto que Hostlyx usa cuando tu dashboard muestra todos los países a la vez."
-              : "This becomes the default market Hostlyx uses when your dashboard is showing all countries at once."}
+              ? "Este pasa a ser el mercado por defecto que GoHostlyx usa cuando tu dashboard muestra todos los países a la vez."
+              : "This becomes the default market GoHostlyx uses when your dashboard is showing all countries at once."}
           </p>
         </div>
 
@@ -155,8 +155,8 @@ export function BusinessSettingsPanel({
               </p>
               <p className="mt-1 text-xs text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? `Hostlyx tratará ${selectedMarket.countryName} como tu mercado por defecto para reporting.`
-                  : `Hostlyx will treat ${selectedMarket.countryName} as your default reporting market.`}
+                  ? `GoHostlyx tratará ${selectedMarket.countryName} como tu mercado por defecto para reporting.`
+                  : `GoHostlyx will treat ${selectedMarket.countryName} as your default reporting market.`}
               </p>
             </div>
             <span className="rounded-full bg-white/[0.06] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
@@ -188,8 +188,8 @@ export function BusinessSettingsPanel({
               </p>
               <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Cuando los filtros están en `All countries`, Hostlyx usa este mercado como valor por defecto de cartera para labels y resúmenes."
-                  : "When filters are on `All countries`, Hostlyx uses this market as the portfolio default for labels and summaries."}
+                  ? "Cuando los filtros están en `All countries`, GoHostlyx usa este mercado como valor por defecto de cartera para labels y resúmenes."
+                  : "When filters are on `All countries`, GoHostlyx uses this market as the portfolio default for labels and summaries."}
               </p>
             </div>
 

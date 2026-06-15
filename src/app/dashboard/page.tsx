@@ -92,8 +92,8 @@ export default async function DashboardPage({
                   ? "Tu prueba de 7 días está a punto de terminar. Elige un plan ahora para mantener acceso al dashboard sin interrupciones."
                   : "Your 7-day trial is almost over. Choose a plan now to keep access to the dashboard without interruption."
                 : isSpanish
-                  ? "Tus reservas, gastos y archivos importados siguen a salvo en Hostlyx. Elige un plan de pago para seguir usando el dashboard."
-                  : "Your bookings, expenses, and imported files are still safe in Hostlyx. Choose a paid plan to keep using the dashboard."
+                  ? "Tus reservas, gastos y archivos importados siguen a salvo en GoHostlyx. Elige un plan de pago para seguir usando el dashboard."
+                  : "Your bookings, expenses, and imported files are still safe in GoHostlyx. Choose a paid plan to keep using the dashboard."
             }
           />
         </div>

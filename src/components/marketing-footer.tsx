@@ -20,8 +20,8 @@ export function MarketingFooter({ locale = "en" }: { locale?: AppLocale }) {
             <BrandLogo href="/" compact />
             <p className="mt-3 max-w-xl text-sm leading-7 text-slate-400">
               {isSpanish
-                ? "Hostlyx convierte datos dispersos en claridad financiera real para hosts de alquiler vacacional."
-                : "Hostlyx turns scattered rental data into real financial clarity for short-term rental hosts."}
+                ? "GoHostlyx convierte datos dispersos en claridad financiera real para hosts de alquiler vacacional."
+                : "GoHostlyx turns scattered rental data into real financial clarity for short-term rental hosts."}
             </p>
           </div>
 

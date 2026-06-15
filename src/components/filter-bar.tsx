@@ -9,8 +9,8 @@ import { WorkspaceSelect } from "@/components/workspace-select";
 import { getMarketDefinition } from "@/lib/markets";
 import type { CountryCode, DashboardDateRangePreset } from "@/lib/types";
 
-const rangeFilterStorageKey = "hostlyx:filters:range";
-const calendarFilterStorageKey = "hostlyx:filters:calendar";
+const rangeFilterStorageKey = "gohostlyx:filters:range";
+const calendarFilterStorageKey = "gohostlyx:filters:calendar";
 
 function buildFilterHref(pathname: string, params: URLSearchParams) {
   const query = params.toString();

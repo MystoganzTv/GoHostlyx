@@ -91,8 +91,8 @@ export function CashflowPanel({
             <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">{rangeLabel}</p>
             <p className="mt-3 text-sm leading-6 text-[var(--workspace-muted)]">
               {isSpanish
-                ? "Hostlyx trata el payout del canal como entrada operativa y los gastos como salida operativa. Esto no sustituye una conciliación bancaria."
-                : "Hostlyx treats channel payout as operating inflow and expenses as operating outflow. This does not replace bank reconciliation."}
+                ? "GoHostlyx trata el payout del canal como entrada operativa y los gastos como salida operativa. Esto no sustituye una conciliación bancaria."
+                : "GoHostlyx treats channel payout as operating inflow and expenses as operating outflow. This does not replace bank reconciliation."}
             </p>
           </div>
           <div className="workspace-soft-card rounded-[22px] p-5">

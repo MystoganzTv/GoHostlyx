@@ -38,8 +38,8 @@ export default async function SettingsPage() {
       pageTitle={isSpanish ? "Ajustes" : "Settings"}
       pageSubtitle={
         isSpanish
-          ? "Define los valores por defecto que Hostlyx usa para reporting, mercados y estimación fiscal."
-          : "Set the defaults Hostlyx uses for reporting, markets, and tax estimation."
+          ? "Define los valores por defecto que GoHostlyx usa para reporting, mercados y estimación fiscal."
+          : "Set the defaults GoHostlyx uses for reporting, markets, and tax estimation."
       }
       businessName={userSettings.businessName}
       userName={userName}

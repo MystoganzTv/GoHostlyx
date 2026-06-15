@@ -69,7 +69,7 @@ export function LatestImportDangerCard({
               Need to remove the last file you imported?
             </h3>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-              Delete the most recent batch here if the CSV or Excel file was wrong. Hostlyx will remove only the data that came from that import.
+              Delete the most recent batch here if the CSV or Excel file was wrong. GoHostlyx will remove only the data that came from that import.
             </p>
           </div>
 

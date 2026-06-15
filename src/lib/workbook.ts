@@ -45,7 +45,7 @@ type ParsedImportFile = {
 };
 
 type SheetDetectionCandidate = {
-  source: Exclude<ImportedFileSource, "hostlyx_excel" | "financial_statement">;
+  source: Exclude<ImportedFileSource, "gohostlyx_excel" | "financial_statement">;
   sheetName: string;
   headerRowIndex: number;
   indexes: OptionalIndexMap<ProviderColumnKey>;
@@ -195,7 +195,7 @@ const sharedProviderColumns: Record<ProviderColumnKey, readonly string[]> = {
 };
 
 const providerDetectionProfiles: Record<
-  Exclude<ImportedFileSource, "hostlyx_excel" | "financial_statement">,
+  Exclude<ImportedFileSource, "gohostlyx_excel" | "financial_statement">,
   {
     label: string;
     filenameHints: string[];
@@ -263,7 +263,7 @@ function getImportedSourceLabel(source: ImportedFileSource) {
       return "Airbnb";
     case "booking_com":
       return "Booking.com";
-    case "hostlyx_excel":
+    case "gohostlyx_excel":
       return "Generic Excel";
     case "financial_statement":
       return "Payout statement";
@@ -684,7 +684,7 @@ function parseCalendarClosures(rows: SheetRow[]) {
   return Array.from(closuresByDate.values());
 }
 
-function parseHostlyxWorkbook(workbook: XLSX.WorkBook) {
+function parseGoHostlyxWorkbook(workbook: XLSX.WorkBook) {
   const bookingsSheet = getWorksheet(workbook, "Bookings");
   const expensesSheet = getWorksheet(workbook, "Expenses");
   const calendarSheet = getOptionalWorksheet(workbook, "Calendar");
@@ -721,7 +721,7 @@ function parseHostlyxWorkbook(workbook: XLSX.WorkBook) {
       return {
         propertyName: "Default Property",
         unitName: "",
-        importedSource: "hostlyx_excel" as ImportedFileSource,
+        importedSource: "gohostlyx_excel" as ImportedFileSource,
         checkIn,
         checkout,
         guestName: String(row[bookingIndexes.guestName] ?? "").trim() || "Guest",
@@ -809,8 +809,8 @@ function detectProviderSheet(
 
       for (const [source, profile] of Object.entries(providerDetectionProfiles) as Array<
         [
-          Exclude<ImportedFileSource, "hostlyx_excel" | "financial_statement">,
-          (typeof providerDetectionProfiles)[Exclude<ImportedFileSource, "hostlyx_excel" | "financial_statement">],
+          Exclude<ImportedFileSource, "gohostlyx_excel" | "financial_statement">,
+          (typeof providerDetectionProfiles)[Exclude<ImportedFileSource, "gohostlyx_excel" | "financial_statement">],
         ]
       >) {
         const indexes = mapOptionalHeaderIndexes(row, profile.columns);
@@ -884,7 +884,7 @@ function parseProviderWorkbook(
 
   if (!detected) {
     throw new Error(
-      "Hostlyx could not detect the booking columns in this file. Export a reservations or payouts report from Airbnb or Booking.com, or use the Hostlyx workbook template.",
+      "GoHostlyx could not detect the booking columns in this file. Export a reservations or payouts report from Airbnb or Booking.com, or use the GoHostlyx workbook template.",
     );
   }
 
@@ -900,7 +900,7 @@ function parseProviderWorkbook(
     warnings.push({
       code: "missing_payout_column",
       message:
-        "No payout column was found. Hostlyx will derive payout from gross revenue minus fees when possible.",
+        "No payout column was found. GoHostlyx will derive payout from gross revenue minus fees when possible.",
     });
   }
 
@@ -908,7 +908,7 @@ function parseProviderWorkbook(
     warnings.push({
       code: "missing_fee_columns",
       message:
-        "No fee or tax columns were found. Platform fees will stay at 0 unless Hostlyx can infer them from gross revenue and payout.",
+        "No fee or tax columns were found. Platform fees will stay at 0 unless GoHostlyx can infer them from gross revenue and payout.",
     });
   }
 
@@ -916,7 +916,7 @@ function parseProviderWorkbook(
     warnings.push({
       code: "generic_detection",
       message:
-        "Hostlyx could not confidently identify the source, so this file was imported as Generic Excel.",
+        "GoHostlyx could not confidently identify the source, so this file was imported as Generic Excel.",
     });
   }
 
@@ -1004,14 +1004,14 @@ function parseProviderWorkbook(
 
   if (!bookings.length) {
     throw new Error(
-      "Hostlyx found the file structure, but no usable booking rows were detected after validation.",
+      "GoHostlyx found the file structure, but no usable booking rows were detected after validation.",
     );
   }
 
   if (skippedRows > 0) {
     warnings.push({
       code: "skipped_rows",
-      message: `Hostlyx skipped ${skippedRows} row${skippedRows === 1 ? "" : "s"} because the dates were missing or incomplete.`,
+      message: `GoHostlyx skipped ${skippedRows} row${skippedRows === 1 ? "" : "s"} because the dates were missing or incomplete.`,
     });
   }
 
@@ -1040,7 +1040,7 @@ export function parseWorkbook(buffer: ArrayBuffer) {
     cellDates: true,
   });
 
-  return parseHostlyxWorkbook(workbook);
+  return parseGoHostlyxWorkbook(workbook);
 }
 
 export function parseImportFile(buffer: ArrayBuffer, fileName: string): ParsedImportFile {
@@ -1053,15 +1053,15 @@ export function parseImportFile(buffer: ArrayBuffer, fileName: string): ParsedIm
   const hasExpensesSheet = Boolean(getOptionalWorksheet(workbook, "Expenses"));
 
   if (hasBookingsSheet && hasExpensesSheet) {
-    const { bookings, expenses, closures } = parseHostlyxWorkbook(workbook);
+    const { bookings, expenses, closures } = parseGoHostlyxWorkbook(workbook);
     return {
-      importedSource: "hostlyx_excel",
+      importedSource: "gohostlyx_excel",
       sourceLabel: "Generic Excel",
       bookings,
       expenses,
       closures,
       summary: {
-        source: "hostlyx_excel",
+        source: "gohostlyx_excel",
         sourceLabel: "Generic Excel",
         rowsImported: bookings.length + expenses.length + closures.length,
         bookingsImported: bookings.length,

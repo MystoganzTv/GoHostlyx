@@ -945,8 +945,8 @@ export function CalendarPanel({
             {linkedCalendarEvent ? (
               <p className="text-sm leading-6 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Hostlyx ocultó el duplicado del iCal y usa esta reserva como ficha principal porque contiene más detalle, como nombre del huésped, contacto y datos financieros."
-                  : "Hostlyx hid the duplicate iCal event and uses this booking as the primary record because it carries richer detail, like guest name, contact, and financial data."}
+                  ? "GoHostlyx ocultó el duplicado del iCal y usa esta reserva como ficha principal porque contiene más detalle, como nombre del huésped, contacto y datos financieros."
+                  : "GoHostlyx hid the duplicate iCal event and uses this booking as the primary record because it carries richer detail, like guest name, contact, and financial data."}
               </p>
             ) : null}
 

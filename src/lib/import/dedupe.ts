@@ -38,7 +38,7 @@ function mapStoredSource(source: BookingRecord["importedSource"]): ImportDetecte
     case "booking_com":
       return "booking";
     case "generic_excel":
-    case "hostlyx_excel":
+    case "gohostlyx_excel":
       return "generic";
     default:
       return "unknown";

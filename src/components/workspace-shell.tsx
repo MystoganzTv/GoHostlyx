@@ -43,7 +43,7 @@ type ActivePage =
   | "imports"
   | "properties"
   | "settings";
-const sidebarStorageKey = "hostlyx:sidebar-collapsed";
+const sidebarStorageKey = "gohostlyx:sidebar-collapsed";
 
 type SubscriptionBadge = {
   label: string;

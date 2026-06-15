@@ -3,7 +3,7 @@ export type ImportedFileSource =
   | "airbnb"
   | "booking_com"
   | "generic_excel"
-  | "hostlyx_excel"
+  | "gohostlyx_excel"
   | "financial_statement";
 export type BookingMatchStatus =
   | "unmatched"

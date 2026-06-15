@@ -29,7 +29,7 @@ const steps = [
   {
     id: "welcome",
     label: "Welcome",
-    title: "Get Hostlyx ready in a few quick steps.",
+    title: "Get GoHostlyx ready in a few quick steps.",
     icon: Sparkles,
   },
   {
@@ -53,7 +53,7 @@ const steps = [
   {
     id: "tax",
     label: "Tax",
-    title: "Choose the estimate Hostlyx should use.",
+    title: "Choose the estimate GoHostlyx should use.",
     icon: ReceiptText,
   },
   {
@@ -214,7 +214,7 @@ export function OnboardingFlow({
             Here’s what your business looks like right now.
           </h3>
           <p className="mt-4 text-sm leading-7 text-[var(--workspace-muted)]">
-            Hostlyx imported your file, but there is not enough clean financial data yet to show this summary.
+            GoHostlyx imported your file, but there is not enough clean financial data yet to show this summary.
           </p>
         </div>
       );
@@ -515,7 +515,7 @@ export function OnboardingFlow({
               Workspace setup
             </p>
             <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-              Give Hostlyx the right home base.
+              Give GoHostlyx the right home base.
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
               Keep this simple. The selected market becomes the default reporting context for the workspace,
@@ -533,7 +533,7 @@ export function OnboardingFlow({
                   className={inputClassName()}
                   value={businessName}
                   onChange={(event) => setBusinessName(event.target.value)}
-                  placeholder="Hostlyx Capital, My Rental Portfolio..."
+                  placeholder="GoHostlyx Capital, My Rental Portfolio..."
                   required
                 />
               </label>
@@ -911,7 +911,7 @@ export function OnboardingFlow({
           <UploadPanel
             properties={properties}
             title="Optional financial data"
-            subtitle="Upload Airbnb, Booking.com, or Excel files only if you want Hostlyx to start with real financial numbers now."
+            subtitle="Upload Airbnb, Booking.com, or Excel files only if you want GoHostlyx to start with real financial numbers now."
             refreshOnSuccess={false}
             onImportComplete={({ hasRemainingIssues }) => {
               setHasUploadedData(true);
@@ -929,7 +929,7 @@ export function OnboardingFlow({
                 Import review
               </p>
               <h3 className="mt-3 text-xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)]">
-                Clean rows are already in Hostlyx.
+                Clean rows are already in GoHostlyx.
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
                 You can keep reviewing this file here, replace it, or move on. Upload is optional now,
@@ -972,7 +972,7 @@ export function OnboardingFlow({
 
     if (currentStep === 4) {
       const estimatedTaxPreview =
-        normalizedTaxRate > 0 ? `Hostlyx will set aside ${normalizedTaxRate}% of net profit.` : "No tax will be set aside.";
+        normalizedTaxRate > 0 ? `GoHostlyx will set aside ${normalizedTaxRate}% of net profit.` : "No tax will be set aside.";
 
       return (
         <section className="space-y-6">
@@ -1102,7 +1102,7 @@ export function OnboardingFlow({
     return (
       <section className="space-y-8">
         <div className="inline-flex rounded-full border border-emerald-400/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100">
-          Hostlyx is ready
+          GoHostlyx is ready
         </div>
 
         {renderValueMoment()}

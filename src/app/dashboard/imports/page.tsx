@@ -150,8 +150,8 @@ export default async function ImportsPage() {
           title={isSpanish ? "Backup y rastro de auditoría" : "Backup & Audit Trail"}
           subtitle={
             isSpanish
-              ? "Cada batch de abajo muestra en qué propiedad entró, cuándo cayó y qué tipo de capa de datos añadió dentro de Hostlyx."
-              : "Each batch below shows which property it entered, when it landed, and which data layer it added inside Hostlyx."
+              ? "Cada batch de abajo muestra en qué propiedad entró, cuándo cayó y qué tipo de capa de datos añadió dentro de GoHostlyx."
+              : "Each batch below shows which property it entered, when it landed, and which data layer it added inside GoHostlyx."
           }
         >
           <ImportsManager importSummaries={importSummaries} />

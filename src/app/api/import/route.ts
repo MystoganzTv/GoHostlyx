@@ -8,7 +8,7 @@ import {
   getCalendarEvents,
   getPropertyDefinitions,
 } from "@/lib/db";
-import { buildImportPreview, mapPreviewToHostlyxRecords } from "@/lib/import/importPipeline";
+import { buildImportPreview, mapPreviewToGoHostlyxRecords } from "@/lib/import/importPipeline";
 import type { ImportManualMapping, ImportRowResolution } from "@/lib/import/types";
 
 export const runtime = "nodejs";
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
     if (!(fileValue instanceof File) || fileValue.size <= 0) {
       return NextResponse.json(
-        { error: "Attach a valid Airbnb, Booking.com, or Hostlyx file first." },
+        { error: "Attach a valid Airbnb, Booking.com, or GoHostlyx file first." },
         { status: 400 },
       );
     }
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         manualMapping = JSON.parse(manualMappingValue) as ImportManualMapping;
       } catch {
         return NextResponse.json(
-          { error: "Hostlyx could not read the manual column mapping." },
+          { error: "GoHostlyx could not read the manual column mapping." },
           { status: 400 },
         );
       }
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         rowResolutions = JSON.parse(rowResolutionsValue) as ImportRowResolution[];
       } catch {
         return NextResponse.json(
-          { error: "Hostlyx could not read the row fixes from this import review." },
+          { error: "GoHostlyx could not read the row fixes from this import review." },
           { status: 400 },
         );
       }
@@ -119,8 +119,8 @@ export async function POST(request: Request) {
           error: preview.requiresManualMapping
             ? "We couldn’t fully recognize your file. Map your columns in a few seconds to continue."
             : preview.source === "financial_statement"
-            ? preview.blockMessage ?? "This payout statement still needs one more review before Hostlyx can import it."
-            : "This file needs attention before Hostlyx can import it.",
+            ? preview.blockMessage ?? "This payout statement still needs one more review before GoHostlyx can import it."
+            : "This file needs attention before GoHostlyx can import it.",
         },
         { status: 400 },
       );
@@ -185,7 +185,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const mapped = mapPreviewToHostlyxRecords(preview, targetPropertyName);
+    const mapped = mapPreviewToGoHostlyxRecords(preview, targetPropertyName);
 
     if (mapped.bookings.length === 0 && mapped.expenses.length === 0) {
       return NextResponse.json(

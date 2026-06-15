@@ -121,8 +121,8 @@ export default async function PayoutsPage({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Este espacio es para statements de payout de canal. Hostlyx los mantiene separados de reservas y gastos, y no los trata como depósitos bancarios reales."
-                  : "This space is for channel payout statements. Hostlyx keeps them separate from bookings and expenses, and does not treat them as real bank deposits."}
+                  ? "Este espacio es para statements de payout de canal. GoHostlyx los mantiene separados de reservas y gastos, y no los trata como depósitos bancarios reales."
+                  : "This space is for channel payout statements. GoHostlyx keeps them separate from bookings and expenses, and does not treat them as real bank deposits."}
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <ReconcileStatementLauncher properties={properties} />

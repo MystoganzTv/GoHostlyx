@@ -3,8 +3,8 @@ import { LegalPageShell } from "@/components/legal-page-shell";
 import { getRequestLocale } from "@/lib/server-locale";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Hostlyx",
-  description: "Privacy Policy for Hostlyx.",
+  title: "Privacy Policy | GoHostlyx",
+  description: "Privacy Policy for GoHostlyx.",
 };
 
 export default async function PrivacyPage() {
@@ -18,8 +18,8 @@ export default async function PrivacyPage() {
       title={isSpanish ? "Política de privacidad" : "Privacy Policy"}
       description={
         isSpanish
-          ? "Esta página explica qué información recopila Hostlyx, cómo se usa y cómo se tratan los datos de facturación y reporting."
-          : "This page explains what information Hostlyx collects, how it is used, and how billing and reporting data are handled."
+          ? "Esta página explica qué información recopila GoHostlyx, cómo se usa y cómo se tratan los datos de facturación y reporting."
+          : "This page explains what information GoHostlyx collects, how it is used, and how billing and reporting data are handled."
       }
     >
       <section>
@@ -28,8 +28,8 @@ export default async function PrivacyPage() {
         </h2>
         <p className="mt-3">
           {isSpanish
-            ? "Hostlyx almacena datos de la cuenta, reservas y gastos subidos, ajustes del workspace y registros de suscripción necesarios para operar el producto. Los datos de pago los procesa Stripe y no los guarda directamente Hostlyx."
-            : "Hostlyx stores account details, uploaded booking and expense data, workspace settings, and subscription records needed to run the product. Payment details are processed by Stripe and are not stored directly by Hostlyx."}
+            ? "GoHostlyx almacena datos de la cuenta, reservas y gastos subidos, ajustes del workspace y registros de suscripción necesarios para operar el producto. Los datos de pago los procesa Stripe y no los guarda directamente GoHostlyx."
+            : "GoHostlyx stores account details, uploaded booking and expense data, workspace settings, and subscription records needed to run the product. Payment details are processed by Stripe and are not stored directly by GoHostlyx."}
         </p>
       </section>
 
@@ -50,8 +50,8 @@ export default async function PrivacyPage() {
         </h2>
         <p className="mt-3">
           {isSpanish
-            ? "Hostlyx se apoya en proveedores de infraestructura externos como Netlify, servicios de base de datos, proveedores de autenticación y Stripe para la facturación. Solo compartimos información con esos servicios cuando hace falta para operar la plataforma."
-            : "Hostlyx relies on third-party infrastructure providers such as Netlify, database services, authentication providers, and Stripe for billing. We only share information with those services when needed to operate the platform."}
+            ? "GoHostlyx se apoya en proveedores de infraestructura externos como Vercel, servicios de base de datos, proveedores de autenticación y Stripe para la facturación. Solo compartimos información con esos servicios cuando hace falta para operar la plataforma."
+            : "GoHostlyx relies on third-party infrastructure providers such as Vercel, database services, authentication providers, and Stripe for billing. We only share information with those services when needed to operate the platform."}
         </p>
       </section>
 

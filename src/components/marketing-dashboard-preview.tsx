@@ -88,7 +88,7 @@ export function MarketingDashboardPreview({
               H
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Hostlyx</p>
+              <p className="text-sm font-semibold text-white">GoHostlyx</p>
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Profit OS</p>
             </div>
           </div>

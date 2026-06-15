@@ -58,14 +58,14 @@ export async function POST(request: Request) {
   }
 
   const resendApiKey = process.env.RESEND_API_KEY;
-  const contactRecipient = process.env.CONTACT_FORM_TO_EMAIL ?? "hello@hostlyx.com";
-  const fromEmail = process.env.CONTACT_FORM_FROM_EMAIL ?? "Hostlyx <onboarding@resend.dev>";
+  const contactRecipient = process.env.CONTACT_FORM_TO_EMAIL ?? "hello@gohostlyx.com";
+  const fromEmail = process.env.CONTACT_FORM_FROM_EMAIL ?? "GoHostlyx <onboarding@resend.dev>";
 
   if (!resendApiKey) {
     return NextResponse.json(
       {
         error:
-          "Contact email is not configured yet. Please write directly to hello@hostlyx.com for now.",
+          "Contact email is not configured yet. Please write directly to hello@gohostlyx.com for now.",
       },
       { status: 503 },
     );
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
 
   const html = `
     <div style="font-family: Inter, Arial, sans-serif; color: #0f172a; line-height: 1.6;">
-      <h2 style="margin-bottom: 16px;">New Hostlyx contact request</h2>
+      <h2 style="margin-bottom: 16px;">New GoHostlyx contact request</h2>
       <p><strong>Name:</strong> ${escapeHtml(name)}</p>
       <p><strong>Email:</strong> ${escapeHtml(email)}</p>
       <p><strong>Topic:</strong> ${escapeHtml(topic)}</p>
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
   `;
 
   const text = [
-    "New Hostlyx contact request",
+    "New GoHostlyx contact request",
     "",
     `Name: ${name}`,
     `Email: ${email}`,
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
       from: fromEmail,
       to: [contactRecipient],
       reply_to: email,
-      subject: `Hostlyx contact: ${topic}`,
+      subject: `GoHostlyx contact: ${topic}`,
       html,
       text,
     }),
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Hostlyx could not send your message right now. Please try again or email hello@hostlyx.com directly.",
+          "GoHostlyx could not send your message right now. Please try again or email hello@gohostlyx.com directly.",
       },
       { status: 502 },
     );

@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
     if (!isEmailAllowed(email)) {
       return NextResponse.json(
-        { error: "This email is not approved for this Hostlyx workspace." },
+        { error: "This email is not approved for this GoHostlyx workspace." },
         { status: 403 },
       );
     }

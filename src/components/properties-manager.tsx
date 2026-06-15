@@ -659,11 +659,11 @@ export function PropertiesManager({
           <div className="space-y-5">
             <div className="rounded-[22px] border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-700">
               {properties.length === 1
-                ? "This is your last property. Deleting it will also erase every linked import, booking, and expense, and the rest of Hostlyx will stay locked until you create a new property."
+                ? "This is your last property. Deleting it will also erase every linked import, booking, and expense, and the rest of GoHostlyx will stay locked until you create a new property."
                 : propertyToDelete.bookings > 0 ||
                     propertyToDelete.expenses > 0 ||
                     propertyToDelete.importsCount > 0
-                  ? "This property has linked workbook imports and accounting data. If you continue, Hostlyx will permanently delete everything tied to this property."
+                  ? "This property has linked workbook imports and accounting data. If you continue, GoHostlyx will permanently delete everything tied to this property."
                   : "This will delete the property and any saved listings under it."}
             </div>
 
