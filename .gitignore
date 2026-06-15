@@ -41,3 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# iCloud Drive duplicate artifacts (e.g. "routes.d 2.ts")
+* 2.*
+* 2/

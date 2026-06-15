@@ -1,11 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { ArrowUpFromLine } from "lucide-react";
 import { Modal } from "@/components/modal";
 import { useLocale } from "@/components/locale-provider";
-import { UploadPanel } from "@/components/upload-panel";
 import type { PropertyDefinition } from "@/lib/types";
+
+// Lazy-load the heavy upload panel; only needed when the modal opens.
+const UploadPanel = dynamic(
+  () => import("@/components/upload-panel").then((m) => m.UploadPanel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center p-10 text-[var(--workspace-muted)]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      </div>
+    ),
+  },
+);
 
 export function ReconcileStatementLauncher({
   properties,

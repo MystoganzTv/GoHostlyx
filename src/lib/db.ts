@@ -28,6 +28,21 @@ import type {
   SubscriptionStatus,
   UserSettings,
 } from "./types";
+import type {
+  MemoryStore,
+  StoredAuthUser,
+  StoredBooking,
+  StoredCalendarClosure,
+  StoredCalendarEvent,
+  StoredExpense,
+  StoredFinancialDocument,
+  StoredIcalFeed,
+  StoredImport,
+  StoredProperty,
+  StoredPropertyUnit,
+  StoredSubscription,
+  StoredUserSettings,
+} from "./db-types";
 import { isAdminOwnerEmail } from "./admin";
 import { normalizeExpenseFields } from "./expense-normalization";
 import {
@@ -44,103 +59,6 @@ import { getDefaultTaxRateByCountry, normalizeTaxRate } from "./tax";
 
 type SQLiteDatabase = import("better-sqlite3").Database;
 type SQLiteModule = typeof import("better-sqlite3");
-
-type StoredImport = ImportSummary & {
-  ownerEmail: string;
-  workbookHash: string;
-};
-
-type StoredBooking = Required<BookingRecord> & {
-  ownerEmail: string;
-};
-
-type StoredCalendarEvent = Required<CalendarEventRecord> & {
-  ownerEmail: string;
-};
-
-type StoredIcalFeed = Required<Omit<IcalFeedRecord, "lastSyncedAt" | "lastError">> & {
-  ownerEmail: string;
-  lastSyncedAt: string | null;
-  lastError: string | null;
-};
-
-type StoredExpense = Required<ExpenseRecord> & {
-  ownerEmail: string;
-};
-
-type StoredCalendarClosure = Required<CalendarClosureRecord> & {
-  ownerEmail: string;
-};
-
-type StoredFinancialDocument = Required<FinancialDocumentRecord> & {
-  ownerEmail: string;
-};
-
-type StoredUserSettings = UserSettings & {
-  ownerEmail: string;
-};
-
-type StoredAuthUser = {
-  ownerEmail: string;
-  fullName: string;
-  passwordHash: string;
-  isVerified: boolean;
-  verificationCodeHash: string | null;
-  verificationExpiresAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type StoredSubscription = {
-  ownerEmail: string;
-  plan: SubscriptionPlan;
-  status: SubscriptionStatus;
-  trialStartedAt: string;
-  trialEndsAt: string;
-  activatedAt: string | null;
-  updatedAt: string;
-  stripeCustomerId: string | null;
-  stripeSubscriptionId: string | null;
-  stripePriceId: string | null;
-};
-
-type StoredProperty = {
-  id: number;
-  ownerEmail: string;
-  name: string;
-  countryCode: CountryCode;
-};
-
-type StoredPropertyUnit = {
-  id: number;
-  propertyId: number;
-  ownerEmail: string;
-  name: string;
-};
-
-type MemoryStore = {
-  nextImportId: number;
-  nextBookingId: number;
-  nextExpenseId: number;
-  nextClosureId: number;
-  nextCalendarEventId: number;
-  nextIcalFeedId: number;
-  nextFinancialDocumentId: number;
-  nextPropertyId: number;
-  nextPropertyUnitId: number;
-  imports: StoredImport[];
-  bookings: StoredBooking[];
-  expenses: StoredExpense[];
-  closures: StoredCalendarClosure[];
-  calendarEvents: StoredCalendarEvent[];
-  icalFeeds: StoredIcalFeed[];
-  financialDocuments: StoredFinancialDocument[];
-  settings: StoredUserSettings[];
-  authUsers: StoredAuthUser[];
-  subscriptions: StoredSubscription[];
-  properties: StoredProperty[];
-  propertyUnits: StoredPropertyUnit[];
-};
 
 const require = createRequire(import.meta.url);
 

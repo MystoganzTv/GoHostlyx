@@ -1,13 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { ArrowUpFromLine } from "lucide-react";
 import type { PropertyDefinition } from "@/lib/types";
 import { Modal } from "@/components/modal";
 import { useLocale } from "@/components/locale-provider";
 import { ReconcileStatementLauncher } from "@/components/reconcile-statement-launcher";
 import { SectionCard } from "@/components/section-card";
-import { UploadPanel } from "@/components/upload-panel";
+
+// Lazy-load the heavy upload panel: it only renders inside the modal, so it
+// should not ship in the initial bundle.
+const UploadPanel = dynamic(
+  () => import("@/components/upload-panel").then((m) => m.UploadPanel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center p-10 text-[var(--workspace-muted)]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      </div>
+    ),
+  },
+);
 
 export function ImportCenterLauncher({
   properties,

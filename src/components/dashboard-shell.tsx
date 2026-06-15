@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   ArrowDownRight,
@@ -32,8 +33,20 @@ import { Modal } from "@/components/modal";
 import { ReconcileSummaryCard } from "@/components/reconcile-panel";
 import { getReconcileSidebarBadge } from "@/lib/reconcile";
 import { SectionCard } from "@/components/section-card";
-import { UploadPanel } from "@/components/upload-panel";
 import { WorkspaceShell } from "@/components/workspace-shell";
+
+// Lazy-load the heavy upload panel; it only renders inside a modal.
+const UploadPanel = dynamic(
+  () => import("@/components/upload-panel").then((m) => m.UploadPanel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center p-10 text-[var(--workspace-muted)]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      </div>
+    ),
+  },
+);
 
 type DashboardShellProps = {
   view: DashboardView;
