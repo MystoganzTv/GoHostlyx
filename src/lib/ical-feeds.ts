@@ -1,3 +1,5 @@
+import { lookup } from "node:dns/promises";
+import { isIP } from "node:net";
 import {
   getIcalFeedById,
   getIcalFeeds,
@@ -12,6 +14,60 @@ const DEFAULT_AUTO_SYNC_AGE_MS = 1000 * 60 * 30;
 
 function isValidFeedProtocol(url: URL) {
   return url.protocol === "http:" || url.protocol === "https:";
+}
+
+// Block requests aimed at private, loopback, link-local or cloud-metadata
+// addresses to prevent server-side request forgery (SSRF) through feed URLs.
+function isBlockedIpAddress(address: string) {
+  const value = address.trim().toLowerCase();
+
+  if (
+    value === "::1" ||
+    value === "::" ||
+    value.startsWith("fc") ||
+    value.startsWith("fd") ||
+    value.startsWith("fe80") ||
+    value.startsWith("::ffff:")
+  ) {
+    return true;
+  }
+
+  const parts = value.split(".").map((part) => Number(part));
+  if (parts.length === 4 && parts.every((part) => Number.isInteger(part) && part >= 0 && part <= 255)) {
+    const [a, b] = parts;
+    if (a === 0 || a === 10 || a === 127) return true; // this-host, private, loopback
+    if (a === 169 && b === 254) return true; // link-local + cloud metadata (169.254.169.254)
+    if (a === 172 && b >= 16 && b <= 31) return true; // private
+    if (a === 192 && b === 168) return true; // private
+    if (a >= 224) return true; // multicast / reserved
+  }
+
+  return false;
+}
+
+async function assertSafeFeedHost(url: URL) {
+  const host = url.hostname.replace(/^\[|\]$/g, "");
+
+  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".internal")) {
+    throw new Error("That iCal URL points to a non-public address.");
+  }
+
+  if (isIP(host)) {
+    if (isBlockedIpAddress(host)) {
+      throw new Error("That iCal URL points to a non-public address.");
+    }
+    return;
+  }
+
+  // Resolve the hostname and reject if it maps to a private/loopback target.
+  const resolved = await lookup(host, { all: true }).catch(() => []);
+  if (resolved.length === 0) {
+    throw new Error("GoHostlyx could not resolve that iCal host.");
+  }
+
+  if (resolved.some((entry) => isBlockedIpAddress(entry.address))) {
+    throw new Error("That iCal URL points to a non-public address.");
+  }
 }
 
 export function validateIcalFeedUrl(value: string) {
@@ -37,8 +93,11 @@ export function validateIcalFeedUrl(value: string) {
 }
 
 async function fetchIcalText(feedUrl: string) {
+  await assertSafeFeedHost(new URL(feedUrl));
+
   const response = await fetch(feedUrl, {
     cache: "no-store",
+    redirect: "error",
     headers: {
       Accept: "text/calendar,text/plain;q=0.9,*/*;q=0.8",
     },

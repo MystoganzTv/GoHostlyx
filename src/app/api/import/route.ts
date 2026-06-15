@@ -13,6 +13,8 @@ import type { ImportManualMapping, ImportRowResolution } from "@/lib/import/type
 
 export const runtime = "nodejs";
 
+const MAX_IMPORT_FILE_BYTES = 15 * 1024 * 1024; // 15 MB
+
 export async function POST(request: Request) {
   try {
     const ownerEmail = await requireUserEmail();
@@ -39,6 +41,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Only CSV or Excel files are supported for import preview." },
         { status: 400 },
+      );
+    }
+
+    if (fileValue.size > MAX_IMPORT_FILE_BYTES) {
+      return NextResponse.json(
+        { error: "That file is too large. Imports are limited to 15 MB." },
+        { status: 413 },
       );
     }
 
