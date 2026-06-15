@@ -24,36 +24,22 @@ export function BrandLogo({
           fill="none"
         >
           <path
-            d="M14 30L32 16L50 30"
+            d="M13 30L32 15L51 30"
             stroke="rgba(216,251,245,0.96)"
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
           <path
-            d="M19 29V45C19 47.2 20.8 49 23 49H41C43.2 49 45 47.2 45 45V29"
-            stroke="rgba(88,196,182,0.98)"
+            d="M18 30V46C18 48.2 19.8 50 22 50H42C44.2 50 46 48.2 46 46V30"
+            stroke="rgba(216,251,245,0.9)"
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <path
-            d="M27 49V39C27 37.3 28.3 36 30 36H34C35.7 36 37 37.3 37 39V49"
-            stroke="rgba(216,251,245,0.9)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M32 24L36 28L32 32L28 28L32 24Z"
-            stroke="rgba(216,251,245,0.9)"
-            strokeWidth="2.4"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M47 15L48.1 18.1L51.2 19.2L48.1 20.3L47 23.4L45.9 20.3L42.8 19.2L45.9 18.1L47 15Z"
-            fill="rgba(216,251,245,0.96)"
-          />
+          <rect x="23" y="40" width="5" height="8" rx="1.6" fill="rgba(88,196,182,0.98)" />
+          <rect x="29.5" y="36" width="5" height="12" rx="1.6" fill="rgba(88,196,182,0.98)" />
+          <rect x="36" y="31.5" width="5" height="16.5" rx="1.6" fill="rgba(216,251,245,0.96)" />
         </svg>
       </span>
 
