@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Manrope } from "next/font/google";
+import { Outfit } from "next/font/google";
 import { LocaleProvider } from "@/components/locale-provider";
 import { getRequestLocale } from "@/lib/server-locale";
 import "./globals.css";
@@ -7,15 +7,9 @@ import "./globals.css";
 const defaultSiteUrl = "https://gohostlyx.vercel.app";
 const siteUrl = process.env.NEXTAUTH_URL ?? defaultSiteUrl;
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -52,7 +46,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${manrope.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      className={`${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
