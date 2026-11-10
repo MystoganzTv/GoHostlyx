@@ -111,6 +111,17 @@ async function upsertStoredSubscription(nextSubscription: StoredSubscription) {
 
 }
 
+/** Tables that reference a property by its name (property_name column). */
+const propertyNamedTables = [
+  "bookings",
+  "expenses",
+  "imports",
+  "calendar_closures",
+  "calendar_events",
+  "ical_feeds",
+  "financial_documents",
+] as const;
+
 async function syncPropertyDefinitionsFromRecords(ownerEmail: string) {
   await ensureDatabase();
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
@@ -1461,27 +1472,32 @@ export async function updatePropertyDefinition({
     throw new Error("That property already exists.");
   }
 
-  await pool.query(
-    "UPDATE properties SET name = $1, country_code = $2 WHERE id = $3 AND owner_email = $4",
-    [normalizedName, normalizedCountryCode, propertyId, normalizedEmail],
-  );
-  await pool.query(
-    "UPDATE bookings SET property_name = $1 WHERE owner_email = $2 AND property_name = $3",
-    [normalizedName, normalizedEmail, currentName],
-  );
-  await pool.query(
-    "UPDATE expenses SET property_name = $1 WHERE owner_email = $2 AND property_name = $3",
-    [normalizedName, normalizedEmail, currentName],
-  );
-  await pool.query(
-    "UPDATE calendar_events SET property_name = $1 WHERE owner_email = $2 AND property_name = $3",
-    [normalizedName, normalizedEmail, currentName],
-  );
-  await pool.query(
-    "UPDATE ical_feeds SET property_name = $1 WHERE owner_email = $2 AND property_name = $3",
-    [normalizedName, normalizedEmail, currentName],
-  );
+  // Every table that stores the property by name has to follow the rename.
+  // Missing one (imports used to be missed) leaves rows under the old name, and
+  // syncPropertyDefinitionsFromRecords then recreates the old property from them.
+  const client = await pool.connect();
 
+  try {
+    await client.query("BEGIN");
+    await client.query(
+      "UPDATE properties SET name = $1, country_code = $2 WHERE id = $3 AND owner_email = $4",
+      [normalizedName, normalizedCountryCode, propertyId, normalizedEmail],
+    );
+
+    for (const table of propertyNamedTables) {
+      await client.query(
+        `UPDATE ${table} SET property_name = $1 WHERE owner_email = $2 AND LOWER(TRIM(property_name)) = LOWER(TRIM($3))`,
+        [normalizedName, normalizedEmail, currentName],
+      );
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export async function deletePropertyDefinition({
@@ -1513,27 +1529,27 @@ export async function deletePropertyDefinition({
   const propertyName = String(getRowValue(propertyRow, "name"));
   const [bookingUsage, expenseUsage, importUsage, closureUsage, eventUsage, feedUsage] = await Promise.all([
     pool.query(
-      "SELECT COUNT(*) AS count FROM bookings WHERE owner_email = $1 AND property_name = $2",
+      "SELECT COUNT(*) AS count FROM bookings WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
       [normalizedEmail, propertyName],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM expenses WHERE owner_email = $1 AND property_name = $2",
+      "SELECT COUNT(*) AS count FROM expenses WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
       [normalizedEmail, propertyName],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM imports WHERE owner_email = $1 AND property_name = $2",
+      "SELECT COUNT(*) AS count FROM imports WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
       [normalizedEmail, propertyName],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM calendar_closures WHERE owner_email = $1 AND property_name = $2",
+      "SELECT COUNT(*) AS count FROM calendar_closures WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
       [normalizedEmail, propertyName],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM calendar_events WHERE owner_email = $1 AND property_name = $2",
+      "SELECT COUNT(*) AS count FROM calendar_events WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
       [normalizedEmail, propertyName],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM ical_feeds WHERE owner_email = $1 AND property_name = $2 AND is_active = TRUE",
+      "SELECT COUNT(*) AS count FROM ical_feeds WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2)) AND is_active = TRUE",
       [normalizedEmail, propertyName],
     ),
   ]);
@@ -1564,53 +1580,37 @@ export async function deletePropertyDefinition({
     throw new Error("This property still has linked imports, bookings, closed days, calendar feeds, or expenses. Confirm destructive delete to remove everything tied to it.");
   }
 
-  await pool.query("BEGIN");
+  // BEGIN/COMMIT must run on one connection: on the pool each query can land
+  // on a different client, which made this "transaction" a no-op.
+  const client = await pool.connect();
 
   try {
+    await client.query("BEGIN");
+
     if (deleteLinkedData) {
-      await pool.query(
-        "DELETE FROM bookings WHERE owner_email = $1 AND property_name = $2",
-        [normalizedEmail, propertyName],
-      );
-    await pool.query(
-      "DELETE FROM expenses WHERE owner_email = $1 AND property_name = $2",
-      [normalizedEmail, propertyName],
-    );
-    await pool.query(
-      "DELETE FROM calendar_closures WHERE owner_email = $1 AND property_name = $2",
-      [normalizedEmail, propertyName],
-    );
-    await pool.query(
-      "DELETE FROM financial_documents WHERE owner_email = $1 AND property_name = $2",
-      [normalizedEmail, propertyName],
-    );
-    await pool.query(
-      "DELETE FROM calendar_events WHERE owner_email = $1 AND property_name = $2",
-      [normalizedEmail, propertyName],
-    );
-    await pool.query(
-      "DELETE FROM ical_feeds WHERE owner_email = $1 AND property_name = $2",
-      [normalizedEmail, propertyName],
-    );
-    await pool.query(
-      "DELETE FROM imports WHERE owner_email = $1 AND property_name = $2",
-      [normalizedEmail, propertyName],
-      );
+      for (const table of propertyNamedTables) {
+        await client.query(
+          `DELETE FROM ${table} WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))`,
+          [normalizedEmail, propertyName],
+        );
+      }
     }
 
-    await pool.query("DELETE FROM property_units WHERE property_id = $1 AND owner_email = $2", [
+    await client.query("DELETE FROM property_units WHERE property_id = $1 AND owner_email = $2", [
       propertyId,
       normalizedEmail,
     ]);
-    await pool.query("DELETE FROM properties WHERE id = $1 AND owner_email = $2", [
+    await client.query("DELETE FROM properties WHERE id = $1 AND owner_email = $2", [
       propertyId,
       normalizedEmail,
     ]);
 
-    await pool.query("COMMIT");
+    await client.query("COMMIT");
   } catch (error) {
-    await pool.query("ROLLBACK");
+    await client.query("ROLLBACK");
     throw error;
+  } finally {
+    client.release();
   }
 
   return {

@@ -663,7 +663,11 @@ export function PropertiesManager({
                 : propertyToDelete.bookings > 0 ||
                     propertyToDelete.expenses > 0 ||
                     propertyToDelete.importsCount > 0
-                  ? "This property has linked workbook imports and accounting data. If you continue, GoHostlyx will permanently delete everything tied to this property."
+                  ? `This will permanently delete ${propertyToDelete.importsCount} import${propertyToDelete.importsCount === 1 ? "" : "s"}${
+                      propertyToDelete.lastImportFileName ? ` (latest: ${propertyToDelete.lastImportFileName})` : ""
+                    }, ${propertyToDelete.bookings} booking${propertyToDelete.bookings === 1 ? "" : "s"} and ${propertyToDelete.expenses} expense${
+                      propertyToDelete.expenses === 1 ? "" : "s"
+                    } tied to this property. This cannot be undone.`
                   : "This will delete the property and any saved listings under it."}
             </div>
 
