@@ -15,8 +15,8 @@ import { getAuthSession } from "@/lib/auth";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { MarketingHeader } from "@/components/marketing-header";
 import { getRequestLocale } from "@/lib/server-locale";
+import { getPricingPlans } from "@/lib/pricing-plans";
 
-const hostInitials = ["AR", "MS", "JP", "LC"];
 const chartBars = [38, 52, 46, 63, 57, 82];
 
 function getLandingCollections(isSpanish: boolean) {
@@ -74,61 +74,7 @@ function getLandingCollections(isSpanish: boolean) {
         { icon: TrendingDown, title: "Operating flow", description: "Understand payouts, expenses, and the net movement of the business." },
       ];
 
-  const pricingPlans = isSpanish
-    ? [
-        {
-          name: "Starter",
-          tagline: "Para una propiedad",
-          price: 19,
-          description: "Un punto de partida sencillo para hosts que quieren claridad sin complejidad.",
-          features: ["1 propiedad", "Importación Excel", "Dashboard completo", "Estimación fiscal"],
-          highlighted: false,
-        },
-        {
-          name: "Pro",
-          tagline: "Para operadores en crecimiento",
-          price: 49,
-          description: "La mejor opción para hosts con más de una propiedad que quieren más visibilidad.",
-          features: ["Múltiples propiedades", "Informes avanzados", "Insights de rendimiento", "Soporte prioritario"],
-          highlighted: true,
-          badge: "Más popular",
-        },
-        {
-          name: "Portfolio",
-          tagline: "Para carteras grandes",
-          price: 99,
-          description: "Para operadores que necesitan escala, analítica profunda y más de un usuario.",
-          features: ["Propiedades ilimitadas", "Analítica avanzada", "Funciones de equipo", "Acceso API"],
-          highlighted: false,
-        },
-      ]
-    : [
-        {
-          name: "Starter",
-          tagline: "For one property",
-          price: 19,
-          description: "A simple starting point for hosts who want clarity without extra complexity.",
-          features: ["1 property", "Excel import", "Full dashboard", "Tax estimate"],
-          highlighted: false,
-        },
-        {
-          name: "Pro",
-          tagline: "For growing operators",
-          price: 49,
-          description: "The best option for hosts managing more than one property who need more visibility.",
-          features: ["Multiple properties", "Advanced reports", "Performance insights", "Priority support"],
-          highlighted: true,
-          badge: "Most popular",
-        },
-        {
-          name: "Portfolio",
-          tagline: "For large portfolios",
-          price: 99,
-          description: "Built for operators who need scale, deeper analytics, and more than one user.",
-          features: ["Unlimited properties", "Advanced analytics", "Team features", "API access"],
-          highlighted: false,
-        },
-      ];
+  const pricingPlans = getPricingPlans(isSpanish);
 
   return { valueProps, features, pricingPlans };
 }
@@ -199,6 +145,18 @@ export default async function LandingPage() {
   const { valueProps, features, pricingPlans } = getLandingCollections(isSpanish);
   const dashboardHref = signedIn ? "/dashboard" : "/login";
 
+  const steps = isSpanish
+    ? [
+        { title: "Importa", description: "Sube la exportación de Airbnb o Booking.com, un Excel o conecta el calendario iCal de cada anuncio." },
+        { title: "Revisa", description: "GoHostlyx detecta reservas duplicadas, ordena los gastos y compara lo que esperabas cobrar con lo que te pagaron." },
+        { title: "Decide", description: "Ve cuánto te queda después de comisiones, gastos e impuestos, por propiedad y por canal." },
+      ]
+    : [
+        { title: "Import", description: "Upload your Airbnb or Booking.com export or an Excel file, or connect each listing's iCal calendar." },
+        { title: "Review", description: "GoHostlyx flags duplicate bookings, sorts your expenses and compares expected payouts with what you were paid." },
+        { title: "Decide", description: "See what you keep after fees, expenses and taxes, by property and by channel." },
+      ];
+
   const ctaBullets = isSpanish
     ? ["Sin tarjeta de crédito", "Configura en minutos", "Importa desde Airbnb y Booking"]
     : ["No credit card required", "Set up in minutes", "Import from Airbnb and Booking"];
@@ -214,7 +172,7 @@ export default async function LandingPage() {
             <div className="absolute -right-32 -top-24 h-[28rem] w-[28rem] rounded-full bg-[var(--accent-soft)] blur-3xl" />
           </div>
 
-          <div className="relative mx-auto grid w-full max-w-6xl items-center gap-14 px-5 pb-20 pt-16 sm:px-6 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:pb-28">
+          <div className="relative mx-auto grid w-full max-w-6xl items-center gap-14 px-5 pb-10 pt-16 sm:px-6 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:pb-14">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" aria-hidden="true" />
@@ -250,29 +208,23 @@ export default async function LandingPage() {
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
                 <Link
-                  href="#preview"
+                  href="#solution"
                   className="brand-button-secondary inline-flex items-center justify-center gap-2 rounded-2xl px-7 py-3.5 text-base font-semibold transition"
                 >
                   {isSpanish ? "Ver cómo funciona" : "See how it works"}
                 </Link>
               </div>
 
-              <div className="mt-10 flex items-center gap-4">
-                <div className="flex -space-x-2">
-                  {hostInitials.map((initials) => (
-                    <span
-                      key={initials}
-                      aria-hidden="true"
-                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--background)] bg-[linear-gradient(180deg,rgba(88,196,182,0.32)_0%,rgba(12,23,39,0.92)_100%)] text-[10px] font-semibold tracking-[0.1em] text-slate-100"
-                    >
-                      {initials}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-slate-400">
-                  {isSpanish ? "Usado por más de 200 hosts en España" : "Used by 200+ hosts in Spain"}
-                </p>
-              </div>
+              <p className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-400">
+                <span className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                  {isSpanish ? "7 días gratis" : "7-day free trial"}
+                </span>
+                <span className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[var(--accent)]" aria-hidden="true" />
+                  {isSpanish ? "Sin tarjeta de crédito" : "No credit card required"}
+                </span>
+              </p>
             </div>
 
             <div className="lg:pl-4">
@@ -281,7 +233,7 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
+        <section id="problem" className="scroll-mt-24 mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
           <div className="max-w-2xl">
             <Eyebrow>{isSpanish ? "El problema" : "The problem"}</Eyebrow>
             <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -308,43 +260,28 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        <section id="preview" className="relative overflow-hidden py-20 sm:py-24">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-soft)] opacity-60 blur-3xl"
-          />
-          <div className="relative mx-auto w-full max-w-6xl px-5 sm:px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <Eyebrow>{isSpanish ? "La solución" : "The solution"}</Eyebrow>
-              <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                {isSpanish ? "Lo único que importa: lo que te quedas" : "The only thing that matters: what you keep"}
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-pretty text-lg leading-8 text-slate-300">
-                {isSpanish
-                  ? "Sube tu Excel y en minutos ves tu beneficio real, tus gastos y por qué tu dinero no siempre coincide."
-                  : "Upload your Excel and in minutes see your real profit, your expenses, and why your money never quite matches."}
-              </p>
-            </div>
-
-            <div className="mx-auto mt-12 max-w-3xl overflow-hidden rounded-[28px] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(17,28,44,0.7)_0%,rgba(11,22,37,0.85)_100%)] shadow-[0_30px_80px_rgba(2,6,23,0.35)]">
-              <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-3">
-                <span className="flex gap-1.5" aria-hidden="true">
-                  <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                </span>
-                <span className="mx-auto rounded-lg bg-white/[0.05] px-4 py-1 text-xs text-slate-400">
-                  gohostlyx.vercel.app/dashboard
-                </span>
-              </div>
-              <div className="p-4 sm:p-6">
-                <ProfitPreview isSpanish={isSpanish} />
-              </div>
-            </div>
+        <section id="solution" className="scroll-mt-24 mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
+          <div className="max-w-2xl">
+            <Eyebrow>{isSpanish ? "Cómo funciona" : "How it works"}</Eyebrow>
+            <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              {isSpanish ? "De exportación a beneficio real en tres pasos" : "From export to real profit in three steps"}
+            </h2>
           </div>
+
+          <ol className="mt-12 grid gap-4 md:grid-cols-3">
+            {steps.map((step, index) => (
+              <li key={step.title} className="rounded-3xl border border-white/[0.08] bg-white/[0.025] p-6">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-sm font-bold text-[var(--accent-contrast)]">
+                  {index + 1}
+                </span>
+                <h3 className="mt-5 text-lg font-semibold text-white">{step.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-400">{step.description}</p>
+              </li>
+            ))}
+          </ol>
         </section>
 
-        <section id="features" className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
+        <section id="features" className="scroll-mt-24 mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
           <div className="max-w-2xl">
             <Eyebrow>{isSpanish ? "Funcionalidades" : "Features"}</Eyebrow>
             <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -371,7 +308,7 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
+        <section id="pricing" className="scroll-mt-24 mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <Eyebrow>{isSpanish ? "Precios" : "Pricing"}</Eyebrow>
             <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">

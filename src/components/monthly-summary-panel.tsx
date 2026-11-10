@@ -146,8 +146,8 @@ export function MonthlySummaryPanel({
         >
           <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
             {isSpanish
-              ? "`All markets` mezcla monedas reales, así que GoHostlyx solo muestra aquí datos mensuales no monetarios hasta que elijas un mercado."
-              : "`All markets` mixes real currencies, so GoHostlyx only shows non-monetary monthly data here until you choose one market."}
+              ? "“All markets” mezcla monedas reales, así que GoHostlyx solo muestra aquí datos mensuales no monetarios hasta que elijas un mercado."
+              : "“All markets” mixes real currencies, so GoHostlyx only shows non-monetary monthly data here until you choose one market."}
           </div>
         </SectionCard>
       ) : null}

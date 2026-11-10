@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { isAdminOwnerEmail } from "@/lib/admin";
 import { requireUserEmail } from "@/lib/auth";
@@ -51,7 +52,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The admin action could not be completed.",
+          clientErrorMessage(error, "The admin action could not be completed."),
       },
       { status: 400 },
     );
@@ -80,7 +81,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The user could not be deleted.",
+          clientErrorMessage(error, "The user could not be deleted."),
       },
       { status: 400 },
     );

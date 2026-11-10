@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { getAuthSession, requireUserEmail } from "@/lib/auth";
 import {
@@ -136,9 +137,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The subscription checkout could not be created.",
+          clientErrorMessage(error, "The subscription checkout could not be created."),
       },
       { status: 400 },
     );

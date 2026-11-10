@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireApiAccess } from "@/lib/access";
 import { deletePropertyDefinition, updatePropertyDefinition } from "@/lib/db";
@@ -42,7 +43,7 @@ export async function PATCH(
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The property could not be updated.",
+          clientErrorMessage(error, "The property could not be updated."),
       },
       { status: 400 },
     );
@@ -89,7 +90,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The property could not be deleted.",
+          clientErrorMessage(error, "The property could not be deleted."),
       },
       { status: 400 },
     );

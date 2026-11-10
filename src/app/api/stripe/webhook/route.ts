@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import {
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Invalid Stripe signature." },
+      { error: clientErrorMessage(error, "Invalid Stripe signature.") },
       { status: 400 },
     );
   }

@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireUserEmail } from "@/lib/auth";
 import { getUserSettings, upsertUserSettings } from "@/lib/db";
@@ -36,9 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The tax estimation settings could not be saved.",
+          clientErrorMessage(error, "The tax estimation settings could not be saved."),
       },
       { status: 400 },
     );

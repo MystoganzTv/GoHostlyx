@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { getAuthUserByEmail, markAuthUserVerified } from "@/lib/db";
 import { hashVerificationCode } from "@/lib/email-verification";
@@ -84,9 +85,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The verification could not be completed.",
+          clientErrorMessage(error, "The verification could not be completed."),
       },
       { status: 400 },
     );

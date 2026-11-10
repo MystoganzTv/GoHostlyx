@@ -114,11 +114,11 @@ export default async function BookingsPage({
       <div className="space-y-6">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <SectionCard
-            title={isSpanish ? "Entrada principal" : "Primary entry point"}
+            title={isSpanish ? "Importar desde archivo" : "Import from a file"}
             subtitle={
               isSpanish
-                ? "Si tu archivo es mayormente de reservas, empieza aquí. Import Center se queda como historial y control."
-                : "If your file is mostly bookings, start here. Import Center stays as history and control."
+                ? "Sube la exportación de Airbnb o Booking.com. Verás una vista previa antes de guardar nada."
+                : "Upload your Airbnb or Booking.com export. You will see a preview before anything is saved."
             }
             className="max-w-xl"
             action={

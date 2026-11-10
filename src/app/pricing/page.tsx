@@ -9,6 +9,7 @@ import { MarketingHeader } from "@/components/marketing-header";
 import { SubscriptionPlanButton } from "@/components/subscription-plan-button";
 import { ManageBillingButton } from "@/components/manage-billing-button";
 import { getRequestLocale } from "@/lib/server-locale";
+import { getPricingPlans } from "@/lib/pricing-plans";
 
 export const metadata: Metadata = {
   title: "Pricing | GoHostlyx",
@@ -27,46 +28,6 @@ export const metadata: Metadata = {
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-type PricingPlan = {
-  name: "Starter" | "Pro" | "Portfolio";
-  tagline: string;
-  price: number;
-  description: string;
-  features: string[];
-  highlighted: boolean;
-  badge?: string;
-};
-
-const plans: PricingPlan[] = [
-  {
-    name: "Starter",
-    tagline: "Para una propiedad",
-    price: 19,
-    description:
-      "Un punto de partida sencillo para hosts que quieren claridad sin añadir complejidad.",
-    features: ["1 propiedad", "Importación Excel", "Dashboard completo", "Estimación fiscal"],
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    tagline: "Para operadores en crecimiento",
-    price: 49,
-    description:
-      "La mejor opción para hosts que gestionan más de una propiedad y quieren mayor visibilidad.",
-    features: ["Múltiples propiedades", "Informes avanzados", "Insights de rendimiento", "Soporte prioritario"],
-    highlighted: true,
-    badge: "Más popular",
-  },
-  {
-    name: "Portfolio",
-    tagline: "Para carteras grandes",
-    price: 99,
-    description:
-      "Diseñado para operadores que necesitan escala, analítica profunda y más de un usuario.",
-    features: ["Propiedades ilimitadas", "Analítica avanzada", "Funciones de equipo", "API access"],
-    highlighted: false,
-  },
-];
 
 export default async function PricingPage({
   searchParams,
@@ -75,6 +36,7 @@ export default async function PricingPage({
 }) {
   const locale = await getRequestLocale();
   const isSpanish = locale === "es";
+  const plans = getPricingPlans(isSpanish);
   const resolvedSearchParams = await searchParams;
   const session = await getAuthSession();
   const signedIn = Boolean(session?.user?.email);
@@ -148,7 +110,7 @@ export default async function PricingPage({
         <section className="mt-16 grid items-start gap-5 md:grid-cols-3">
           {plans.map((plan) => (
             <article
-              key={plan.name}
+              key={plan.id}
               className={`relative rounded-[28px] border p-8 transition-all duration-300 ${
                 plan.highlighted
                   ? "scale-[1.02] border-[var(--accent)]/40 bg-[rgba(88,196,182,0.06)] shadow-[0_24px_50px_rgba(88,196,182,0.12)]"
@@ -188,7 +150,7 @@ export default async function PricingPage({
 
               {signedIn ? (
                 <SubscriptionPlanButton
-                  plan={plan.name.toLowerCase() as "starter" | "pro" | "portfolio"}
+                  plan={plan.id}
                   currentPlan={subscription?.status === "active" ? subscription.plan : "trial"}
                   redirectTo="/pricing"
                   labels={{

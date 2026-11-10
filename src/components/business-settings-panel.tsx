@@ -188,8 +188,8 @@ export function BusinessSettingsPanel({
               </p>
               <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Cuando los filtros están en `All countries`, GoHostlyx usa este mercado como valor por defecto de cartera para labels y resúmenes."
-                  : "When filters are on `All countries`, GoHostlyx uses this market as the portfolio default for labels and summaries."}
+                  ? "Cuando ves todos los mercados a la vez, GoHostlyx usa este como mercado por defecto en etiquetas y resúmenes."
+                  : "When you view all markets at once, GoHostlyx uses this one as the default for labels and summaries."}
               </p>
             </div>
 

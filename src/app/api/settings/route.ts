@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireUserEmail } from "@/lib/auth";
 import { upsertUserSettings } from "@/lib/db";
@@ -39,9 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The business settings could not be saved.",
+          clientErrorMessage(error, "The business settings could not be saved."),
       },
       { status: 400 },
     );

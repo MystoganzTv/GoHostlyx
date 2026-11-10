@@ -51,6 +51,11 @@ body {
     radial-gradient(circle at top left, rgba(104, 132, 173, 0.2), transparent 30%),
     radial-gradient(circle at top right, rgba(88, 196, 182, 0.18), transparent 28%),
     linear-gradient(180deg, #09111d 0%, #07111c 34%, #0b1627 100%);
+  /* Pin the gradients to the viewport. Without this the body background is
+     tiled once per screen height, which drew a hard seam every ~900px on long
+     pages (landing, pricing, login). */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
@@ -208,7 +213,7 @@ textarea {
 
 .login-submit-button {
   background: linear-gradient(180deg, #102037 0%, #0b1627 100%);
-  color: rgba(226, 232, 240, 0.68);
+  color: #f8fafc;
   box-shadow:
     0 16px 30px rgba(10, 19, 34, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);

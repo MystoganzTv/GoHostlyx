@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireUserEmail } from "@/lib/auth";
 import { buildDashboardView, getDashboardFilters } from "@/lib/dashboard";
@@ -61,9 +62,7 @@ export async function GET() {
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The onboarding preview could not be loaded.",
+          clientErrorMessage(error, "The onboarding preview could not be loaded."),
       },
       { status: 400 },
     );

@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireApiAccess } from "@/lib/access";
 import { syncDueIcalFeeds } from "@/lib/ical-feeds";
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "The saved iCal feeds could not be refreshed.",
+        error: clientErrorMessage(error, "The saved iCal feeds could not be refreshed."),
       },
       { status: 400 },
     );

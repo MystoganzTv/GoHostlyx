@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { deleteImportBatch } from "@/lib/db";
 import { requireApiAccess } from "@/lib/access";
@@ -34,9 +35,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The import could not be deleted.",
+          clientErrorMessage(error, "The import could not be deleted."),
       },
       { status: 400 },
     );

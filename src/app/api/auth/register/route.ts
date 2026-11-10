@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { getAuthUserByEmail, upsertPendingAuthUser } from "@/lib/db";
 import { isEmailAllowed } from "@/lib/auth";
@@ -90,9 +91,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The account could not be created.",
+          clientErrorMessage(error, "The account could not be created."),
       },
       { status: 400 },
     );

@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireApiAccess } from "@/lib/access";
 import { syncIcalFeedById } from "@/lib/ical-feeds";
@@ -34,7 +35,7 @@ export async function POST(
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "The iCal feed could not be synced.",
+        error: clientErrorMessage(error, "The iCal feed could not be synced."),
       },
       { status: 400 },
     );

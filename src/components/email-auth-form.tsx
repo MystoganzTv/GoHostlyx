@@ -160,10 +160,10 @@ export function EmailAuthForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {mode === "sign-up" && stage === "form" ? (
           <div>
-            <label className="block text-center text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-slate-700">
               {isSpanish ? "Nombre completo" : "Full name"}
             </label>
-            <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
+            <div className="login-input-shell mt-2 flex items-center gap-3 rounded-[14px] px-4 py-3">
               <UserRound className="h-5 w-5 text-slate-400" />
               <input
                 value={fullName}
@@ -178,10 +178,10 @@ export function EmailAuthForm() {
         ) : null}
 
         <div>
-          <label className="block text-center text-sm font-semibold text-slate-700">
+          <label className="block text-sm font-semibold text-slate-700">
             {isSpanish ? "Email" : "Email"}
           </label>
-          <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
+          <div className="login-input-shell mt-2 flex items-center gap-3 rounded-[14px] px-4 py-3">
             <Mail className="h-5 w-5 text-slate-400" />
             <input
               type="email"
@@ -196,10 +196,10 @@ export function EmailAuthForm() {
         </div>
 
         <div>
-          <label className="block text-center text-sm font-semibold text-slate-700">
+          <label className="block text-sm font-semibold text-slate-700">
             {isSpanish ? "Contraseña" : "Password"}
           </label>
-          <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
+          <div className="login-input-shell mt-2 flex items-center gap-3 rounded-[14px] px-4 py-3">
             <Lock className="h-5 w-5 text-slate-400" />
             <input
               type="password"
@@ -223,10 +223,10 @@ export function EmailAuthForm() {
 
         {mode === "sign-up" && stage === "verify" ? (
           <div>
-            <label className="block text-center text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-slate-700">
               {isSpanish ? "Código de verificación" : "Verification code"}
             </label>
-            <div className="login-input-shell mt-3 flex items-center gap-3 rounded-[18px] px-4 py-4">
+            <div className="login-input-shell mt-2 flex items-center gap-3 rounded-[14px] px-4 py-3">
               <ShieldCheck className="h-5 w-5 text-slate-400" />
               <input
                 value={verificationCode}
@@ -264,7 +264,7 @@ export function EmailAuthForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="login-submit-button flex w-full items-center justify-center gap-3 rounded-[18px] px-5 py-4 text-lg font-semibold text-slate-50 transition disabled:cursor-not-allowed disabled:opacity-60"
+          className="login-submit-button flex w-full items-center justify-center gap-3 rounded-[16px] px-5 py-3.5 text-base font-semibold text-slate-50 transition disabled:cursor-not-allowed disabled:opacity-60"
         >
           <ShieldCheck className="h-5 w-5" />
           {isPending

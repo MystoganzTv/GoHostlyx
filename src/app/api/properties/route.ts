@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireApiAccess } from "@/lib/access";
 import { createPropertyDefinition } from "@/lib/db";
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The property could not be created.",
+          clientErrorMessage(error, "The property could not be created."),
       },
       { status: 400 },
     );

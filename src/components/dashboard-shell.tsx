@@ -430,11 +430,6 @@ export function DashboardShell({
                     {timeContextHint}
                   </span>
                 </div>
-                <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-                  {isSpanish
-                    ? "Una vista más limpia del periodo seleccionado, con el beneficio después de impuestos en primer plano."
-                    : "A cleaner snapshot of the selected period, with after-tax profit front and center."}
-                </p>
               </div>
 
               <div className="xl:flex xl:flex-1 xl:justify-end">
@@ -560,17 +555,6 @@ export function DashboardShell({
                           </p>
                         </div>
 
-                        <div className="workspace-soft-card rounded-[26px] p-5">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                            {isSpanish ? "Contexto de la vista" : "View Context"}
-                          </p>
-                          <p className="mt-3 text-xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)]">
-                            {timeContext}
-                          </p>
-                          <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                            {timeContextHint}
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </article>

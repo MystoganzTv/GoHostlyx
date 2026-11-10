@@ -105,11 +105,11 @@ export default async function ExpensesPage({
       <div className="space-y-6">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <SectionCard
-            title={isSpanish ? "Entrada principal" : "Primary entry point"}
+            title={isSpanish ? "Importar gastos" : "Import expenses"}
             subtitle={
               isSpanish
-                ? "Si tu archivo es mayormente de gastos, empieza aquí. Import Center se queda como historial y control."
-                : "If your file is mostly expenses, start here. Import Center stays as history and control."
+                ? "Sube una hoja de gastos o un Excel mixto. Verás una vista previa antes de guardar nada."
+                : "Upload an expense sheet or a mixed Excel file. You will see a preview before anything is saved."
             }
             className="max-w-xl"
             action={

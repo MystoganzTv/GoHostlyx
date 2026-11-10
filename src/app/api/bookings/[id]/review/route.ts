@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireApiAccess } from "@/lib/access";
 import { updateBookingReviewState } from "@/lib/db";
@@ -50,7 +51,7 @@ export async function PATCH(
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The booking review state could not be updated.",
+          clientErrorMessage(error, "The booking review state could not be updated."),
       },
       { status: 400 },
     );

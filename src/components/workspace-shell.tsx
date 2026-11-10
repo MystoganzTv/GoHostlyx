@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   Shield,
@@ -14,6 +14,8 @@ import {
   Landmark,
   LayoutDashboard,
   LogOut,
+  Menu,
+  X,
   ReceiptText,
   FileText,
   Scale,
@@ -80,6 +82,34 @@ function navClassName(active: boolean) {
     : "workspace-sidebar-link flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition";
 }
 
+const sidebarPreferenceEvent = "gohostlyx:sidebar-preference";
+
+function readSidebarPreference() {
+  try {
+    return window.localStorage.getItem(sidebarStorageKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function writeSidebarPreference(collapsed: boolean) {
+  try {
+    window.localStorage.setItem(sidebarStorageKey, String(collapsed));
+  } catch {
+    // Storage unavailable (private mode): the toggle still works for this event.
+  }
+  window.dispatchEvent(new Event(sidebarPreferenceEvent));
+}
+
+function subscribeToSidebarPreference(onChange: () => void) {
+  window.addEventListener(sidebarPreferenceEvent, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(sidebarPreferenceEvent, onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
 export function WorkspaceShell({
   activePage,
   pageTitle,
@@ -115,20 +145,22 @@ export function WorkspaceShell({
 }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
+  // The collapsed preference lives in localStorage. useSyncExternalStore renders
+  // "expanded" on the server and during hydration, then the saved value, so the
+  // server and client HTML always match (reading storage during the first
+  // render caused a hydration error).
+  const isSidebarCollapsed = useSyncExternalStore(
+    subscribeToSidebarPreference,
+    readSidebarPreference,
+    () => false,
+  );
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    return window.localStorage.getItem(sidebarStorageKey) === "true";
-  });
+  // The mobile drawer always shows the full menu.
+  const isCollapsed = isSidebarCollapsed && !isMobileMenuOpen;
 
   function toggleSidebar() {
-    setIsCollapsed((current) => {
-      const nextValue = !current;
-      window.localStorage.setItem(sidebarStorageKey, String(nextValue));
-      return nextValue;
-    });
+    writeSidebarPreference(!isSidebarCollapsed);
   }
 
   function subscriptionBadgeClassName(tone: SubscriptionBadge["tone"]) {
@@ -164,8 +196,33 @@ export function WorkspaceShell({
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-4 py-5 sm:px-6 xl:h-screen xl:overflow-hidden xl:px-8 xl:py-6">
       <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-5 xl:h-[calc(100vh-3rem)] xl:flex-row xl:items-stretch">
+        <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[var(--workspace-sidebar-border)] bg-[var(--workspace-sidebar)] px-4 py-3 xl:hidden">
+          <BrandLogo href="/dashboard" compact />
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label={isSpanish ? "Abrir menú" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
+          >
+            <Menu className="h-4 w-4" />
+            {isSpanish ? "Menú" : "Menu"}
+          </button>
+        </div>
+
+        {isMobileMenuOpen ? (
+          <button
+            type="button"
+            aria-label={isSpanish ? "Cerrar menú" : "Close menu"}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="fixed inset-0 z-40 bg-[rgba(2,6,23,0.7)] backdrop-blur-sm xl:hidden"
+          />
+        ) : null}
+
         <aside
-          className={`w-full rounded-[30px] border border-[var(--workspace-sidebar-border)] bg-[var(--workspace-sidebar)] shadow-[0_18px_42px_rgba(2,6,23,0.2)] xl:max-h-full xl:shrink-0 xl:self-stretch xl:overflow-y-auto xl:overscroll-contain ${isCollapsed ? "p-4 xl:w-[104px]" : "p-5 xl:w-[272px]"}`}
+          className={`rounded-[30px] border border-[var(--workspace-sidebar-border)] bg-[var(--workspace-sidebar)] shadow-[0_18px_42px_rgba(2,6,23,0.2)] xl:static xl:z-auto xl:block xl:max-h-full xl:w-auto xl:shrink-0 xl:self-stretch xl:overflow-y-auto xl:overscroll-contain ${
+            isMobileMenuOpen ? "fixed inset-y-3 left-3 z-50 block w-[min(320px,calc(100vw-1.5rem))] overflow-y-auto" : "hidden"
+          } ${isCollapsed ? "p-4 xl:w-[104px]" : "p-5 xl:w-[272px]"}`}
         >
           <div className="border-b border-white/8 pb-5">
             <div
@@ -180,6 +237,14 @@ export function WorkspaceShell({
                 title={isCollapsed ? (isSpanish ? "Expandir sidebar" : "Expand sidebar") : isSpanish ? "Contraer sidebar" : "Collapse sidebar"}
               >
                 {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label={isSpanish ? "Cerrar menú" : "Close menu"}
+                className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] p-2.5 text-white transition hover:bg-white/[0.08] xl:hidden"
+              >
+                <X className="h-4 w-4" />
               </button>
             </div>
             {!isCollapsed ? (

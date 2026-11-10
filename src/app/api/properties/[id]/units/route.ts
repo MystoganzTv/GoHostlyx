@@ -1,3 +1,4 @@
+import { clientErrorMessage } from "@/lib/client-error";
 import { NextResponse } from "next/server";
 import { requireApiAccess } from "@/lib/access";
 import { createPropertyUnit } from "@/lib/db";
@@ -39,7 +40,7 @@ export async function POST(
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "The unit could not be created.",
+          clientErrorMessage(error, "The unit could not be created."),
       },
       { status: 400 },
     );
