@@ -876,7 +876,7 @@ export function UploadPanel({
   if (committed) {
     return (
       <div className="relative">
-        <div className="workspace-card py-6 sm:py-7 border-t border-[var(--workspace-border)]">
+        <div className="workspace-card overflow-hidden rounded-[34px] border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(10,20,38,0.98),rgba(10,18,33,0.96))] p-6 sm:p-7">
           {toast ? (
             <div
               ref={toastRef}
@@ -951,7 +951,7 @@ export function UploadPanel({
               ).map(([label, value, tone]) => (
                 <div
                   key={String(label)}
-                  className="py-5 border-t border-[var(--workspace-border)]"
+                  className="rounded-[24px] border border-[var(--workspace-border)] bg-[rgba(255,255,255,0.03)] px-5 py-5"
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                     {label}
@@ -994,7 +994,7 @@ export function UploadPanel({
     <div className="relative">
       <div
         ref={panelRef}
-        className="workspace-card py-5 sm:py-7 border-t border-[var(--workspace-border)]"
+        className="workspace-card overflow-hidden rounded-[34px] border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(10,20,38,0.98),rgba(10,18,33,0.96))] p-5 sm:p-7"
       >
         {toast ? (
           <div
@@ -1033,7 +1033,7 @@ export function UploadPanel({
           {hideHeader ? null : (
           <div className={`flex flex-wrap items-start justify-between gap-4 ${isCompactAppearance ? "sm:gap-3" : ""}`}>
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--workspace-border)] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
                 <Sparkles className="h-4 w-4 text-[var(--workspace-accent)]" />
                 {isCompactAppearance ? "Payouts" : "Import Center"}
               </div>
@@ -1098,7 +1098,7 @@ export function UploadPanel({
                 placeholder="Select a property"
               />
             ) : (
-              <div className="py-3 text-sm text-[var(--workspace-text)] border-t border-[var(--workspace-border)]">
+              <div className="rounded-[18px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] px-4 py-3 text-sm text-[var(--workspace-text)]">
                 {selectedPropertyName}
               </div>
             )}
@@ -1133,7 +1133,7 @@ export function UploadPanel({
           >
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center text-[var(--workspace-accent)] border-t border-[var(--workspace-border)]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] border border-[var(--workspace-border)] bg-[rgba(125,211,197,0.08)] text-[var(--workspace-accent)]">
                   {phase === "previewing" || phase === "importing" ? (
                     <LoaderCircle className="h-6 w-6 animate-spin" />
                   ) : (
@@ -1222,7 +1222,7 @@ export function UploadPanel({
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center border-t border-[var(--workspace-border)]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.04]">
                       {(() => {
                         const Icon = getSourcePresentation(preview.source).icon;
                         return <Icon className="h-5 w-5 text-[var(--workspace-accent)]" />;
@@ -1435,7 +1435,7 @@ export function UploadPanel({
                     })}
                   </div>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 py-4 border-t border-[var(--workspace-border)]">
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                     <p className="text-sm text-[var(--workspace-muted)]">
                       {currentManualReady
                         ? "Required fields are mapped. Preview again to continue."
@@ -1482,7 +1482,7 @@ export function UploadPanel({
                   </div>
 
                   <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-                    <div className="py-5 border-t border-[var(--workspace-border)]">
+                    <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                         Payout summary
                       </p>
@@ -1494,7 +1494,7 @@ export function UploadPanel({
                       </p>
 
                       <div className="mt-5 grid gap-4 md:grid-cols-2">
-                        <div className="py-4 border-t border-[var(--workspace-border)]">
+                        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                             What gets saved
                           </p>
@@ -1502,7 +1502,7 @@ export function UploadPanel({
                             Actual payout, fees, taxes, source, currency, and statement period.
                           </p>
                         </div>
-                        <div className="py-4 border-t border-[var(--workspace-border)]">
+                        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                             Why bookings stay at 0
                           </p>
@@ -1513,7 +1513,7 @@ export function UploadPanel({
                       </div>
 
                       {financialStatementPreviewData?.previewRows?.length ? (
-                        <div className="mt-5 py-4 border-t border-[var(--workspace-border)]">
+                        <div className="mt-5 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1563,7 +1563,7 @@ export function UploadPanel({
 
                     <div
                       ref={readyToContinueRef}
-                      className="border-[var(--workspace-accent)]/18 py-5 border-t border-[var(--workspace-border)]"
+                      className="rounded-[24px] border border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.07)] p-5"
                     >
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                         Ready to continue
@@ -1575,7 +1575,7 @@ export function UploadPanel({
                         Nothing will be saved until you confirm this payout statement import.
                       </p>
 
-                      <div className="mt-5 border-[var(--workspace-accent)]/18 py-4 text-sm text-[var(--workspace-text)] border-t border-[var(--workspace-border)]">
+                      <div className="mt-5 rounded-[18px] border border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.08)] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         This file will feed Payouts so you can compare expected payout against what Airbnb or Booking.com says it paid out.
                       </div>
 
@@ -1609,7 +1609,7 @@ export function UploadPanel({
                 </div>
               ) : !needsFocusedMapping && !preview.blocksImport ? (
                 <div className="space-y-5">
-                  <div className="py-5 border-t border-[var(--workspace-border)]">
+                  <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1624,7 +1624,7 @@ export function UploadPanel({
                             : "We checked your file against synced calendar data to catch duplicates and conflicts before import."}
                         </p>
                       </div>
-                      <div className="py-4 text-right border-t border-[var(--workspace-border)]">
+                      <div className="rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.03] px-4 py-4 text-right">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                           {hasBookingPreview ? "Rows in file" : "Total rows found"}
                         </p>
@@ -1664,7 +1664,7 @@ export function UploadPanel({
                     </div>
 
                     {hasBookingPreview ? (
-                      <div className="mt-5 py-4 text-sm leading-6 text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
+                      <div className="mt-5 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
                         <p>
                           GoHostlyx read <span className="font-medium text-[var(--workspace-text)]">{preview.totalRowsRead}</span> rows from this file.
                           <span className="font-medium text-[var(--workspace-text)]"> {importableBookingRows}</span> can be imported right now.
@@ -1730,22 +1730,22 @@ export function UploadPanel({
                     </div>
                   </div>
 
-                  <div className="py-5 border-t border-[var(--workspace-border)]">
+                  <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                       {isSpanish ? "Qué pasará después" : "What happens next"}
                     </p>
                     <div className="mt-4 grid gap-3 lg:grid-cols-3">
-                      <div className="py-4 text-sm text-[var(--workspace-text)] border-t border-[var(--workspace-border)]">
+                      <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
                           ? "1. GoHostlyx importará todas las filas utilizables sin obligarte a aprobar una por una."
                           : "1. GoHostlyx will import every usable row without forcing you to approve them one by one."}
                       </div>
-                      <div className="py-4 text-sm text-[var(--workspace-text)] border-t border-[var(--workspace-border)]">
+                      <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
                           ? "2. Las reservas dudosas quedarán marcadas en Reservas como 'necesitan revisión'."
                           : "2. Uncertain bookings will be marked in Bookings as 'need review'."}
                       </div>
-                      <div className="py-4 text-sm text-[var(--workspace-text)] border-t border-[var(--workspace-border)]">
+                      <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
                           ? "3. Allí podrás editarlas o marcarlas como revisadas sin volver a este modal."
                           : "3. From there you can edit them or mark them reviewed without coming back to this modal."}
@@ -1754,7 +1754,7 @@ export function UploadPanel({
                   </div>
 
                   {preview.previewRows.length > 0 ? (
-                    <div className="py-5 border-t border-[var(--workspace-border)]">
+                    <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1775,7 +1775,7 @@ export function UploadPanel({
                         {preview.previewRows.map((row, index) => (
                           <div
                             key={`preview-row-${index}-${row.guestName}`}
-                            className="py-4 border-t border-[var(--workspace-border)]"
+                            className="rounded-[20px] border border-white/8 bg-white/[0.03] px-4 py-4"
                           >
                             <div className="flex flex-wrap items-center gap-3">
                               <p className="text-base font-medium text-[var(--workspace-text)]">
@@ -1807,7 +1807,7 @@ export function UploadPanel({
 
                   <div
                     ref={readyToContinueRef}
-                    className="py-5 border-t border-[var(--workspace-border)]"
+                    className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5"
                   >
                     <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                       <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center">

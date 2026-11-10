@@ -203,7 +203,7 @@ export function WorkspaceDateField({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] max-w-[calc(100vw-2rem)] py-4 border-t border-[var(--workspace-border)]">
+        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] max-w-[calc(100vw-2rem)] rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,28,46,0.98)_0%,rgba(10,19,31,0.98)_100%)] p-4 shadow-[0_24px_60px_rgba(2,6,23,0.48)]">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"

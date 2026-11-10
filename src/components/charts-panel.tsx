@@ -106,7 +106,7 @@ export function ChartsPanel({
         subtitle="The fastest way to see if the business is actually becoming more profitable."
         action={
           monthlySummary.length > 0 ? (
-            <div className="inline-flex py-1 border-t border-[var(--workspace-border)]">
+            <div className="inline-flex py-1">
               {[
                 { value: "trend", label: "Trend" },
                 { value: "bars", label: "Bars" },
@@ -222,7 +222,7 @@ export function ChartsPanel({
           subtitle="See how top-line inflow compares against cost load each month."
           action={
             monthlySummary.length > 12 ? (
-              <div className="inline-flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
+              <div className="inline-flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 Last 12 months
               </div>
             ) : null

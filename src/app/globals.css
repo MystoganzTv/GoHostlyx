@@ -446,3 +446,17 @@ textarea {
   background: transparent;
   box-shadow: none;
 }
+
+/* Floating layers (modals) keep a solid surface: content behind them must not
+   show through, unlike in-page sections which are flat. */
+.modal-surface {
+  background: var(--workspace-panel-soft);
+  border: 1px solid var(--workspace-border);
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.55);
+}
+
+.modal-surface > .workspace-card {
+  border-top: 0;
+  padding-top: 0;
+}

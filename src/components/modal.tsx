@@ -58,19 +58,19 @@ export function Modal({
           <button
             type="button"
             aria-label="Close modal"
-            className="absolute inset-0 bg-slate-950/78"
+            className="absolute inset-0 bg-[rgba(3,8,16,0.86)] backdrop-blur-sm"
             onClick={onClose}
           />
         ) : (
-          <div className="absolute inset-0 bg-slate-950/78" />
+          <div className="absolute inset-0 bg-[rgba(3,8,16,0.86)] backdrop-blur-sm" />
         )}
         <div
           ref={modalCardRef}
           tabIndex={-1}
           className={
             bare
-              ? "relative z-10 w-full max-w-6xl max-h-[calc(100vh-2rem)] overflow-y-auto outline-none sm:max-h-[calc(100vh-3rem)]"
-              : "workspace-card relative z-10 my-auto max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-[30px] p-5 outline-none sm:p-6"
+              ? "modal-surface relative z-10 w-full max-w-5xl max-h-[calc(100vh-2rem)] overflow-y-auto px-5 pb-6 outline-none sm:max-h-[calc(100vh-3rem)] sm:px-8 sm:pb-8"
+              : "modal-surface relative z-10 my-auto max-h-[90vh] w-full max-w-5xl overflow-y-auto p-5 outline-none sm:p-8"
           }
         >
           {bare && dismissible ? (

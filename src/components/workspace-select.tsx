@@ -102,7 +102,7 @@ export function WorkspaceSelect({
       {helper ? <p className="text-xs text-slate-500">{helper}</p> : null}
 
       {isOpen ? (
-        <div className="absolute left-0 top-full z-30 mt-2 w-full py-2 border-t border-[var(--workspace-border)]">
+        <div className="absolute left-0 top-full z-30 mt-2 w-full overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,28,46,0.98)_0%,rgba(10,19,31,0.98)_100%)] p-2 shadow-[0_24px_60px_rgba(2,6,23,0.48)]">
           <div className="max-h-72 overflow-y-auto">
             {options.map((option) => {
               const isSelected = option.value === value;
