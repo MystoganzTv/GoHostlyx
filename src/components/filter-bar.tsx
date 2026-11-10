@@ -6,7 +6,7 @@ import { Funnel } from "lucide-react";
 import { useLocale } from "@/components/locale-provider";
 import { WorkspaceDateField } from "@/components/workspace-date-field";
 import { WorkspaceSelect } from "@/components/workspace-select";
-import { getMarketDefinition } from "@/lib/markets";
+import { getMarketLabels } from "@/lib/markets";
 import type { CountryCode, DashboardDateRangePreset } from "@/lib/types";
 
 const rangeFilterStorageKey = "gohostlyx:filters:range";
@@ -354,7 +354,7 @@ export function FilterBar(props: FilterBarProps) {
           {isSpanish ? "Todos los mercados" : "All markets"}
         </button>
         {props.countries.map((countryCode) => {
-          const market = getMarketDefinition(countryCode);
+          const market = getMarketLabels(countryCode, locale);
 
           return (
             <button

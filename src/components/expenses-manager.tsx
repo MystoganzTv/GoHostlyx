@@ -25,6 +25,7 @@ export function ExpensesManager({
 }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [editingExpense, setEditingExpense] = useState<ExpenseRecord | null>(null);
@@ -90,7 +91,7 @@ export function ExpensesManager({
             return;
           }
 
-          setMessage(payload.message ?? (isSpanish ? "Gasto eliminado." : "Expense deleted."));
+          setMessage((payload.message ?? (isSpanish ? "Gasto eliminado." : "Expense deleted.")) + " " + (isSpanish ? "Puedes recuperarlo desde Ajustes → Eliminado recientemente durante 7 días." : "You can restore it from Settings → Recently deleted for 7 days."));
           setExpenseToDelete(null);
           router.refresh();
         } catch {
@@ -103,8 +104,8 @@ export function ExpensesManager({
   return (
     <>
       <div className="space-y-4">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
@@ -135,7 +136,7 @@ export function ExpensesManager({
                       {expense.note ? <p className="mt-1 text-xs text-slate-400">{expense.note}</p> : null}
                     </div>
                   </td>
-                  <td className="py-4 pr-4">{formatCurrency(expense.amount, false, currencyCode)}</td>
+                  <td className="tnum py-4 pr-4 font-medium text-neg">{formatCurrency(expense.amount, false, currencyCode, locale)}</td>
                   <td className="py-4">
                     <div className="flex flex-nowrap gap-2 whitespace-nowrap">
                       <button
@@ -178,19 +179,19 @@ export function ExpensesManager({
             />
             <WorkspaceDateField name="date" label="Date" defaultValue={editingExpense.date} required />
             <label className="space-y-2">
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Amount</span>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">{t("Amount", "Importe")}</span>
               <input className={inputClassName()} type="number" min="0.01" step="0.01" name="amount" defaultValue={editingExpense.amount} required />
             </label>
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Category</span>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">{t("Category", "Categoría")}</span>
               <input className={inputClassName()} name="category" defaultValue={editingExpense.category} required />
             </label>
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Description</span>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">{t("Description", "Descripción")}</span>
               <input className={inputClassName()} name="description" defaultValue={editingExpense.description} required />
             </label>
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Note</span>
+              <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">{t("Note", "Nota")}</span>
               <textarea className={`${inputClassName()} min-h-[108px] resize-y`} name="note" defaultValue={editingExpense.note} />
             </label>
             <div className="sm:col-span-2">
@@ -220,14 +221,14 @@ export function ExpensesManager({
 
             <div className="workspace-soft-card grid gap-3 rounded-lg p-4 sm:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Property</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{t("Property", "Propiedad")}</p>
                 <p className="mt-1 text-sm text-[var(--workspace-text)]">
                   {expenseToDelete.propertyName}
                   {expenseToDelete.unitName ? ` • ${expenseToDelete.unitName}` : ""}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Amount</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{t("Amount", "Importe")}</p>
                 <p className="mt-1 text-sm text-[var(--workspace-text)]">
                   {formatCurrency(expenseToDelete.amount, false, currencyCode)}
                 </p>

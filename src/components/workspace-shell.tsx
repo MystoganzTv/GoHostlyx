@@ -27,7 +27,6 @@ import { LanguageToggle } from "@/components/language-toggle";
 import { useLocale } from "@/components/locale-provider";
 import { SignOutButton } from "@/components/auth-buttons";
 import { isAdminOwnerEmail } from "@/lib/admin";
-import { formatDateLabel } from "@/lib/format";
 import type { CurrencyCode, ImportSummary } from "@/lib/types";
 
 type ActivePage =
@@ -142,7 +141,6 @@ export function WorkspaceShell({
   userName,
   userEmail,
   currencyCode,
-  latestImport,
   subscriptionBadge,
   reconcileBadge,
   stickyHeader = false,

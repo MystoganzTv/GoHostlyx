@@ -294,8 +294,8 @@ export function EmailAuthForm({ initialMode = "sign-in" }: { initialMode?: Mode 
       </form>
 
       <div className="min-h-6 text-center">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
       </div>
     </div>
   );

@@ -240,7 +240,7 @@ export function BookingsManager({
             return;
           }
 
-          setMessage(payload.message ?? (isSpanish ? "Reserva eliminada." : "Booking deleted."));
+          setMessage((payload.message ?? (isSpanish ? "Reserva eliminada." : "Booking deleted.")) + " " + (isSpanish ? "Puedes recuperarlo desde Ajustes → Eliminado recientemente durante 7 días." : "You can restore it from Settings → Recently deleted for 7 days."));
           setBookingToDelete(null);
           router.refresh();
         } catch {
@@ -253,8 +253,8 @@ export function BookingsManager({
   return (
     <>
       <div className="space-y-4">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
         <div className="filter-bar flex-wrap gap-0.5">
           <button
             type="button"
@@ -390,8 +390,8 @@ export function BookingsManager({
                   <td className="py-4 pr-4">
                     <BookingChannelBadge channel={booking.channel} />
                   </td>
-                  <td className="py-4 pr-4">{formatCurrency(booking.totalRevenue, false, currencyCode)}</td>
-                  <td className="py-4 pr-4">{formatCurrency(booking.payout, false, currencyCode)}</td>
+                  <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(booking.totalRevenue, false, currencyCode, locale)}</td>
+                  <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(booking.payout, false, currencyCode, locale)}</td>
                   <td className="py-4">
                     <div className="flex flex-nowrap gap-2 whitespace-nowrap">
                       {booking.reviewStatus === "needs_review" ? (

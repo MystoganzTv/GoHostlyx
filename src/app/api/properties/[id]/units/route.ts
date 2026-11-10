@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { createPropertyUnit } from "@/lib/db";
 
@@ -21,7 +21,7 @@ export async function POST(
     const propertyId = Number((await params).id);
 
     if (!Number.isFinite(propertyId) || propertyId <= 0) {
-      return NextResponse.json({ error: "Invalid property id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid property id." }, { status: 400 });
     }
 
     const formData = await request.formData();
@@ -32,12 +32,12 @@ export async function POST(
       name: unitName,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       unitId,
       message: `Listing "${unitName}" created successfully.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The unit could not be created."),

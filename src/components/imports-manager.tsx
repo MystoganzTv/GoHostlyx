@@ -7,12 +7,14 @@ import { Modal } from "@/components/modal";
 import type { ImportSummary } from "@/lib/types";
 import { formatDateLabel, formatNumber } from "@/lib/format";
 import { getImportedSourceLabel } from "@/lib/workbook";
+import { useTranslate } from "@/components/use-translate";
 
 export function ImportsManager({
   importSummaries,
 }: {
   importSummaries: ImportSummary[];
 }) {
+  const t = useTranslate();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
@@ -36,15 +38,15 @@ export function ImportsManager({
           const payload = (await response.json()) as { error?: string; message?: string };
 
           if (!response.ok) {
-            setError(payload.error ?? "The import could not be deleted.");
+            setError(payload.error ?? t("The import could not be deleted.", "No se pudo eliminar la importación."));
             return;
           }
 
-          setMessage(payload.message ?? "Import deleted.");
+          setMessage((payload.message ?? t("Import deleted.", "Importación eliminada.")) + " " + t("You can restore it from Settings → Recently deleted for 7 days.", "Puedes recuperarlo desde Ajustes → Eliminado recientemente durante 7 días."));
           setImportToDelete(null);
           router.refresh();
         } catch {
-          setError("The import could not be deleted.");
+          setError(t("The import could not be deleted.", "No se pudo eliminar la importación."));
         }
       })();
     });
@@ -53,7 +55,7 @@ export function ImportsManager({
   if (importSummaries.length === 0) {
     return (
       <div className="workspace-soft-card rounded-lg p-5 text-sm text-[var(--workspace-muted)]">
-        No imports yet. When you upload Excel files, GoHostlyx will keep the history here for backup context and traceability.
+        {t("No imports yet. When you upload Excel files, GoHostlyx will keep the history here for backup context and traceability.", "Todavía no hay importaciones. Cuando subas archivos, GoHostlyx guardará aquí el historial.")}
       </div>
     );
   }
@@ -61,20 +63,20 @@ export function ImportsManager({
   return (
     <>
       <div className="min-h-6">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
             <tr>
-              <th className="pb-3 pr-4 font-medium">File</th>
-              <th className="pb-3 pr-4 font-medium">Property</th>
-              <th className="pb-3 pr-4 font-medium">Imported</th>
-              <th className="pb-3 pr-4 font-medium">Layer</th>
-              <th className="pb-3 pr-4 font-medium">Impact</th>
-              <th className="pb-3 font-medium">Action</th>
+              <th className="pb-3 pr-4 font-medium">{t("File", "Archivo")}</th>
+              <th className="pb-3 pr-4 font-medium">{t("Property", "Propiedad")}</th>
+              <th className="pb-3 pr-4 font-medium">{t("Imported", "Importado")}</th>
+              <th className="pb-3 pr-4 font-medium">{t("Layer", "Capa")}</th>
+              <th className="pb-3 pr-4 font-medium">{t("Impact", "Impacto")}</th>
+              <th className="pb-3 font-medium">{t("Action", "Acción")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--workspace-border)] text-[var(--workspace-text)]">
@@ -97,8 +99,8 @@ export function ImportsManager({
                 <td className="py-4 pr-4">{formatDateLabel(entry.importedAt.slice(0, 10))}</td>
                 <td className="py-4 pr-4">
                   {entry.importedSource === "financial_statement"
-                    ? "Payout statement"
-                    : "Operational rows"}
+                    ? t("Payout statement", "Extracto de payout")
+                    : t("Operational rows", "Filas operativas")}
                 </td>
                 <td className="py-4 pr-4">
                   {entry.importedSource === "financial_statement"
@@ -117,7 +119,7 @@ export function ImportsManager({
                     className="inline-flex items-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Trash2 className="h-4 w-4" />
-                    Delete
+                    {t("Delete", "Eliminar")}
                   </button>
                 </td>
               </tr>
@@ -128,13 +130,13 @@ export function ImportsManager({
 
       <Modal
         open={Boolean(importToDelete)}
-        title="Delete imported workbook"
+        title={t("Delete imported workbook", "Eliminar archivo importado")}
         onClose={() => setImportToDelete(null)}
       >
         {importToDelete ? (
           <div className="space-y-5">
             <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
-              Deleting <span className="font-medium text-[var(--workspace-text)]">{importToDelete.fileName}</span> will remove the import from history and permanently delete{" "}
+              {t("Deleting", "Eliminando")} <span className="font-medium text-[var(--workspace-text)]">{importToDelete.fileName}</span> will remove the import from history and permanently delete{" "}
               {importToDelete.importedSource === "financial_statement"
                 ? "the payout statement saved by that batch."
                 : "the data that batch created inside GoHostlyx."}
@@ -142,14 +144,14 @@ export function ImportsManager({
 
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="workspace-soft-card rounded-lg px-4 py-3">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Property</p>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">{t("Property", "Propiedad")}</p>
                 <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                   {importToDelete.propertyName}
                 </p>
               </div>
               <div className="workspace-soft-card rounded-lg px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                  {importToDelete.importedSource === "financial_statement" ? "Saved record" : "Bookings to remove"}
+                  {importToDelete.importedSource === "financial_statement" ? t("Saved record", "Registro guardado") : t("Bookings to remove", "Reservas que se eliminan")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                   {importToDelete.importedSource === "financial_statement"
@@ -159,7 +161,7 @@ export function ImportsManager({
               </div>
               <div className="workspace-soft-card rounded-lg px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                  {importToDelete.importedSource === "financial_statement" ? "Expenses to remove" : "Expenses to remove"}
+                  {importToDelete.importedSource === "financial_statement" ? t("Expenses to remove", "Gastos que se eliminan") : t("Expenses to remove", "Gastos que se eliminan")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                   {formatNumber(importToDelete.expensesCount)}
@@ -168,7 +170,7 @@ export function ImportsManager({
             </div>
 
             <p className="text-sm text-[var(--workspace-muted)]">
-              Manual entries and data from other imports will stay untouched.
+              {t("Manual entries and data from other imports will stay untouched.", "Las entradas manuales y los datos de otras importaciones no se tocan.")}
             </p>
 
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -177,7 +179,7 @@ export function ImportsManager({
                 onClick={() => setImportToDelete(null)}
                 className="workspace-button-secondary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
-                Cancel
+                {t("Cancel", "Cancelar")}
               </button>
               <button
                 type="button"
@@ -186,7 +188,7 @@ export function ImportsManager({
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Trash2 className="h-4 w-4" />
-                {isPending ? "Deleting import..." : "Delete import"}
+                {isPending ? t("Deleting import...", "Eliminando importación...") : t("Delete import", "Eliminar importación")}
               </button>
             </div>
           </div>

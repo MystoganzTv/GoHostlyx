@@ -48,6 +48,24 @@ export function normalizeCurrencyCode(value: string | undefined): CurrencyCode {
   return marketDefinitions.find((market) => market.currencyCode === value)?.currencyCode ?? "USD";
 }
 
+const spanishMarketLabels: Record<
+  CountryCode,
+  { countryName: string; shortLabel: string; regionLabel: string; currencyLabel: string }
+> = {
+  US: { countryName: "Estados Unidos", shortLabel: "EE. UU.", regionLabel: "Norteamérica", currencyLabel: "Dólar estadounidense" },
+  ES: { countryName: "España", shortLabel: "España", regionLabel: "Europa", currencyLabel: "Euro" },
+  GB: { countryName: "Reino Unido", shortLabel: "Reino Unido", regionLabel: "Europa", currencyLabel: "Libra esterlina" },
+};
+
+/** Country, region and currency names in the user's language. */
+export function getMarketLabels(countryCode: CountryCode, locale: "en" | "es") {
+  const market = getMarketDefinition(countryCode);
+  if (locale === "es") {
+    return { ...market, ...spanishMarketLabels[market.countryCode] };
+  }
+  return market;
+}
+
 export function getMarketDefinition(countryCode: CountryCode) {
   return marketDefinitions.find((market) => market.countryCode === countryCode) ?? marketDefinitions[0];
 }

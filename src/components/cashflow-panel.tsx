@@ -4,7 +4,7 @@ import { ArrowDownRight, ArrowUpRight, Landmark, Wallet } from "lucide-react";
 import { useLocale } from "@/components/locale-provider";
 import { MetricCard } from "@/components/metric-card";
 import { SectionCard } from "@/components/section-card";
-import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
+import { formatCurrency, formatNumber, formatPercent, formatMonthLabel } from "@/lib/format";
 import type { CurrencyCode, DashboardView } from "@/lib/types";
 
 function averageNetCashflow(view: DashboardView) {
@@ -15,11 +15,9 @@ function averageNetCashflow(view: DashboardView) {
 export function CashflowPanel({
   view,
   currencyCode,
-  rangeLabel,
 }: {
   view: DashboardView;
   currencyCode: CurrencyCode;
-  rangeLabel: string;
 }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
@@ -77,42 +75,6 @@ export function CashflowPanel({
         ) : null}
       </div>
 
-      <SectionCard
-        title={isSpanish ? "Lectura de flujo operativo" : "Operating Flow Reading"}
-        subtitle={
-          isSpanish
-            ? "Usa esta página para ver cómo se mueve el negocio a nivel operativo dentro de la ventana seleccionada."
-            : "Use this page to see how the business moves operationally across the selected reporting window."
-        }
-      >
-        <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="workspace-soft-card rounded-lg p-5">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {isSpanish ? "Ventana de reporte" : "Reporting window"}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">{rangeLabel}</p>
-            <p className="mt-3 text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "GoHostlyx trata el payout del canal como entrada operativa y los gastos como salida operativa. Esto no sustituye una conciliación bancaria."
-                : "GoHostlyx treats channel payout as operating inflow and expenses as operating outflow. This does not replace bank reconciliation."}
-            </p>
-          </div>
-          <div className="workspace-soft-card rounded-lg p-5">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {isSpanish ? "Promedio mensual" : "Monthly average"}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">
-              {formatCurrency(averageNetCashflow(view), false, currencyCode, locale)}
-            </p>
-            <p className="mt-3 text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Promedio mensual del flujo operativo neto entre los meses visibles ahora."
-                : "Average monthly net operating flow across the months currently in view."}
-            </p>
-          </div>
-        </div>
-      </SectionCard>
-
       {!view.mixedCurrencyMode ? (
         <SectionCard
           title={isSpanish ? "Salud operativa" : "Operating Health"}
@@ -122,7 +84,15 @@ export function CashflowPanel({
               : "Quick ways to read how comfortably the selected period sustained itself operationally."
           }
         >
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="workspace-soft-card rounded-lg p-5">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+                {isSpanish ? "Promedio mensual" : "Monthly average"}
+              </p>
+              <p className="tnum mt-2 text-2xl font-semibold text-[var(--workspace-text)]">
+                {formatCurrency(averageNetCashflow(view), false, currencyCode, locale)}
+              </p>
+            </div>
             <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Cobertura" : "Coverage"}
@@ -211,7 +181,7 @@ export function CashflowPanel({
               <article key={month.label} className="workspace-soft-card rounded-lg p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-base font-semibold text-[var(--workspace-text)]">{month.label}</p>
+                    <p className="text-base font-semibold text-[var(--workspace-text)]">{formatMonthLabel(month, locale)}</p>
                     <p className="mt-1 text-sm text-[var(--workspace-muted)]">
                       {formatNumber(month.bookings, locale)} {isSpanish ? "reservas" : "bookings"} • {formatNumber(month.nights, locale)} {isSpanish ? "noches" : "nights"}
                     </p>
@@ -259,10 +229,10 @@ export function CashflowPanel({
               <tbody className="divide-y divide-[var(--workspace-border)] text-[var(--workspace-text)]">
                 {view.monthlySummary.map((month) => (
                   <tr key={month.label}>
-                    <td className="py-4 pr-4 font-medium">{month.label}</td>
-                    <td className="py-4 pr-4">{formatCurrency(month.payout, false, currencyCode, locale)}</td>
-                    <td className="py-4 pr-4">{formatCurrency(month.expenses, false, currencyCode, locale)}</td>
-                    <td className="py-4 pr-4">{formatCurrency(month.profit, false, currencyCode, locale)}</td>
+                    <td className="py-4 pr-4 font-medium">{formatMonthLabel(month, locale)}</td>
+                    <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(month.payout, false, currencyCode, locale)}</td>
+                    <td className="tnum py-4 pr-4 font-medium text-neg">{formatCurrency(month.expenses, false, currencyCode, locale)}</td>
+                    <td className={`tnum py-4 pr-4 font-medium ${month.profit >= 0 ? "text-pos" : "text-neg"}`}>{formatCurrency(month.profit, false, currencyCode, locale)}</td>
                     <td className="py-4 pr-4">{formatNumber(month.bookings, locale)}</td>
                     <td className="py-4">{formatNumber(month.nights, locale)}</td>
                   </tr>

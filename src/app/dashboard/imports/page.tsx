@@ -1,10 +1,10 @@
 import { requireDashboardAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { FileSpreadsheet, Layers3 } from "lucide-react";
 import { ImportCenterLauncher } from "@/components/import-center-launcher";
 import { ImportsManager } from "@/components/imports-manager";
 import { SectionCard } from "@/components/section-card";
+import { StatStrip } from "@/components/stat-strip";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
 import {
@@ -60,101 +60,46 @@ export default async function ImportsPage() {
       pageTitle={isSpanish ? "Centro de importación" : "Import Center"}
       pageSubtitle={
         isSpanish
-          ? "Usa Reservas o Gastos como punto de entrada principal. Esta página queda para historial, control y trazabilidad."
-          : "Use Bookings or Expenses as the main entry point. This page stays focused on history, control, and traceability."
+          ? "Historial de todo lo importado: Airbnb, Booking.com, Excel de GoHostlyx y extractos de payout."
+          : "History of everything imported: Airbnb, Booking.com, GoHostlyx Excel and payout statements."
       }
       businessName={userSettings.businessName}
       userName={userName}
       userEmail={ownerEmail}
       currencyCode={userSettings.currencyCode}
       latestImport={latestImport}
+      actions={<ImportCenterLauncher properties={properties} />}
     >
       <div className="space-y-6">
-        <ImportCenterLauncher properties={properties} />
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <SectionCard title={isSpanish ? "Archivos importados" : "Imported files"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-lg p-3">
-                <FileSpreadsheet className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(importSummaries.length)}
-              </p>
-            </div>
-          </SectionCard>
-
-          <SectionCard title={isSpanish ? "Registros operativos" : "Operational records"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-lg p-3">
-                <Layers3 className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                  {formatNumber(totalImportedBookings + totalImportedExpenses)}
-                </p>
-                <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                  {formatNumber(totalImportedBookings, locale)} {isSpanish ? "reservas" : "bookings"} {isSpanish ? "y" : "and"} {formatNumber(totalImportedExpenses, locale)} {isSpanish ? "gastos" : "expenses"}
-                </p>
-              </div>
-            </div>
-          </SectionCard>
-
-          <SectionCard title={isSpanish ? "Statements de payout" : "Payout statements"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-lg p-3">
-                <Layers3 className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(totalPayoutStatements, locale)}
-              </p>
-            </div>
-          </SectionCard>
-        </div>
-
-        <SectionCard title={isSpanish ? "Cómo pensarlo" : "How to think about it"}>
-          <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-            <p className="text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Piensa en esta página como la capa de control. Las reservas viven mejor en Reservas, los gastos en Gastos y los payout statements en Liquidaciones. Aquí revisas qué cayó y cuándo."
-                : "Think of this page as the control layer. Bookings belong naturally in Bookings, expenses in Expenses, and payout statements in Payouts. This is where you review what landed and when."}
-            </p>
-            <div className="workspace-soft-card rounded-lg px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
-              <p>
-                {isSpanish
-                  ? "Cada archivo de abajo sigue visible como historial de importación para que entiendas qué cambió, cuándo cayó y si creó reservas, gastos o un statement de payout."
-                  : "Each file below stays visible as import history so you can understand what changed, when it landed, and whether it created bookings, expenses, or a payout statement."}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  href="/dashboard/bookings"
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
-                >
-                  {isSpanish ? "Ir a Reservas" : "Go to Bookings"}
-                </Link>
-                <Link
-                  href="/dashboard/expenses"
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
-                >
-                  {isSpanish ? "Ir a Gastos" : "Go to Expenses"}
-                </Link>
-                <Link
-                  href="/dashboard/payouts"
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
-                >
-                  {isSpanish ? "Ir a Liquidaciones" : "Go to Payouts"}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </SectionCard>
+        <StatStrip
+          items={[
+            {
+              label: isSpanish ? "Archivos importados" : "Imported files",
+              value: formatNumber(importSummaries.length, locale),
+              icon: <FileSpreadsheet className="h-4 w-4" />,
+            },
+            {
+              label: isSpanish ? "Registros importados" : "Imported records",
+              value: formatNumber(totalImportedBookings + totalImportedExpenses, locale),
+              hint: isSpanish
+                ? `${formatNumber(totalImportedBookings, locale)} reservas y ${formatNumber(totalImportedExpenses, locale)} gastos`
+                : `${formatNumber(totalImportedBookings, locale)} bookings and ${formatNumber(totalImportedExpenses, locale)} expenses`,
+              icon: <Layers3 className="h-4 w-4" />,
+            },
+            {
+              label: isSpanish ? "Extractos de payout" : "Payout statements",
+              value: formatNumber(totalPayoutStatements, locale),
+              icon: <Layers3 className="h-4 w-4" />,
+            },
+          ]}
+        />
 
         <SectionCard
-          title={isSpanish ? "Backup y rastro de auditoría" : "Backup & Audit Trail"}
+          title={isSpanish ? "Historial de importaciones" : "Import history"}
           subtitle={
             isSpanish
-              ? "Cada batch de abajo muestra en qué propiedad entró, cuándo cayó y qué tipo de capa de datos añadió dentro de GoHostlyx."
-              : "Each batch below shows which property it entered, when it landed, and which data layer it added inside GoHostlyx."
+              ? "Qué archivo entró, en qué propiedad y cuándo. Borrar una importación quita solo los datos que trajo."
+              : "Which file landed, in which property and when. Deleting an import removes only the data it brought in."
           }
         >
           <ImportsManager importSummaries={importSummaries} />

@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { deleteImportBatch } from "@/lib/db";
 import { requireApiAccess } from "@/lib/access";
 
@@ -28,11 +28,11 @@ export async function DELETE(
       importId,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Deleted ${result.deletedFileName} from ${result.deletedPropertyName}. Removed the data linked to that import batch.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The import could not be deleted."),

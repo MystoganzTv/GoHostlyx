@@ -3,16 +3,18 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { FileOutput } from "lucide-react";
+import { useTranslate } from "@/components/use-translate";
 
 export function ExportReportLink({
   className,
   target = "_blank",
-  label = "Export Report",
+  label,
 }: {
   className: string;
   target?: "_self" | "_blank";
   label?: string;
 }) {
+  const t = useTranslate();
   const searchParams = useSearchParams();
   const query = searchParams.toString();
   const href = query ? `/dashboard/reports/share?${query}` : "/dashboard/reports/share";
@@ -26,7 +28,7 @@ export function ExportReportLink({
       rel={target === "_blank" ? "noreferrer" : undefined}
     >
       <FileOutput className="h-[18px] w-[18px] shrink-0 opacity-95" />
-      <span>{label}</span>
+      <span>{label ?? t("Export report", "Exportar informe")}</span>
     </Link>
   );
 }

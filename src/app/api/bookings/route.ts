@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { getPropertyDefinitions, insertManualBooking } from "@/lib/db";
 import { normalizeManualBooking } from "@/lib/manual-entry";
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const properties = await getPropertyDefinitions(ownerEmail);
 
     if (properties.length === 0) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Create your first property before adding bookings." },
         { status: 400 },
       );
@@ -32,11 +32,11 @@ export async function POST(request: Request) {
       booking,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Booking for ${booking.guestName} added successfully.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The booking could not be saved."),

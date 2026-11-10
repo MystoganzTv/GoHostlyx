@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { syncIcalFeedById } from "@/lib/ical-feeds";
 
@@ -21,7 +21,7 @@ export async function POST(
     const feedId = Number((await params).id);
 
     if (!Number.isFinite(feedId) || feedId <= 0) {
-      return NextResponse.json({ error: "Invalid feed id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid feed id." }, { status: 400 });
     }
 
     const result = await syncIcalFeedById({
@@ -29,11 +29,11 @@ export async function POST(
       feedId,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Synced ${result.eventCount} event${result.eventCount === 1 ? "" : "s"} just now.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error: clientErrorMessage(error, "The iCal feed could not be synced."),
       },

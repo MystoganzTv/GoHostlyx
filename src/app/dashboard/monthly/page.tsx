@@ -102,7 +102,6 @@ export default async function MonthlyPage({
       <MonthlySummaryPanel
         view={view}
         currencyCode={view.displayCurrencyCode}
-        rangeLabel={view.rangeLabel}
       />
     </WorkspaceShell>
   );

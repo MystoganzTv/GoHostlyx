@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireUserEmail } from "@/lib/auth";
 import { upsertUserSettings } from "@/lib/db";
 import { normalizeCountryCode } from "@/lib/markets";
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const ownerEmail = await requireUserEmail();
 
     if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return await localizedJson({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     );
 
     if (!businessName) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Add a business name before saving settings." },
         { status: 400 },
       );
@@ -33,11 +33,11 @@ export async function POST(request: Request) {
       primaryCountryCode,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Saved ${businessName}. GoHostlyx will now use ${primaryCountryCode} as the default reporting market when all countries are selected.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The business settings could not be saved."),

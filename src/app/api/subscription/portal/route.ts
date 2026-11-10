@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireUserEmail } from "@/lib/auth";
 import { getSubscriptionState } from "@/lib/db";
 import { buildAppUrl, getStripeClient } from "@/lib/stripe";
@@ -12,19 +12,19 @@ export async function POST(request: Request) {
     const ownerEmail = await requireUserEmail();
 
     if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return await localizedJson({ error: "Unauthorized" }, { status: 401 });
     }
 
     const stripe = getStripeClient();
 
     if (!stripe) {
-      return NextResponse.json({ error: "Stripe billing is not configured yet." }, { status: 500 });
+      return await localizedJson({ error: "Stripe billing is not configured yet." }, { status: 500 });
     }
 
     const subscription = await getSubscriptionState(ownerEmail);
 
     if (!subscription.stripeCustomerId) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "There is no billing account for this workspace yet." },
         { status: 400 },
       );
@@ -41,10 +41,10 @@ export async function POST(request: Request) {
       return_url: buildAppUrl(returnPath),
     });
 
-    return NextResponse.json({ url: portalSession.url });
+    return await localizedJson({ url: portalSession.url });
   } catch (error) {
     console.error("[billing-portal]", error);
-    return NextResponse.json(
+    return await localizedJson(
       { error: "The billing portal could not be opened." },
       { status: 500 },
     );

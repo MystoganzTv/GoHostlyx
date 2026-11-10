@@ -44,7 +44,7 @@ export default async function PricingPage({
     signedIn && session?.user?.email
       ? await getSubscriptionState(session.user.email.toLowerCase())
       : null;
-  const subscriptionBadge = subscription ? getSubscriptionBadge(subscription) : null;
+  const subscriptionBadge = subscription ? getSubscriptionBadge(subscription, locale) : null;
   const primaryCtaHref = signedIn ? "/dashboard" : "/login?mode=sign-up";
   const billingState =
     typeof resolvedSearchParams.billing === "string" ? resolvedSearchParams.billing : undefined;

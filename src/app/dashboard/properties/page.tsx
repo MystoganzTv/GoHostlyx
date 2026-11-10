@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Building2, Layers3 } from "lucide-react";
 import { PropertiesManager } from "@/components/properties-manager";
 import { SectionCard } from "@/components/section-card";
+import { StatStrip } from "@/components/stat-strip";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
 import {
@@ -201,46 +202,34 @@ export default async function PropertiesPage() {
           </SectionCard>
         ) : null}
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <SectionCard title={isSpanish ? "Propiedades" : "Properties"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-lg p-3">
-                <Building2 className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(properties.length)}
-              </p>
-            </div>
-          </SectionCard>
-          <SectionCard title={isSpanish ? "Listings" : "Listings"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-lg p-3">
-                <Layers3 className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(properties.reduce((sum, property) => sum + property.units.length, 0))}
-              </p>
-            </div>
-          </SectionCard>
-          <SectionCard title={isSpanish ? "Cómo usarlo" : "How to use it"}>
-            <p className="text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Las importaciones se asignan a la propiedad que elijas durante el upload. Los listings viven bajo esa propiedad, así que el sync de calendario y el seguimiento operativo pueden seguir siendo específicos del listing mientras el reporting se consolida limpio."
-                : "Imports are assigned to the property you choose during upload. Listings live under that property, so calendar sync and operational tracking can stay listing-specific while reporting still rolls up cleanly."}
-            </p>
-          </SectionCard>
-        </div>
+        <StatStrip
+          items={[
+            {
+              label: isSpanish ? "Propiedades" : "Properties",
+              value: formatNumber(properties.length, locale),
+              icon: <Building2 className="h-4 w-4" />,
+            },
+            {
+              label: "Listings",
+              value: formatNumber(properties.reduce((sum, property) => sum + property.units.length, 0), locale),
+              hint: isSpanish
+                ? "Las viviendas completas no necesitan listings extra."
+                : "Single-home rentals don't need extra listings.",
+              icon: <Layers3 className="h-4 w-4" />,
+            },
+          ]}
+        />
 
         <SectionCard
-          title={isSetupMode ? (isSpanish ? "Crea tu primera estructura de listings" : "Create Your First Listing Structure") : isSpanish ? "Setup de listings" : "Listings Setup"}
+          title={isSetupMode ? (isSpanish ? "Crea tu primera estructura de listings" : "Create Your First Listing Structure") : isSpanish ? "Tus propiedades" : "Your properties"}
           subtitle={
             isSetupMode
               ? isSpanish
                 ? "Dile a GoHostlyx si esto es un alquiler de casa completa o una propiedad con varios listings."
                 : "Tell GoHostlyx whether this is a single-home rental or a property with several listings."
               : isSpanish
-                ? "Crea primero la estructura de la cartera y luego asigna reservas y gastos a la propiedad y listing correctos."
-                : "Create the portfolio structure first, then assign bookings and expenses to the right property and listing."
+                ? "Cada reserva, gasto e importación pertenece a una propiedad."
+                : "Every booking, expense and import belongs to a property."
           }
         >
           <PropertiesManager

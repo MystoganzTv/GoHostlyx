@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { redirect } from "next/navigation";
 import { requireUserEmail } from "@/lib/auth";
 import { getSubscriptionState } from "@/lib/db";
@@ -28,14 +29,14 @@ export async function requireApiAccess(): Promise<ApiAccess> {
   const ownerEmail = await requireUserEmail();
 
   if (!ownerEmail) {
-    return { response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+    return { response: await localizedJson({ error: "Unauthorized" }, { status: 401 }) };
   }
 
   const subscription = await getSubscriptionState(ownerEmail);
 
   if (!canAccessDashboard(subscription)) {
     return {
-      response: NextResponse.json(
+      response: await localizedJson(
         { error: "Your trial has ended. Choose a plan to keep using GoHostlyx." },
         { status: 402 },
       ),

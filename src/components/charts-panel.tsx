@@ -16,9 +16,10 @@ import {
   YAxis,
 } from "recharts";
 import type { CategoryPoint, ChannelPoint, CurrencyCode, MonthlyPoint } from "@/lib/types";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatCurrency, formatMonthLabel, formatPercent } from "@/lib/format";
 import { getLocaleForCurrency } from "@/lib/markets";
 import { SectionCard } from "./section-card";
+import { useLocale } from "@/components/locale-provider";
 
 const categoryColors = ["#58c4b6", "#82d3c8", "#7a94d6", "#f2b26b", "#ec8f96", "#8d81d9"];
 
@@ -66,7 +67,7 @@ function buildBarsLabel(month: MonthlyPoint, index: number, months: MonthlyPoint
 }
 
 export function ChartsPanel({
-  monthlySummary,
+  monthlySummary: rawMonthlySummary,
   expensesByCategory,
   revenueByChannel,
   currencyCode,
@@ -78,6 +79,13 @@ export function ChartsPanel({
   currencyCode: CurrencyCode;
   mixedCurrencyMode?: boolean;
 }) {
+  const { locale } = useLocale();
+  const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
+  const monthlySummary = useMemo(
+    () => rawMonthlySummary.map((point) => ({ ...point, label: formatMonthLabel(point, locale) })),
+    [rawMonthlySummary, locale],
+  );
   const [profitChartMode, setProfitChartMode] = useState<"trend" | "bars">("trend");
   const [activeProfitBarKey, setActiveProfitBarKey] = useState<string | null>(null);
   const costStructure = topCostShare(expensesByCategory);
@@ -91,10 +99,10 @@ export function ChartsPanel({
   if (mixedCurrencyMode) {
     return (
       <SectionCard
-        title="Portfolio View"
-        subtitle="All markets mixes real currencies, so GoHostlyx pauses converted amount charts until you focus on one market."
+        title={t("Portfolio View", "Vista portfolio")}
+        subtitle={t("All markets mixes real currencies, so GoHostlyx pauses converted amount charts until you focus on one market.", "Todos los mercados mezcla monedas reales, así que GoHostlyx pausa los gráficos de importes hasta que elijas un mercado.")}
       >
-        <EmptyChartState label="Select a single market to unlock profit-over-time, revenue-vs-expenses, and cost charts." />
+        <EmptyChartState label={t("Select a single market to unlock profit-over-time, revenue-vs-expenses, and cost charts.", "Elige un solo mercado para ver beneficio en el tiempo, ingresos frente a gastos y costes.")} />
       </SectionCard>
     );
   }
@@ -102,14 +110,14 @@ export function ChartsPanel({
   return (
     <div className="space-y-6">
       <SectionCard
-        title="Profit Over Time"
-        subtitle="The fastest way to see if the business is actually becoming more profitable."
+        title={t("Profit Over Time", "Beneficio en el tiempo")}
+        subtitle={t("The fastest way to see if the business is actually becoming more profitable.", "La forma más rápida de ver si el negocio gana más con el tiempo.")}
         action={
           monthlySummary.length > 0 ? (
             <div className="inline-flex py-1">
               {[
-                { value: "trend", label: "Trend" },
-                { value: "bars", label: "Bars" },
+                { value: "trend", label: t("Trend", "Tendencia") },
+                { value: "bars", label: t("Bars", "Barras") },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -129,7 +137,7 @@ export function ChartsPanel({
         }
       >
         {monthlySummary.length === 0 ? (
-          <EmptyChartState label="No monthly data available for the current filters." />
+          <EmptyChartState label={t("No monthly data available for the current filters.", "No hay datos mensuales con los filtros actuales.")} />
         ) : profitChartMode === "trend" ? (
           <div className="h-[320px] min-w-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -202,7 +210,7 @@ export function ChartsPanel({
                     </p>
                     <div className="h-4">
                       {isActive ? (
-                        <p className={`text-[11px] ${isPositive ? "text-emerald-300" : "text-rose-200"}`}>
+                        <p className={`text-[11px] ${isPositive ? "text-pos" : "text-neg"}`}>
                           {formatCurrency(month.profit, false, currencyCode)}
                         </p>
                       ) : null}
@@ -218,8 +226,8 @@ export function ChartsPanel({
 
       <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <SectionCard
-          title="Revenue vs Expenses"
-          subtitle="See how top-line inflow compares against cost load each month."
+          title={t("Revenue vs Expenses", "Ingresos frente a gastos")}
+          subtitle={t("See how top-line inflow compares against cost load each month.", "Cómo se comparan los ingresos con los costes cada mes.")}
           action={
             monthlySummary.length > 12 ? (
               <div className="inline-flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -229,7 +237,7 @@ export function ChartsPanel({
           }
         >
           {monthlySummary.length === 0 ? (
-            <EmptyChartState label="No revenue or expense data for the current filters." />
+            <EmptyChartState label={t("No revenue or expense data for the current filters.", "No hay ingresos ni gastos con los filtros actuales.")} />
           ) : (
             <div className="h-[300px] min-w-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -261,11 +269,11 @@ export function ChartsPanel({
         </SectionCard>
 
         <SectionCard
-          title="Expenses Breakdown"
-          subtitle="Understand where money is actually leaving the business."
+          title={t("Expenses Breakdown", "Desglose de gastos")}
+          subtitle={t("Understand where money is actually leaving the business.", "Dónde se va realmente el dinero del negocio.")}
         >
           {expensesByCategory.length === 0 ? (
-            <EmptyChartState label="No expenses match the current filters." />
+            <EmptyChartState label={t("No expenses match the current filters.", "Ningún gasto coincide con los filtros actuales.")} />
           ) : (
             <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
               <div className="h-[300px] min-w-0">
@@ -292,19 +300,19 @@ export function ChartsPanel({
               <div className="workspace-soft-card rounded-lg p-5">
                 <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
                   <div>
-                    <p className="text-sm font-semibold text-[var(--workspace-text)]">Cost Table</p>
-                    <p className="mt-1 text-xs text-[var(--workspace-muted)]">Top categories by weight in the business.</p>
+                    <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("Cost table", "Tabla de costes")}</p>
+                    <p className="mt-1 text-xs text-[var(--workspace-muted)]">{t("Top categories by weight in the business.", "Las categorías que más pesan en el negocio.")}</p>
                   </div>
                   <span className="flex min-h-[58px] min-w-[58px] flex-col items-center justify-center rounded-full bg-white/[0.06] px-2 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
-                    <span className="leading-none">Top</span>
+                    <span className="leading-none">{t("Top", "Top")}</span>
                     <span className="mt-1 text-base leading-none text-[var(--workspace-text)]">5</span>
                   </span>
                 </div>
 
                 <div className="mt-3 overflow-hidden rounded-lg border border-white/8">
                   <div className="grid grid-cols-[minmax(0,1fr)_96px] gap-6 bg-white/[0.04] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
-                    <span>Category</span>
-                    <span className="text-right">Share</span>
+                    <span>{t("Category", "Categoría")}</span>
+                    <span className="text-right">{t("Share", "Peso")}</span>
                   </div>
 
                   <div className="divide-y divide-white/8">
@@ -338,11 +346,11 @@ export function ChartsPanel({
 
       <div className="grid gap-6 xl:grid-cols-3">
         <SectionCard
-          title="Revenue By Channel"
-          subtitle="See which channels are actually driving the business."
+          title={t("Revenue By Channel", "Ingresos por canal")}
+          subtitle={t("See which channels are actually driving the business.", "Qué canales mueven realmente el negocio.")}
         >
           {revenueByChannel.length === 0 ? (
-            <EmptyChartState label="No channel data for the current filters." />
+            <EmptyChartState label={t("No channel data for the current filters.", "No hay datos de canales con los filtros actuales.")} />
           ) : (
             <div className="h-[260px] min-w-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -380,8 +388,8 @@ export function ChartsPanel({
         </SectionCard>
 
         <SectionCard
-          title="Monthly Performance"
-          subtitle="Quick compare of the months driving the strongest results."
+          title={t("Monthly Performance", "Rendimiento mensual")}
+          subtitle={t("Quick compare of the months driving the strongest results.", "Comparativa rápida de los meses con mejores resultados.")}
         >
           <div className="space-y-3">
             {monthlySummary.length === 0 ? (
@@ -398,7 +406,7 @@ export function ChartsPanel({
                       <div>
                         <p className="text-base font-semibold text-[var(--workspace-text)]">{month.label}</p>
                         <p className="mt-1 text-sm text-[var(--workspace-muted)]">
-                          {month.bookings} bookings • {month.nights} nights
+                          {month.bookings} {t("bookings", "reservas")} • {month.nights} {t("nights", "noches")}
                         </p>
                       </div>
                       <span className="text-sm font-semibold text-emerald-300">
@@ -412,8 +420,8 @@ export function ChartsPanel({
         </SectionCard>
 
         <SectionCard
-          title="Cost Structure"
-          subtitle="The categories taking the largest share of your expense base."
+          title={t("Cost Structure", "Estructura de costes")}
+          subtitle={t("The categories taking the largest share of your expense base.", "Las categorías que más pesan en tus gastos.")}
         >
           <div className="space-y-3">
             {costStructure.length === 0 ? (
@@ -426,7 +434,7 @@ export function ChartsPanel({
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-base font-semibold text-[var(--workspace-text)]">{item.label}</p>
-                      <p className="mt-1 text-sm text-[var(--workspace-muted)]">{formatPercent(item.share)} of total expenses</p>
+                      <p className="mt-1 text-sm text-[var(--workspace-muted)]">{formatPercent(item.share, locale)} {t("of total expenses", "del total de gastos")}</p>
                     </div>
                     <span className="text-sm font-semibold text-[var(--workspace-text)]">
                       {formatCurrency(item.value, false, currencyCode)}

@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { disconnectIcalFeed } from "@/lib/db";
 
@@ -21,7 +21,7 @@ export async function DELETE(
     const feedId = Number((await params).id);
 
     if (!Number.isFinite(feedId) || feedId <= 0) {
-      return NextResponse.json({ error: "Invalid feed id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid feed id." }, { status: 400 });
     }
 
     await disconnectIcalFeed({
@@ -29,11 +29,11 @@ export async function DELETE(
       feedId,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: "Feed disconnected.",
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error: clientErrorMessage(error, "The iCal feed could not be disconnected."),
       },

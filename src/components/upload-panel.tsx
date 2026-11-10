@@ -374,6 +374,7 @@ export function UploadPanel({
   const router = useRouter();
   const { locale } = useLocale();
   const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const toastRef = useRef<HTMLDivElement | null>(null);
@@ -1358,7 +1359,7 @@ export function UploadPanel({
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-[var(--workspace-text)]">Map your columns</p>
+                      <p className="text-sm font-medium text-[var(--workspace-text)]">{t("Map your columns", "Asigna tus columnas")}</p>
                       <p className="text-sm leading-6 text-[var(--workspace-muted)]">
                         {needsFocusedMapping
                           ? "GoHostlyx read the file, but key columns still need your review before we can show a clean preview."
@@ -1412,7 +1413,7 @@ export function UploadPanel({
                                   : "border-[var(--workspace-border)]"
                             }`}
                           >
-                            <option value="">Select a column</option>
+                            <option value="">{t("Select a column", "Elige una columna")}</option>
                             {(preview.manualMapping?.columns ?? []).map((column) => (
                               <option key={`${field}-${column.index}`} value={column.index}>
                                 {column.label}

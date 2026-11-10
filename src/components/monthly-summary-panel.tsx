@@ -3,7 +3,7 @@
 import { SectionCard } from "@/components/section-card";
 import { useLocale } from "@/components/locale-provider";
 import { MetricCard } from "@/components/metric-card";
-import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
+import { formatCurrency, formatNumber, formatPercent, formatMonthLabel } from "@/lib/format";
 import type { CurrencyCode, DashboardView, MonthlyPoint } from "@/lib/types";
 
 function findTopMonth(months: MonthlyPoint[]) {
@@ -19,14 +19,13 @@ function findTopMonth(months: MonthlyPoint[]) {
 export function MonthlySummaryPanel({
   view,
   currencyCode,
-  rangeLabel,
 }: {
   view: DashboardView;
   currencyCode: CurrencyCode;
-  rangeLabel: string;
 }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
   const monthsInView = view.monthlySummary.length;
   const topMonth = findTopMonth(view.monthlySummary);
   const averageRevenue =
@@ -87,41 +86,6 @@ export function MonthlySummaryPanel({
 
   return (
     <div className="space-y-6">
-      <SectionCard
-        title={isSpanish ? "Cómo funciona esta vista" : "How This View Works"}
-        subtitle={
-          isSpanish
-            ? "Esta página compara meses entre sí en lugar de hacer zoom en un solo mes."
-            : "This page compares months against each other instead of zooming into one single month."
-        }
-      >
-        <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="workspace-soft-card rounded-lg p-5">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {isSpanish ? "Ventana de reporte" : "Reporting window"}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">
-              {rangeLabel}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "GoHostlyx agrupa tus reservas y gastos guardados mes a mes para que puedas comparar estacionalidad, ritmo y rentabilidad."
-                : "GoHostlyx groups your saved bookings and expenses month by month so you can compare seasonality, pace, and profitability."}
-            </p>
-          </div>
-          <div className="workspace-soft-card rounded-lg p-5">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {isSpanish ? "Consejo de lectura" : "Reading tip"}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Ingresos y payout se agrupan por el mes de check-in de la reserva. Los gastos se quedan en su propio mes de gasto. Usa esta página para comparar meses y luego Dashboard o Calendar cuando quieras una vista operativa más cercana."
-                : "Revenue and payout are grouped by booking check-in month. Expenses stay in their own expense month. Use this page to compare months, then use Dashboard or Calendar when you want a closer operational view."}
-            </p>
-          </div>
-        </div>
-      </SectionCard>
-
       <div className={`metric-strip grid ${view.mixedCurrencyMode ? "md:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
         {cards.map((card) => (
           <MetricCard
@@ -217,8 +181,8 @@ export function MonthlySummaryPanel({
         title={isSpanish ? "Desglose mensual" : "Monthly Breakdown"}
         subtitle={
           isSpanish
-            ? "Ingresos, payout, gastos, beneficio, reservas y noches agrupados por mes."
-            : "Revenue, payout, expenses, profit, bookings, and nights grouped by month."
+            ? "Ingresos y payout van al mes del check-in; los gastos, a su propio mes."
+            : "Revenue and payout count in the check-in month; expenses in their own month."
         }
       >
         <div className="space-y-3 md:hidden">
@@ -233,7 +197,7 @@ export function MonthlySummaryPanel({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-base font-semibold text-[var(--workspace-text)]">
-                      {month.label}
+                      {formatMonthLabel(month, locale)}
                     </p>
                     <p className="mt-1 text-sm text-[var(--workspace-muted)]">
                       {formatNumber(month.bookings, locale)} {isSpanish ? "reservas" : "bookings"} • {formatNumber(month.guests, locale)} {isSpanish ? "huéspedes" : "guests"} • {formatNumber(month.nights, locale)} {isSpanish ? "noches" : "nights"}
@@ -293,7 +257,7 @@ export function MonthlySummaryPanel({
                     </div>
                     <div>
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                        Expenses
+                        {t("Expenses", "Gastos")}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
                         {formatCurrency(month.expenses, false, currencyCode)}
@@ -301,7 +265,7 @@ export function MonthlySummaryPanel({
                     </div>
                     <div>
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                        Margin
+                        {t("Margin", "Margen")}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
                         {formatPercent(margin)}
@@ -318,17 +282,17 @@ export function MonthlySummaryPanel({
           <table className="min-w-full text-left text-sm">
             <thead className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               <tr>
-                <th className="pb-3 pr-4 font-medium">Month</th>
-                <th className="pb-3 pr-4 font-medium">Bookings</th>
-                <th className="pb-3 pr-4 font-medium">Guests</th>
-                <th className="pb-3 pr-4 font-medium">Nights</th>
+                <th className="pb-3 pr-4 font-medium">{t("Month", "Mes")}</th>
+                <th className="pb-3 pr-4 font-medium">{t("Bookings", "Reservas")}</th>
+                <th className="pb-3 pr-4 font-medium">{t("Guests", "Huéspedes")}</th>
+                <th className="pb-3 pr-4 font-medium">{t("Nights", "Noches")}</th>
                 {!view.mixedCurrencyMode ? (
                   <>
-                    <th className="pb-3 pr-4 font-medium">Revenue</th>
+                    <th className="pb-3 pr-4 font-medium">{t("Revenue", "Ingresos")}</th>
                     <th className="pb-3 pr-4 font-medium">Payout</th>
-                    <th className="pb-3 pr-4 font-medium">Expenses</th>
-                    <th className="pb-3 pr-4 font-medium">Profit</th>
-                    <th className="pb-3 font-medium">Margin</th>
+                    <th className="pb-3 pr-4 font-medium">{t("Expenses", "Gastos")}</th>
+                    <th className="pb-3 pr-4 font-medium">{t("Profit", "Beneficio")}</th>
+                    <th className="pb-3 font-medium">{t("Margin", "Margen")}</th>
                   </>
                 ) : null}
               </tr>
@@ -339,16 +303,16 @@ export function MonthlySummaryPanel({
 
                 return (
                   <tr key={month.label}>
-                    <td className="py-4 pr-4 font-medium">{month.label}</td>
+                    <td className="py-4 pr-4 font-medium">{formatMonthLabel(month, locale)}</td>
                     <td className="py-4 pr-4">{formatNumber(month.bookings)}</td>
                     <td className="py-4 pr-4">{formatNumber(month.guests)}</td>
                     <td className="py-4 pr-4">{formatNumber(month.nights)}</td>
                     {!view.mixedCurrencyMode ? (
                       <>
-                        <td className="py-4 pr-4">{formatCurrency(month.revenue, false, currencyCode)}</td>
-                        <td className="py-4 pr-4">{formatCurrency(month.payout, false, currencyCode)}</td>
-                        <td className="py-4 pr-4">{formatCurrency(month.expenses, false, currencyCode)}</td>
-                        <td className="py-4 pr-4">{formatCurrency(month.profit, false, currencyCode)}</td>
+                        <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(month.revenue, false, currencyCode, locale)}</td>
+                        <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(month.payout, false, currencyCode, locale)}</td>
+                        <td className="tnum py-4 pr-4 font-medium text-neg">{formatCurrency(month.expenses, false, currencyCode, locale)}</td>
+                        <td className={`tnum py-4 pr-4 font-medium ${month.profit >= 0 ? "text-pos" : "text-neg"}`}>{formatCurrency(month.profit, false, currencyCode, locale)}</td>
                         <td className="py-4">{formatPercent(margin)}</td>
                       </>
                     ) : null}

@@ -6,6 +6,7 @@ import { PencilLine, ReceiptText, ScrollText } from "lucide-react";
 import { PropertyUnitFieldGroup } from "@/components/property-unit-field-group";
 import { WorkspaceDateField } from "@/components/workspace-date-field";
 import type { PropertyDefinition } from "@/lib/types";
+import { useTranslate } from "@/components/use-translate";
 
 function inputClassName() {
   return "input-surface w-full rounded-lg px-4 py-3 text-sm";
@@ -16,6 +17,7 @@ export function ManualEntryPanel({
 }: {
   properties: PropertyDefinition[];
 }) {
+  const t = useTranslate();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [bookingMessage, setBookingMessage] = useState<string | null>(null);
@@ -44,14 +46,14 @@ export function ManualEntryPanel({
           };
 
           if (!response.ok) {
-            onError(payload.error ?? "The record could not be saved.");
+            onError(payload.error ?? t("The record could not be saved.", "No se pudo guardar el registro."));
             return;
           }
 
-          onSuccess(payload.message ?? "Saved.");
+          onSuccess(payload.message ?? t("Saved.", "Guardado."));
           router.refresh();
         } catch {
-          onError("The record could not be saved.");
+          onError(t("The record could not be saved.", "No se pudo guardar el registro."));
         }
       })();
     });
@@ -86,10 +88,10 @@ export function ManualEntryPanel({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
-            Manual Entry
+            {t("Manual Entry", "Entrada manual")}
           </p>
           <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-            Add bookings and expenses directly in the app.
+            {t("Add bookings and expenses directly in the app.", "Añade reservas y gastos directamente en la app.")}
           </p>
         </div>
         <div className="workspace-icon-chip rounded-xl p-3">
@@ -113,9 +115,9 @@ export function ManualEntryPanel({
                 <ScrollText className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[var(--workspace-text)]">Add Booking</p>
+                <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("Add Booking", "Añadir reserva")}</p>
                 <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                  Capture stays, guests, pricing, and payout.
+                  {t("Capture stays, guests, pricing, and payout.", "Estancias, huéspedes, precios y payout.")}
                 </p>
               </div>
             </div>
@@ -135,9 +137,9 @@ export function ManualEntryPanel({
                 <ReceiptText className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[var(--workspace-text)]">Add Expense</p>
+                <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("Add Expense", "Añadir gasto")}</p>
                 <p className="mt-1 text-xs text-[var(--workspace-muted)]">
-                  Log costs, categories, and notes cleanly.
+                  {t("Log costs, categories, and notes cleanly.", "Costes, categorías y notas.")}
                 </p>
               </div>
             </div>
@@ -147,58 +149,58 @@ export function ManualEntryPanel({
         {activeEntryType === "booking" ? (
         <form action={handleBookingSubmit} className="workspace-soft-card rounded-xl p-4 sm:p-5 space-y-4">
           <div>
-            <p className="text-sm font-semibold text-[var(--workspace-text)]">Booking details</p>
-            <p className="mt-1 text-sm text-[var(--workspace-muted)]">Use this when you want to add a stay manually.</p>
+            <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("Booking details", "Datos de la reserva")}</p>
+            <p className="mt-1 text-sm text-[var(--workspace-muted)]">{t("Use this when you want to add a stay manually.", "Úsalo para añadir una estancia a mano.")}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <WorkspaceDateField name="checkIn" label="Check-in" placeholder="Select check-in" required />
-            <WorkspaceDateField name="checkout" label="Checkout" placeholder="Select checkout" required />
+            <WorkspaceDateField name="checkIn" label="Check-in" placeholder={t("Select check-in", "Elige el check-in")} required />
+            <WorkspaceDateField name="checkout" label={t("Checkout", "Check-out")} placeholder={t("Select checkout", "Elige el check-out")} required />
             <PropertyUnitFieldGroup properties={properties} />
             <label className="space-y-2 sm:col-span-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Guest name
+                {t("Guest name", "Nombre del huésped")}
               </span>
-              <input className={inputClassName()} type="text" name="guestName" placeholder="Guest name" required />
+              <input className={inputClassName()} type="text" name="guestName" placeholder={t("Guest name", "Nombre del huésped")} required />
             </label>
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Guests
+                {t("Guests", "Huéspedes")}
               </span>
               <input className={inputClassName()} type="number" min="1" name="guestCount" defaultValue="1" required />
             </label>
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Channel
+                {t("Channel", "Canal")}
               </span>
-              <input className={inputClassName()} type="text" name="channel" placeholder="Airbnb, Booking.com, Direct..." required />
+              <input className={inputClassName()} type="text" name="channel" placeholder={t("Airbnb, Booking.com, Direct...", "Airbnb, Booking.com, Directo...")} required />
             </label>
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Price per night
+                {t("Price per night", "Precio por noche")}
               </span>
               <input className={inputClassName()} type="number" min="0" step="0.01" name="pricePerNight" defaultValue="0" required />
             </label>
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Extra fee
+                {t("Extra fee", "Cargo extra")}
               </span>
               <input className={inputClassName()} type="number" min="0" step="0.01" name="extraFee" defaultValue="0" />
             </label>
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Discount
+                {t("Discount", "Descuento")}
               </span>
               <input className={inputClassName()} type="number" min="0" step="0.01" name="discount" defaultValue="0" />
             </label>
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Cleaning fee
+                {t("Cleaning fee", "Tarifa de limpieza")}
               </span>
               <input className={inputClassName()} type="number" min="0" step="0.01" name="cleaningFee" defaultValue="0" />
             </label>
             <label className="space-y-2 sm:col-span-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Host fee
+                {t("Host fee", "Comisión del anfitrión")}
               </span>
               <input className={inputClassName()} type="number" min="0" step="0.01" name="hostFee" defaultValue="0" />
             </label>
@@ -208,45 +210,45 @@ export function ManualEntryPanel({
             disabled={isPending}
             className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isPending ? "Saving booking..." : "Add booking"}
+            {isPending ? t("Saving booking...", "Guardando reserva...") : t("Add booking", "Añadir reserva")}
           </button>
           <div className="min-h-6">
-            {bookingMessage ? <p className="text-sm text-emerald-600">{bookingMessage}</p> : null}
-            {bookingError ? <p className="text-sm text-rose-500">{bookingError}</p> : null}
+            {bookingMessage ? <p className="text-sm text-pos">{bookingMessage}</p> : null}
+            {bookingError ? <p className="text-sm text-neg">{bookingError}</p> : null}
           </div>
         </form>
         ) : (
         <form action={handleExpenseSubmit} className="workspace-soft-card rounded-xl p-4 sm:p-5 space-y-4">
           <div>
-            <p className="text-sm font-semibold text-[var(--workspace-text)]">Expense details</p>
-            <p className="mt-1 text-sm text-[var(--workspace-muted)]">Use this for bills, cleaning, supplies, repairs, and operating costs.</p>
+            <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("Expense details", "Datos del gasto")}</p>
+            <p className="mt-1 text-sm text-[var(--workspace-muted)]">{t("Use this for bills, cleaning, supplies, repairs, and operating costs.", "Facturas, limpieza, suministros, reparaciones y costes operativos.")}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <WorkspaceDateField name="date" label="Date" placeholder="Select expense date" required />
+            <WorkspaceDateField name="date" label={t("Date", "Fecha")} placeholder={t("Select expense date", "Elige la fecha del gasto")} required />
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Amount
+                {t("Amount", "Importe")}
               </span>
               <input className={inputClassName()} type="number" min="0.01" step="0.01" name="amount" required />
             </label>
             <PropertyUnitFieldGroup properties={properties} />
             <label className="space-y-2 sm:col-span-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Category
+                {t("Category", "Categoría")}
               </span>
-              <input className={inputClassName()} type="text" name="category" placeholder="Cleaning, Repairs, Utilities..." required />
+              <input className={inputClassName()} type="text" name="category" placeholder={t("Cleaning, Repairs, Utilities...", "Limpieza, Reparaciones, Suministros...")} required />
             </label>
             <label className="space-y-2 sm:col-span-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Description
+                {t("Description", "Descripción")}
               </span>
-              <input className={inputClassName()} type="text" name="description" placeholder="What was paid for?" required />
+              <input className={inputClassName()} type="text" name="description" placeholder={t("What was paid for?", "¿Qué se pagó?")} required />
             </label>
             <label className="space-y-2 sm:col-span-2">
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                Note
+                {t("Note", "Nota")}
               </span>
-              <textarea className={`${inputClassName()} min-h-[108px] resize-y`} name="note" placeholder="Optional note" />
+              <textarea className={`${inputClassName()} min-h-[108px] resize-y`} name="note" placeholder={t("Optional note", "Nota opcional")} />
             </label>
           </div>
           <button
@@ -254,11 +256,11 @@ export function ManualEntryPanel({
             disabled={isPending}
             className="workspace-button-secondary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isPending ? "Saving expense..." : "Add expense"}
+            {isPending ? t("Saving expense...", "Guardando gasto...") : t("Add expense", "Añadir gasto")}
           </button>
           <div className="min-h-6">
-            {expenseMessage ? <p className="text-sm text-emerald-600">{expenseMessage}</p> : null}
-            {expenseError ? <p className="text-sm text-rose-500">{expenseError}</p> : null}
+            {expenseMessage ? <p className="text-sm text-pos">{expenseMessage}</p> : null}
+            {expenseError ? <p className="text-sm text-neg">{expenseError}</p> : null}
           </div>
         </form>
         )}

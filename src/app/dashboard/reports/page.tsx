@@ -15,7 +15,7 @@ import { ExportReportLink } from "@/components/export-report-link";
 import { SectionCard } from "@/components/section-card";
 import { SubscriptionUpgradeCard } from "@/components/subscription-upgrade-card";
 import { WorkspaceShell } from "@/components/workspace-shell";
-import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
+import { formatCurrency, formatNumber, formatPercent, formatMonthLabel } from "@/lib/format";
 import { getReconcileSidebarBadge } from "@/lib/reconcile";
 import { getRequestLocale } from "@/lib/server-locale";
 import { canAccessReports, getSubscriptionBadge } from "@/lib/subscription";
@@ -54,7 +54,7 @@ export default async function ReportsPage({
     searchParams,
     getSubscriptionState(ownerEmail),
   ]);
-  const subscriptionBadge = getSubscriptionBadge(subscription);
+  const subscriptionBadge = getSubscriptionBadge(subscription, locale);
 
   if (!canAccessReports(subscription)) {
     return (
@@ -166,11 +166,11 @@ export default async function ReportsPage({
                       key={`${month.label}-${index}`}
                       className="border-t border-[var(--workspace-border)] text-[var(--workspace-text)]"
                     >
-                      <td className="py-4 pr-4 font-medium">{month.label}</td>
+                      <td className="py-4 pr-4 font-medium">{formatMonthLabel(month, locale)}</td>
                       <td className="py-4 pr-4">{formatNumber(month.bookings, locale)}</td>
-                      <td className="py-4 pr-4">{formatCurrency(month.revenue, false, view.displayCurrencyCode, locale)}</td>
-                      <td className="py-4 pr-4">{formatCurrency(month.expenses, false, view.displayCurrencyCode, locale)}</td>
-                      <td className={`py-4 pr-4 ${month.profit >= 0 ? "text-emerald-300" : "text-rose-200"}`}>
+                      <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(month.revenue, false, view.displayCurrencyCode, locale)}</td>
+                      <td className="tnum py-4 pr-4 font-medium text-neg">{formatCurrency(month.expenses, false, view.displayCurrencyCode, locale)}</td>
+                      <td className={`py-4 pr-4 ${month.profit >= 0 ? "text-pos" : "text-neg"}`}>
                         {formatCurrency(month.profit, false, view.displayCurrencyCode, locale)}
                       </td>
                       <td className="py-4">{formatPercent(margin, locale)}</td>

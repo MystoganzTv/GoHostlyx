@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Landmark, ShieldAlert } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { useLocale } from "@/components/locale-provider";
 import { SectionCard } from "@/components/section-card";
-import { TaxSummaryMetrics } from "@/components/dashboard/TaxSummaryMetrics";
-import { getMarketDefinition } from "@/lib/markets";
+import { formatCurrency } from "@/lib/format";
+import { getMarketLabels } from "@/lib/markets";
 import type { CountryCode, CurrencyCode } from "@/lib/types";
 
 export function TaxEstimationCard({
@@ -30,97 +31,80 @@ export function TaxEstimationCard({
   usesSavedSettings: boolean;
   usesCustomRate: boolean;
 }) {
-  const market = getMarketDefinition(countryCode);
-  const savedMarket = getMarketDefinition(savedCountryCode);
-  const contextLabel = mixedCurrencyMode
-    ? `Choose a single market to estimate what you keep after taxes.`
+  const { locale } = useLocale();
+  const isSpanish = locale === "es";
+  const market = getMarketLabels(countryCode, locale);
+  const savedMarket = getMarketLabels(savedCountryCode, locale);
+  const rateLabel = `${taxRate.toFixed(taxRate % 1 === 0 ? 0 : 1)}%`;
+
+  const rateSource = mixedCurrencyMode
+    ? isSpanish
+      ? "Elige un solo mercado para estimar lo que te quedas después de impuestos."
+      : "Choose a single market to estimate what you keep after taxes."
     : usesSavedSettings
       ? usesCustomRate
-        ? `Using your saved ${savedMarket.countryName} rate of ${taxRate}% for this view.`
-        : `Using the saved ${savedMarket.countryName} baseline at ${taxRate}%.`
-      : `Using the active ${market.countryName} default estimate of ${suggestedTaxRate}%.`;
-  const settingsHint = mixedCurrencyMode
-    ? `Settings currently default to ${savedMarket.countryName}.`
-    : usesSavedSettings
-      ? "Adjust your baseline in Settings if you want a different estimate."
-      : "Save a custom rate in Settings if you want something other than the default estimate.";
+        ? isSpanish
+          ? `Tu tasa guardada para ${savedMarket.countryName}.`
+          : `Your saved ${savedMarket.countryName} rate.`
+        : isSpanish
+          ? `Base guardada para ${savedMarket.countryName}.`
+          : `Saved ${savedMarket.countryName} baseline.`
+      : isSpanish
+        ? `Estimación por defecto para ${market.countryName} (${suggestedTaxRate}%).`
+        : `Default ${market.countryName} estimate (${suggestedTaxRate}%).`;
 
   return (
     <SectionCard
-      title="Tax Estimation"
-      subtitle="Estimate what to set aside and what you actually keep."
+      title={isSpanish ? "Estimación de impuestos" : "Tax estimate"}
+      subtitle={rateSource}
       action={
-        <div className="inline-flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-          <ShieldAlert className="h-4 w-4 text-[var(--workspace-accent)]" />
-          Estimate only
-        </div>
+        <Link
+          href="/settings"
+          className="workspace-button-secondary inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition"
+        >
+          {isSpanish ? "Cambiar en Ajustes" : "Edit in Settings"}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       }
     >
-      <div className="space-y-5">
-        <div className="grid gap-4 xl:grid-cols-[0.85fr_0.85fr_auto]">
-          <div className="workspace-soft-card rounded-lg p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              Market in view
-            </p>
-            <div className="mt-3 flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-lg p-3">
-                <Landmark className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-base font-semibold text-[var(--workspace-text)]">{market.countryName}</p>
-                <p className="text-xs text-[var(--workspace-muted)]">
-                  {mixedCurrencyMode ? "Select one country to estimate clearly" : `${market.currencyCode} reporting context`}
-                </p>
-              </div>
-            </div>
+      {mixedCurrencyMode ? (
+        <p className="text-sm text-[var(--workspace-muted)]">
+          {isSpanish
+            ? "GoHostlyx no estima beneficio después de impuestos mezclando monedas. Filtra por un país o elige en Ajustes el mercado base."
+            : "GoHostlyx will not estimate after-tax profit across mixed currencies. Filter to one country, or choose the baseline market in Settings."}
+        </p>
+      ) : (
+        <dl className="-my-3 divide-y divide-[var(--workspace-border)]">
+          <div className="flex items-baseline justify-between gap-4 py-3">
+            <dt className="text-xs text-[var(--workspace-muted)]">{isSpanish ? "Mercado" : "Market"}</dt>
+            <dd className="text-sm font-semibold text-[var(--workspace-text)]">
+              {market.countryName} · {market.currencyCode}
+            </dd>
           </div>
-
-          <div className="workspace-soft-card rounded-lg p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              Rate applied
-            </p>
-            <p className="mt-4 text-3xl font-semibold tracking-tight text-[var(--workspace-text)]">
-              {taxRate.toFixed(taxRate % 1 === 0 ? 0 : 1)}%
-            </p>
-            <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">{contextLabel}</p>
+          <div className="flex items-baseline justify-between gap-4 py-3">
+            <dt className="text-xs text-[var(--workspace-muted)]">{isSpanish ? "Tasa aplicada" : "Rate applied"}</dt>
+            <dd className="tnum text-sm font-semibold text-[var(--workspace-text)]">{rateLabel}</dd>
           </div>
-
-          <Link
-            href="/settings"
-            className="workspace-button-secondary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition xl:self-end"
-          >
-            Edit in Settings
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-
-        {mixedCurrencyMode ? (
-          <div className="workspace-soft-card rounded-xl p-5">
-            <p className="text-sm font-semibold text-[var(--workspace-text)]">Pick one market for after-tax clarity</p>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
-              GoHostlyx will not estimate after-tax profit across mixed currencies. Filter to one country, or use Settings to choose the baseline market that should guide your estimate.
-            </p>
+          <div className="flex items-baseline justify-between gap-4 py-3">
+            <dt className="text-xs text-[var(--workspace-muted)]">{isSpanish ? "Impuestos estimados" : "Estimated taxes"}</dt>
+            <dd className="tnum text-base font-semibold text-warn">
+              {formatCurrency(estimatedTaxes, false, currencyCode, locale)}
+            </dd>
           </div>
-        ) : (
-          <TaxSummaryMetrics
-            estimatedTaxes={estimatedTaxes}
-            profitAfterTax={profitAfterTax}
-            currencyCode={currencyCode}
-          />
-        )}
+          <div className="flex items-baseline justify-between gap-4 py-3">
+            <dt className="text-xs text-[var(--workspace-muted)]">{isSpanish ? "Te quedas" : "You keep"}</dt>
+            <dd className={`tnum text-base font-semibold ${profitAfterTax >= 0 ? "text-info" : "text-neg"}`}>
+              {formatCurrency(profitAfterTax, false, currencyCode, locale)}
+            </dd>
+          </div>
+        </dl>
+      )}
 
-        <div className="border-t border-white/8 pt-4">
-          <p className="text-xs leading-6 text-[var(--workspace-muted)]">{settingsHint}</p>
-          <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-            Tax values are estimates only and may not reflect your actual tax obligation.
-          </p>
-          <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-            GoHostlyx applies one flat rate to net profit. Real rules differ: income tax is usually progressive,
-            occupancy and tourist taxes are not included, and in Spain non-residents outside the EU are taxed on
-            gross rental income without deducting expenses. Confirm with your accountant.
-          </p>
-        </div>
-      </div>
+      <p className="mt-4 border-t border-[var(--workspace-border)] pt-3 text-xs leading-5 text-[var(--workspace-muted)]">
+        {isSpanish
+          ? "Solo es una estimación: GoHostlyx aplica una tasa fija al beneficio neto. Las reglas reales cambian (el IRPF es progresivo, las tasas turísticas no están incluidas y en España los no residentes fuera de la UE tributan sobre el ingreso bruto sin deducir gastos). Confírmalo con tu asesor."
+          : "Estimate only: GoHostlyx applies one flat rate to net profit. Real rules differ (income tax is usually progressive, occupancy and tourist taxes are not included, and in Spain non-residents outside the EU are taxed on gross rental income without deducting expenses). Confirm with your accountant."}
+      </p>
     </SectionCard>
   );
 }

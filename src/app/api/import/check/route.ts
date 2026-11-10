@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { getImportedWorkbookMatches } from "@/lib/db";
 
@@ -21,9 +21,9 @@ export async function POST(request: Request) {
 
     const matches = await getImportedWorkbookMatches(ownerEmail, hashes);
 
-    return NextResponse.json({ matches });
+    return await localizedJson({ matches });
   } catch {
-    return NextResponse.json(
+    return await localizedJson(
       { error: "The duplicate check could not be completed." },
       { status: 400 },
     );

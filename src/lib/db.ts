@@ -22,6 +22,7 @@ import type {
 } from "./types";
 import type { StoredSubscription } from "./db-types";
 import { isAdminOwnerEmail } from "./admin";
+import { copyToTrash } from "./trash";
 import {
   getRowValue,
   mapBookingRecord,
@@ -111,8 +112,8 @@ async function upsertStoredSubscription(nextSubscription: StoredSubscription) {
 
 }
 
-/** Tables that reference a property by its name (property_name column). */
-const propertyNamedTables = [
+/** Tables whose rows belong to a property (property_id, with property_name kept in step). */
+const propertyLinkedTables = [
   "bookings",
   "expenses",
   "imports",
@@ -121,64 +122,6 @@ const propertyNamedTables = [
   "ical_feeds",
   "financial_documents",
 ] as const;
-
-async function syncPropertyDefinitionsFromRecords(ownerEmail: string) {
-  await ensureDatabase();
-  const normalizedEmail = normalizeOwnerEmail(ownerEmail);
-  const fallbackCountryCode: CountryCode = "US";
-  const createdAt = new Date().toISOString();
-
-  const pool = getPostgresPool();
-  const [propertiesResult, bookingResult, expenseResult, importResult] = await Promise.all([
-    pool.query("SELECT name FROM properties WHERE owner_email = $1", [normalizedEmail]),
-    pool.query(
-      "SELECT DISTINCT property_name AS propertyName FROM bookings WHERE owner_email = $1 AND property_name <> ''",
-      [normalizedEmail],
-    ),
-    pool.query(
-      "SELECT DISTINCT property_name AS propertyName FROM expenses WHERE owner_email = $1 AND property_name <> ''",
-      [normalizedEmail],
-    ),
-    pool.query(
-      "SELECT DISTINCT property_name AS propertyName FROM imports WHERE owner_email = $1 AND property_name <> ''",
-      [normalizedEmail],
-    ),
-  ]);
-
-  const existingNames = new Set(
-    propertiesResult.rows.map((row) =>
-      String(getRowValue(row as Record<string, unknown>, "name")).trim().toLowerCase(),
-    ),
-  );
-  const discoveredNames = new Set<string>();
-
-  for (const row of [...bookingResult.rows, ...expenseResult.rows, ...importResult.rows]) {
-    const name = String(
-      getRowValue(row as Record<string, unknown>, "propertyName", "propertyname") ?? "",
-    ).trim();
-
-    if (name) {
-      discoveredNames.add(name);
-    }
-  }
-
-  for (const discoveredName of discoveredNames) {
-    const normalizedName = discoveredName.toLowerCase();
-    if (existingNames.has(normalizedName)) {
-      continue;
-    }
-
-    await pool.query(
-      `
-        INSERT INTO properties (owner_email, name, country_code, created_at)
-        VALUES ($1, $2, $3, $4)
-      `,
-      [normalizedEmail, discoveredName, fallbackCountryCode, createdAt],
-    );
-    existingNames.add(normalizedName);
-  }
-
-}
 
 function normalizeFingerprintValue(value: string) {
   return value.trim().toLowerCase();
@@ -690,6 +633,20 @@ export async function deleteImportBatch({
     if (!importRow) {
       throw new Error("Import not found.");
     }
+
+    const byImport = { where: "owner_email = $1 AND import_id = $2", params: [normalizedEmail, importId] };
+    await copyToTrash(client, {
+      ownerEmail: normalizedEmail,
+      kind: "import",
+      label: String(getRowValue(importRow, "fileName", "filename")),
+      selections: [
+        { table: "imports", where: "owner_email = $1 AND id = $2", params: [normalizedEmail, importId] },
+        { table: "bookings", ...byImport },
+        { table: "expenses", ...byImport },
+        { table: "financial_documents", ...byImport },
+        { table: "calendar_closures", ...byImport },
+      ],
+    });
 
     const bookingDelete = await client.query(
       "DELETE FROM bookings WHERE owner_email = $1 AND import_id = $2",
@@ -1295,7 +1252,7 @@ export async function disconnectIcalFeed({
 export async function getPropertyDefinitions(
   ownerEmail: string,
 ): Promise<PropertyDefinition[]> {
-  await syncPropertyDefinitionsFromRecords(ownerEmail);
+  await ensureDatabase();
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
 
   const pool = getPostgresPool();
@@ -1462,7 +1419,6 @@ export async function updatePropertyDefinition({
     throw new Error("Property not found.");
   }
 
-  const currentName = String(getRowValue(propertyRow, "name"));
   const duplicate = await pool.query(
     "SELECT id FROM properties WHERE owner_email = $1 AND LOWER(name) = LOWER($2) AND id <> $3 LIMIT 1",
     [normalizedEmail, normalizedName, propertyId],
@@ -1472,32 +1428,12 @@ export async function updatePropertyDefinition({
     throw new Error("That property already exists.");
   }
 
-  // Every table that stores the property by name has to follow the rename.
-  // Missing one (imports used to be missed) leaves rows under the old name, and
-  // syncPropertyDefinitionsFromRecords then recreates the old property from them.
-  const client = await pool.connect();
-
-  try {
-    await client.query("BEGIN");
-    await client.query(
-      "UPDATE properties SET name = $1, country_code = $2 WHERE id = $3 AND owner_email = $4",
-      [normalizedName, normalizedCountryCode, propertyId, normalizedEmail],
-    );
-
-    for (const table of propertyNamedTables) {
-      await client.query(
-        `UPDATE ${table} SET property_name = $1 WHERE owner_email = $2 AND LOWER(TRIM(property_name)) = LOWER(TRIM($3))`,
-        [normalizedName, normalizedEmail, currentName],
-      );
-    }
-
-    await client.query("COMMIT");
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
+  // Records are linked by property_id; the properties_rename_records trigger
+  // copies the new name onto every linked row in the same statement.
+  await pool.query(
+    "UPDATE properties SET name = $1, country_code = $2 WHERE id = $3 AND owner_email = $4",
+    [normalizedName, normalizedCountryCode, propertyId, normalizedEmail],
+  );
 }
 
 export async function deletePropertyDefinition({
@@ -1529,28 +1465,28 @@ export async function deletePropertyDefinition({
   const propertyName = String(getRowValue(propertyRow, "name"));
   const [bookingUsage, expenseUsage, importUsage, closureUsage, eventUsage, feedUsage] = await Promise.all([
     pool.query(
-      "SELECT COUNT(*) AS count FROM bookings WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
-      [normalizedEmail, propertyName],
+      "SELECT COUNT(*) AS count FROM bookings WHERE owner_email = $1 AND property_id = $2",
+      [normalizedEmail, propertyId],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM expenses WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
-      [normalizedEmail, propertyName],
+      "SELECT COUNT(*) AS count FROM expenses WHERE owner_email = $1 AND property_id = $2",
+      [normalizedEmail, propertyId],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM imports WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
-      [normalizedEmail, propertyName],
+      "SELECT COUNT(*) AS count FROM imports WHERE owner_email = $1 AND property_id = $2",
+      [normalizedEmail, propertyId],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM calendar_closures WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
-      [normalizedEmail, propertyName],
+      "SELECT COUNT(*) AS count FROM calendar_closures WHERE owner_email = $1 AND property_id = $2",
+      [normalizedEmail, propertyId],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM calendar_events WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))",
-      [normalizedEmail, propertyName],
+      "SELECT COUNT(*) AS count FROM calendar_events WHERE owner_email = $1 AND property_id = $2",
+      [normalizedEmail, propertyId],
     ),
     pool.query(
-      "SELECT COUNT(*) AS count FROM ical_feeds WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2)) AND is_active = TRUE",
-      [normalizedEmail, propertyName],
+      "SELECT COUNT(*) AS count FROM ical_feeds WHERE owner_email = $1 AND property_id = $2 AND is_active = TRUE",
+      [normalizedEmail, propertyId],
     ),
   ]);
 
@@ -1587,11 +1523,23 @@ export async function deletePropertyDefinition({
   try {
     await client.query("BEGIN");
 
+    const byProperty = { where: "owner_email = $1 AND property_id = $2", params: [normalizedEmail, propertyId] };
+    await copyToTrash(client, {
+      ownerEmail: normalizedEmail,
+      kind: "property",
+      label: propertyName,
+      selections: [
+        { table: "properties", where: "owner_email = $1 AND id = $2", params: [normalizedEmail, propertyId] },
+        { table: "property_units", ...byProperty },
+        ...(deleteLinkedData ? propertyLinkedTables.map((table) => ({ table, ...byProperty })) : []),
+      ],
+    });
+
     if (deleteLinkedData) {
-      for (const table of propertyNamedTables) {
+      for (const table of propertyLinkedTables) {
         await client.query(
-          `DELETE FROM ${table} WHERE owner_email = $1 AND LOWER(TRIM(property_name)) = LOWER(TRIM($2))`,
-          [normalizedEmail, propertyName],
+          `DELETE FROM ${table} WHERE owner_email = $1 AND property_id = $2`,
+          [normalizedEmail, propertyId],
         );
       }
     }
@@ -1804,6 +1752,51 @@ export async function updateBookingReviewState({
   return (result.rowCount ?? 0) > 0;
 }
 
+/** Deletes one booking or expense, keeping a copy in Recently deleted. */
+async function deleteSingleRecord({
+  ownerEmail,
+  table,
+  id,
+}: {
+  ownerEmail: string;
+  table: "bookings" | "expenses";
+  id: number;
+}) {
+  const client = await getPostgresPool().connect();
+
+  try {
+    await client.query("BEGIN");
+    const found = await client.query(
+      table === "bookings"
+        ? "SELECT guest_name AS label, check_in AS detail FROM bookings WHERE id = $1 AND owner_email = $2"
+        : "SELECT description AS label, date AS detail FROM expenses WHERE id = $1 AND owner_email = $2",
+      [id, ownerEmail],
+    );
+    const row = found.rows[0] as { label?: string; detail?: string } | undefined;
+
+    if (!row) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+
+    await copyToTrash(client, {
+      ownerEmail,
+      kind: table === "bookings" ? "booking" : "expense",
+      label: [row.label, row.detail].filter(Boolean).join(" · "),
+      selections: [{ table, where: "owner_email = $1 AND id = $2", params: [ownerEmail, id] }],
+    });
+    const result = await client.query(`DELETE FROM ${table} WHERE id = $1 AND owner_email = $2`, [id, ownerEmail]);
+    await client.query("COMMIT");
+
+    return (result.rowCount ?? 0) > 0;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 export async function deleteBookingRecord({
   ownerEmail,
   bookingId,
@@ -1814,13 +1807,7 @@ export async function deleteBookingRecord({
   await ensureDatabase();
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
 
-  const pool = getPostgresPool();
-  const result = await pool.query(
-    "DELETE FROM bookings WHERE id = $1 AND owner_email = $2",
-    [bookingId, normalizedEmail],
-  );
-
-  return (result.rowCount ?? 0) > 0;
+  return deleteSingleRecord({ ownerEmail: normalizedEmail, table: "bookings", id: bookingId });
 }
 
 export async function updateExpenseRecord({
@@ -1875,13 +1862,7 @@ export async function deleteExpenseRecord({
   await ensureDatabase();
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
 
-  const pool = getPostgresPool();
-  const result = await pool.query(
-    "DELETE FROM expenses WHERE id = $1 AND owner_email = $2",
-    [expenseId, normalizedEmail],
-  );
-
-  return (result.rowCount ?? 0) > 0;
+  return deleteSingleRecord({ ownerEmail: normalizedEmail, table: "expenses", id: expenseId });
 }
 
 export async function getUserSettings(
@@ -2616,6 +2597,7 @@ export async function deleteManagedUser(ownerEmail: string) {
     await client.query("DELETE FROM imports WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM property_units WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM properties WHERE owner_email = $1", [normalizedEmail]);
+    await client.query("DELETE FROM deleted_items WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM user_settings WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM subscriptions WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM auth_users WHERE owner_email = $1", [normalizedEmail]);

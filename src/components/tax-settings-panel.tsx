@@ -5,7 +5,7 @@ import { Landmark, Percent, ReceiptText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/locale-provider";
 import { WorkspaceSelect } from "@/components/workspace-select";
-import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
+import { marketDefinitions, getMarketLabels } from "@/lib/markets";
 import { getDefaultTaxRateByCountry, normalizeTaxRate } from "@/lib/tax";
 import type { CountryCode } from "@/lib/types";
 
@@ -29,14 +29,14 @@ export function TaxSettingsPanel({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const market = getMarketDefinition(countryCode);
+  const market = getMarketLabels(countryCode, locale);
   const normalizedTaxRate = normalizeTaxRate(taxRate);
   const suggestedRate = getDefaultTaxRateByCountry(countryCode);
   const hasCustomRate = normalizedTaxRate !== suggestedRate;
   const hasChanges =
     countryCode !== initialTaxCountryCode ||
     normalizedTaxRate !== normalizeTaxRate(initialTaxRate);
-  const countryOptions = marketDefinitions.map((marketDefinition) => ({
+  const countryOptions = marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((marketDefinition) => ({
     value: marketDefinition.countryCode,
     label: marketDefinition.countryName,
     description: isSpanish
@@ -237,8 +237,8 @@ export function TaxSettingsPanel({
       </form>
 
       <div className="mt-4 min-h-6">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
       </div>
     </div>
   );

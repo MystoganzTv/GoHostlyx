@@ -19,7 +19,7 @@ import type {
 } from "@/lib/types";
 import { getBookingStatusState } from "@/lib/booking-status";
 import { formatCurrency, formatDateLabel, formatNumber, formatPercent } from "@/lib/format";
-import { getMarketDefinition } from "@/lib/markets";
+import { getMarketLabels } from "@/lib/markets";
 import { ChartsPanel } from "@/components/charts-panel";
 import { TaxEstimationCard } from "@/components/dashboard/TaxEstimationCard";
 import { ExportReportLink } from "@/components/export-report-link";
@@ -400,7 +400,7 @@ export function DashboardShell({
               >
                 <div className="grid gap-4 xl:grid-cols-3">
                   {view.marketBreakdown.map((market) => {
-                    const meta = getMarketDefinition(market.countryCode);
+                    const meta = getMarketLabels(market.countryCode, locale);
 
                     return (
                       <article key={market.countryCode} className="workspace-soft-card rounded-xl p-6">
@@ -417,7 +417,7 @@ export function DashboardShell({
                           </div>
                           <div>
                             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Beneficio" : "Profit"}</p>
-                            <p className={`mt-2 text-sm font-semibold ${market.profit >= 0 ? "text-emerald-300" : "text-rose-200"}`}>
+                            <p className={`mt-2 text-sm font-semibold ${market.profit >= 0 ? "text-pos" : "text-neg"}`}>
                               {formatCurrency(market.profit, false, market.currencyCode)}
                             </p>
                           </div>

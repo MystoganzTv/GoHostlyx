@@ -176,8 +176,8 @@ export function CalendarFeedsManager({
           : "Saved calendar connections stay separate from financial bookings. Use them for occupancy, check-ins, check-outs, and blocked dates."}
       </p>
 
-      {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-      {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+      {message ? <p className="text-sm text-pos">{message}</p> : null}
+      {error ? <p className="text-sm text-neg">{error}</p> : null}
 
       <div className="grid gap-4 xl:grid-cols-2">
         {feeds.map((feed) => (

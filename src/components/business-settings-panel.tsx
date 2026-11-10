@@ -4,7 +4,7 @@ import { type FormEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Globe2, Settings2 } from "lucide-react";
 import { useLocale } from "@/components/locale-provider";
-import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
+import { marketDefinitions, getMarketLabels } from "@/lib/markets";
 import type { CountryCode } from "@/lib/types";
 
 function inputClassName() {
@@ -26,7 +26,7 @@ export function BusinessSettingsPanel({
   const [primaryCountryCode, setPrimaryCountryCode] = useState<CountryCode>(initialPrimaryCountryCode);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const selectedMarket = getMarketDefinition(primaryCountryCode);
+  const selectedMarket = getMarketLabels(primaryCountryCode, locale);
   const hasChanges =
     businessName.trim() !== initialBusinessName.trim() ||
     primaryCountryCode !== initialPrimaryCountryCode;
@@ -109,7 +109,7 @@ export function BusinessSettingsPanel({
             {isSpanish ? "Mercado principal de reporting" : "Primary reporting market"}
           </span>
           <div className="grid gap-3 sm:grid-cols-3">
-            {marketDefinitions.map((market) => {
+            {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((market) => {
               const isSelected = primaryCountryCode === market.countryCode;
 
               return (
@@ -229,8 +229,8 @@ export function BusinessSettingsPanel({
       </form>
 
       <div className="mt-4 min-h-6">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
       </div>
     </div>
   );

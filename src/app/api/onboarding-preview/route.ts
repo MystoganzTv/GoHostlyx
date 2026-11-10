@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireUserEmail } from "@/lib/auth";
 import { buildDashboardView, getDashboardFilters } from "@/lib/dashboard";
 import {
@@ -16,7 +16,7 @@ export async function GET() {
     const ownerEmail = await requireUserEmail();
 
     if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return await localizedJson({ error: "Unauthorized" }, { status: 401 });
     }
 
     const [bookings, expenses, properties, userSettings] = await Promise.all([
@@ -29,7 +29,7 @@ export async function GET() {
     const hasData = bookings.length > 0 || expenses.length > 0;
 
     if (!hasData) {
-      return NextResponse.json({
+      return await localizedJson({
         hasData: false,
         netProfit: 0,
         currencyCode: userSettings.currencyCode,
@@ -53,13 +53,13 @@ export async function GET() {
       taxRate: userSettings.taxRate,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       hasData: true,
       netProfit: view.metrics.netProfit,
       currencyCode: view.displayCurrencyCode,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The onboarding preview could not be loaded."),

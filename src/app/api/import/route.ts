@@ -1,6 +1,6 @@
 import { clientErrorMessage } from "@/lib/client-error";
 import { createHash } from "node:crypto";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import {
   appendFinancialStatementImport,
@@ -36,21 +36,21 @@ export async function POST(request: Request) {
     const rowResolutionsValue = formData.get("rowResolutions");
 
     if (!(fileValue instanceof File) || fileValue.size <= 0) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Attach a valid Airbnb, Booking.com, or GoHostlyx file first." },
         { status: 400 },
       );
     }
 
     if (!/\.(csv|xlsx|xls)$/i.test(fileValue.name)) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Only CSV or Excel files are supported for import preview." },
         { status: 400 },
       );
     }
 
     if (fileValue.size > MAX_IMPORT_FILE_BYTES) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "That file is too large. Imports are limited to 4 MB. Export a shorter date range and try again." },
         { status: 413 },
       );
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       try {
         manualMapping = JSON.parse(manualMappingValue) as ImportManualMapping;
       } catch {
-        return NextResponse.json(
+        return await localizedJson(
           { error: "GoHostlyx could not read the manual column mapping." },
           { status: 400 },
         );
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       try {
         rowResolutions = JSON.parse(rowResolutionsValue) as ImportRowResolution[];
       } catch {
-        return NextResponse.json(
+        return await localizedJson(
           { error: "GoHostlyx could not read the row fixes from this import review." },
           { status: 400 },
         );
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     });
 
     if (action !== "commit") {
-      return NextResponse.json({
+      return await localizedJson({
         preview: {
           source: preview.source,
           sourceLabel: preview.sourceLabel,
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
     }
 
     if (!preview.canImport) {
-      return NextResponse.json(
+      return await localizedJson(
         {
           error: preview.requiresManualMapping
             ? "We couldn’t fully recognize your file. Map your columns in a few seconds to continue."
@@ -143,7 +143,7 @@ export async function POST(request: Request) {
     const propertyDefinitions = await getPropertyDefinitions(ownerEmail);
 
     if (propertyDefinitions.length === 0) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Create your first property before importing data." },
         { status: 400 },
       );
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
         (property) => property.name.toLowerCase() === targetPropertyName.toLowerCase(),
       )
     ) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Choose a valid property for this import." },
         { status: 400 },
       );
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
         },
       });
 
-      return NextResponse.json({
+      return await localizedJson({
         message: `Imported 1 payout statement into ${targetPropertyName}.`,
         committed: {
           source: preview.source,
@@ -202,7 +202,7 @@ export async function POST(request: Request) {
     const mapped = mapPreviewToGoHostlyxRecords(preview, targetPropertyName);
 
     if (mapped.bookings.length === 0 && mapped.expenses.length === 0) {
-      return NextResponse.json(
+      return await localizedJson(
         {
           error:
             "Everything in this file is blocked, duplicated, canceled, or still missing key data. Fix the source file or use Bookings to review imported rows after the next attempt.",
@@ -224,7 +224,7 @@ export async function POST(request: Request) {
       allowDuplicateBookings: false,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Imported ${result.bookingsCount} bookings and ${result.expensesCount} expenses into ${targetPropertyName}.`,
       committed: {
         source: preview.source,
@@ -235,7 +235,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The file could not be processed."),

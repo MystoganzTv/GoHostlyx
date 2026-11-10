@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { deletePropertyDefinition, updatePropertyDefinition } from "@/lib/db";
 import { normalizeCountryCode } from "@/lib/markets";
@@ -22,7 +22,7 @@ export async function PATCH(
     const propertyId = Number((await params).id);
 
     if (!Number.isFinite(propertyId) || propertyId <= 0) {
-      return NextResponse.json({ error: "Invalid property id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid property id." }, { status: 400 });
     }
 
     const formData = await request.formData();
@@ -36,11 +36,11 @@ export async function PATCH(
       countryCode,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Property renamed to "${propertyName}".`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The property could not be updated."),
@@ -66,7 +66,7 @@ export async function DELETE(
     const propertyId = Number((await params).id);
 
     if (!Number.isFinite(propertyId) || propertyId <= 0) {
-      return NextResponse.json({ error: "Invalid property id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid property id." }, { status: 400 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -78,7 +78,7 @@ export async function DELETE(
       deleteLinkedData,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message:
         result.deletedLinkedData
           ? result.removedLastProperty
@@ -87,7 +87,7 @@ export async function DELETE(
           : "Property deleted successfully.",
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The property could not be deleted."),

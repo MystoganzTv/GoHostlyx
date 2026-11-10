@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { getAuthSession, requireUserEmail } from "@/lib/auth";
 import {
   getSubscriptionState,
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     const ownerEmail = await requireUserEmail();
 
     if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return await localizedJson({ error: "Unauthorized" }, { status: 401 });
     }
 
     const session = await getAuthSession();
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const returnPath = sanitizeReturnPath(payload.returnPath);
 
     if (plan === "trial") {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Choose a paid plan to continue." },
         { status: 400 },
       );
@@ -48,13 +48,13 @@ export async function POST(request: Request) {
       if (process.env.NODE_ENV !== "production") {
         await updateSubscriptionPlan({ ownerEmail, plan });
 
-        return NextResponse.json({
+        return await localizedJson({
           redirectTo: returnPath,
           mode: "local",
         });
       }
 
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Stripe billing is not configured yet." },
         { status: 500 },
       );
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     const priceId = getStripePriceIdForPlan(plan);
 
     if (!stripe || !priceId) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Stripe billing is not configured yet." },
         { status: 500 },
       );
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
         return_url: buildAppUrl(returnPath),
       });
 
-      return NextResponse.json({ url: portalSession.url, mode: "portal" });
+      return await localizedJson({ url: portalSession.url, mode: "portal" });
     }
 
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -123,18 +123,18 @@ export async function POST(request: Request) {
     }
 
     if (!checkoutSession.url) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Stripe checkout could not be created." },
         { status: 500 },
       );
     }
 
-    return NextResponse.json({
+    return await localizedJson({
       url: checkoutSession.url,
       email: session?.user?.email ?? ownerEmail,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The subscription checkout could not be created."),

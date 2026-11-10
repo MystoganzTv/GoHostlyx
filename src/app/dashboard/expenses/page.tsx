@@ -6,6 +6,7 @@ import { FilterBar } from "@/components/filter-bar";
 import { OperationalImportLauncher } from "@/components/operational-import-launcher";
 import { SectionCard } from "@/components/section-card";
 import { StatStrip } from "@/components/stat-strip";
+import { ExportDataLink } from "@/components/export-data-link";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
 import {
@@ -52,7 +53,14 @@ export default async function ExpensesPage({
     redirect("/dashboard/properties?setup=1");
   }
 
-  const [bookings, expenses, financialDocuments, latestImport, userSettings, resolvedSearchParams] = await Promise.all([
+  const [
+    bookings,
+    expenses,
+    financialDocuments,
+    latestImport,
+    userSettings,
+    resolvedSearchParams,
+  ] = await Promise.all([
     getBookings(ownerEmail),
     getExpenses(ownerEmail),
     getFinancialDocuments(ownerEmail),
@@ -85,7 +93,10 @@ export default async function ExpensesPage({
     fallbackCountryCode: userSettings.primaryCountryCode,
   });
 
-  const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const totalExpenses = filteredExpenses.reduce(
+    (sum, expense) => sum + expense.amount,
+    0,
+  );
   const propertyCount = new Set(
     filteredExpenses.map((expense) => expense.propertyName).filter(Boolean),
   ).size;
@@ -104,26 +115,32 @@ export default async function ExpensesPage({
       userEmail={ownerEmail}
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
-      reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
+      reconcileBadge={getReconcileSidebarBadge(
+        view.reconcile,
+        view.displayCurrencyCode,
+      )}
       toolbar={
-      <FilterBar
-        channels={view.availableChannels}
-        countries={view.availableCountries}
-        rangeShortcutYears={view.availableYears}
-        selectedRangePreset={view.filters.rangePreset}
-        selectedStartDate={view.filters.startDate}
-        selectedEndDate={view.filters.endDate}
-        selectedChannel={view.filters.channel}
-        selectedCountryCode={view.filters.countryCode}
-        showChannelSelect={false}
-      />
+        <FilterBar
+          channels={view.availableChannels}
+          countries={view.availableCountries}
+          rangeShortcutYears={view.availableYears}
+          selectedRangePreset={view.filters.rangePreset}
+          selectedStartDate={view.filters.startDate}
+          selectedEndDate={view.filters.endDate}
+          selectedChannel={view.filters.channel}
+          selectedCountryCode={view.filters.countryCode}
+          showChannelSelect={false}
+        />
       }
       actions={
-        <OperationalImportLauncher
-          properties={properties}
-          context="expenses"
-          buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
-        />
+        <>
+          <ExportDataLink />
+          <OperationalImportLauncher
+            properties={properties}
+            context="expenses"
+            buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
+          />
+        </>
       }
     >
       <div className="space-y-6">
@@ -131,7 +148,11 @@ export default async function ExpensesPage({
           items={[
             {
               label: isSpanish ? "Gastos en vista" : "Expenses in view",
-              value: formatCurrency(totalExpenses, false, view.displayCurrencyCode),
+              value: formatCurrency(
+                totalExpenses,
+                false,
+                view.displayCurrencyCode,
+              ),
               icon: <Wallet className="h-4 w-4" />,
             },
             {
@@ -140,7 +161,9 @@ export default async function ExpensesPage({
               icon: <ReceiptText className="h-4 w-4" />,
             },
             {
-              label: isSpanish ? "Propiedades con gasto" : "Properties with spend",
+              label: isSpanish
+                ? "Propiedades con gasto"
+                : "Properties with spend",
               value: formatNumber(propertyCount),
               icon: <Home className="h-4 w-4" />,
             },

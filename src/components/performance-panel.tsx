@@ -29,11 +29,9 @@ function bestMonth(view: DashboardView) {
 export function PerformancePanel({
   view,
   currencyCode,
-  rangeLabel,
 }: {
   view: DashboardView;
   currencyCode: CurrencyCode;
-  rangeLabel: string;
 }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
@@ -158,41 +156,6 @@ export function PerformancePanel({
           </>
         ) : null}
       </div>
-
-      <SectionCard
-        title={isSpanish ? "Lectura de rendimiento" : "Performance Read"}
-        subtitle={
-          isSpanish
-            ? "Usa esta página para ver calidad de demanda, calidad de tarifa y eficiencia general de reservas."
-            : "Use this page for demand quality, rate quality, and overall booking efficiency."
-        }
-      >
-        <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="workspace-soft-card rounded-lg p-5">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {isSpanish ? "Ventana de reporte" : "Reporting window"}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">
-              {rangeLabel}
-            </p>
-            <p className="mt-3 text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "El rendimiento se lee mejor como mezcla de volumen, tarifa, ocupación y consistencia. Esta página mantiene juntas esas señales."
-                : "Performance is best read as a mix of volume, rate, occupancy, and consistency. This page keeps those signals together."}
-            </p>
-          </div>
-          <div className="workspace-soft-card rounded-lg p-5">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {isSpanish ? "Consejo de lectura" : "Reading tip"}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Empieza por reservas, huéspedes y noches para leer la demanda. Luego mira ocupación, ADR y RevPAR para entender la calidad del precio. Usa las vistas mensual y calendario cuando quieras una historia más profunda detrás de los números."
-                : "Start with bookings, guests, and nights for demand. Then read occupancy, ADR, and RevPAR to understand pricing quality. Use monthly and calendar views when you want the deeper story behind the numbers."}
-            </p>
-          </div>
-        </div>
-      </SectionCard>
 
       <div className="grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
         <SectionCard

@@ -54,7 +54,7 @@ export default async function DashboardPage({
     getLatestImport(ownerEmail),
     getUserSettings(ownerEmail, userName),
   ]);
-  const subscriptionBadge = getSubscriptionBadge(subscription);
+  const subscriptionBadge = getSubscriptionBadge(subscription, locale);
 
   if (!canAccessDashboard(subscription)) {
     const trialDaysLeft = getTrialDaysLeft(subscription);

@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { createPropertyDefinition } from "@/lib/db";
 import { normalizeCountryCode } from "@/lib/markets";
@@ -25,12 +25,12 @@ export async function POST(request: Request) {
       countryCode,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       propertyId,
       message: `Property "${propertyName}" created successfully.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The property could not be created."),

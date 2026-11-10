@@ -1,3 +1,4 @@
+import { getRequestLocale } from "@/lib/server-locale";
 import { redirect } from "next/navigation";
 import { AdminUsersPanel } from "@/components/admin-users-panel";
 import { WorkspaceShell } from "@/components/workspace-shell";
@@ -38,7 +39,7 @@ export default async function AdminPage() {
       userEmail={ownerEmail}
       currencyCode={userSettings.currencyCode}
       latestImport={latestImport}
-      subscriptionBadge={getSubscriptionBadge(subscription)}
+      subscriptionBadge={getSubscriptionBadge(subscription, await getRequestLocale())}
     >
       <AdminUsersPanel users={users} />
     </WorkspaceShell>

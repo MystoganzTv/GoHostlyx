@@ -14,51 +14,22 @@ import {
   Sparkles,
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
+import { useLocale } from "@/components/locale-provider";
 import { UploadPanel } from "@/components/upload-panel";
 import { formatCurrency } from "@/lib/format";
-import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
+import { getMarketLabels, marketDefinitions } from "@/lib/markets";
 import { getDefaultTaxRateByCountry, normalizeTaxRate } from "@/lib/tax";
 import type { CountryCode, CurrencyCode, PropertyDefinition, UserSettings } from "@/lib/types";
 
 const onboardingPropertyName = "Main Property";
 
 const steps = [
-  {
-    id: "welcome",
-    label: "Welcome",
-    title: "Get GoHostlyx ready in a few quick steps.",
-    icon: Sparkles,
-  },
-  {
-    id: "workspace",
-    label: "Workspace",
-    title: "Set the workspace basics.",
-    icon: Building2,
-  },
-  {
-    id: "property",
-    label: "Property",
-    title: "Create the home that calendars and finances belong to.",
-    icon: House,
-  },
-  {
-    id: "finance",
-    label: "Finance",
-    title: "Bring in statements or spreadsheets only if you want them now.",
-    icon: FileSpreadsheet,
-  },
-  {
-    id: "tax",
-    label: "Tax",
-    title: "Choose the estimate GoHostlyx should use.",
-    icon: ReceiptText,
-  },
-  {
-    id: "dashboard",
-    label: "Dashboard",
-    title: "You are ready to see the numbers.",
-    icon: LayoutDashboard,
-  },
+  { id: "welcome", label: { en: "Welcome", es: "Bienvenida" }, icon: Sparkles },
+  { id: "workspace", label: { en: "Workspace", es: "Espacio" }, icon: Building2 },
+  { id: "property", label: { en: "Property", es: "Propiedad" }, icon: House },
+  { id: "finance", label: { en: "Finance", es: "Finanzas" }, icon: FileSpreadsheet },
+  { id: "tax", label: { en: "Tax", es: "Impuestos" }, icon: ReceiptText },
+  { id: "dashboard", label: { en: "Dashboard", es: "Dashboard" }, icon: LayoutDashboard },
 ] as const;
 
 function inputClassName() {
@@ -85,6 +56,9 @@ export function OnboardingFlow({
   defaultPropertyName?: string;
 }) {
   const router = useRouter();
+  const { locale } = useLocale();
+  const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
   // Step 0 (welcome) was an explainer with no input; the flow starts on the
   // workspace step instead.
   const [currentStep, setCurrentStep] = useState(1);
@@ -115,7 +89,7 @@ export function OnboardingFlow({
   const [previewState, setPreviewState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [preview, setPreview] = useState<OnboardingPreview | null>(null);
 
-  const selectedTaxMarket = getMarketDefinition(taxCountryCode);
+  const selectedTaxMarket = getMarketLabels(taxCountryCode, locale);
   const normalizedTaxRate = normalizeTaxRate(taxRate);
   const previewCurrencyCode = preview?.currencyCode ?? initialSettings.currencyCode;
   const previewNetProfit = preview?.netProfit ?? 0;
@@ -172,14 +146,13 @@ export function OnboardingFlow({
       return (
         <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            Financial snapshot
+            {t("Financial snapshot", "Resumen financiero")}
           </p>
           <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-            Calendar first is completely fine.
+            {t("Calendar first is completely fine.", "Empezar por el calendario está perfecto.")}
           </h3>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-            Skip spreadsheets for now if iCal will bring your bookings. You can add statements,
-            expenses, or Excel data later whenever you want richer financial reporting.
+            {t("Skip spreadsheets for now if iCal will bring your bookings. You can add statements, expenses, or Excel data later whenever you want richer financial reporting.", "Sáltate los archivos si el iCal va a traer tus reservas. Puedes añadir extractos, gastos o Excel más adelante cuando quieras informes más completos.")}
           </p>
         </div>
       );
@@ -189,13 +162,13 @@ export function OnboardingFlow({
       return (
         <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            First look
+            {t("First look", "Primer vistazo")}
           </p>
           <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-            Here’s what your business looks like right now.
+            {t("Here’s what your business looks like right now.", "Así se ve tu negocio ahora mismo.")}
           </h3>
           <p className="mt-4 text-sm leading-7 text-[var(--workspace-muted)]">
-            Reading the imported numbers and preparing your first summary.
+            {t("Reading the imported numbers and preparing your first summary.", "Leyendo los números importados y preparando tu primer resumen.")}
           </p>
         </div>
       );
@@ -205,13 +178,13 @@ export function OnboardingFlow({
       return (
         <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            First look
+            {t("First look", "Primer vistazo")}
           </p>
           <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-            Here’s what your business looks like right now.
+            {t("Here’s what your business looks like right now.", "Así se ve tu negocio ahora mismo.")}
           </h3>
           <p className="mt-4 text-sm leading-7 text-[var(--workspace-muted)]">
-            GoHostlyx imported your file, but there is not enough clean financial data yet to show this summary.
+            {t("GoHostlyx imported your file, but there is not enough clean financial data yet to show this summary.", "GoHostlyx importó tu archivo, pero todavía no hay suficientes datos limpios para mostrar este resumen.")}
           </p>
         </div>
       );
@@ -223,13 +196,13 @@ export function OnboardingFlow({
       <div className="space-y-5">
         <div className="space-y-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            First look
+            {t("First look", "Primer vistazo")}
           </p>
           <h3 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)] sm:text-4xl">
-            Here’s what your business looks like right now.
+            {t("Here’s what your business looks like right now.", "Así se ve tu negocio ahora mismo.")}
           </h3>
           <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-            The estimate below updates as you adjust the tax rate, so the first number you see is what you keep.
+            {t("The estimate below updates as you adjust the tax rate, so the first number you see is what you keep.", "La estimación se actualiza al cambiar la tasa, así que el primer número que ves es lo que te quedas.")}
           </p>
         </div>
 
@@ -242,7 +215,7 @@ export function OnboardingFlow({
             }`}
           >
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              You Keep
+              {t("You Keep", "Te quedas")}
             </p>
             <p
               className={`mt-5 text-5xl font-semibold tracking-[-0.04em] sm:text-6xl ${
@@ -252,32 +225,32 @@ export function OnboardingFlow({
               {formatCurrency(previewYouKeep, false, previewCurrencyCode)}
             </p>
             <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300">
-              This is roughly what you keep after setting aside estimated taxes.
+              {t("This is roughly what you keep after setting aside estimated taxes.", "Es aproximadamente lo que te quedas después de reservar los impuestos estimados.")}
             </p>
           </article>
 
           <div className="grid gap-4">
             <article className="workspace-soft-card rounded-xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                Set Aside
+                {t("Set Aside", "Reserva")}
               </p>
               <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)]">
                 {formatCurrency(previewSetAside, false, previewCurrencyCode)}
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                Based on the tax rate in this setup.
+                {t("Based on the tax rate in this setup.", "Según la tasa de impuestos de esta configuración.")}
               </p>
             </article>
 
             <article className="workspace-soft-card rounded-xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                Net Profit
+                {t("Net Profit", "Beneficio neto")}
               </p>
               <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)]">
                 {formatCurrency(previewNetProfit, false, previewCurrencyCode)}
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                Before estimated taxes are set aside.
+                {t("Before estimated taxes are set aside.", "Antes de reservar los impuestos estimados.")}
               </p>
             </article>
           </div>
@@ -293,7 +266,7 @@ export function OnboardingFlow({
     const normalizedBusinessName = businessName.trim();
 
     if (!normalizedBusinessName) {
-      setWorkspaceError("Add a workspace name before continuing.");
+      setWorkspaceError(t("Add a workspace name before continuing.", "Añade un nombre de espacio antes de continuar."));
       return;
     }
 
@@ -311,7 +284,7 @@ export function OnboardingFlow({
           const settingsPayload = (await settingsResponse.json()) as { error?: string };
 
           if (!settingsResponse.ok) {
-            setWorkspaceError(settingsPayload.error ?? "The workspace could not be saved.");
+            setWorkspaceError(settingsPayload.error ?? t("The workspace could not be saved.", "No se pudo guardar el espacio de trabajo."));
             return;
           }
 
@@ -326,7 +299,7 @@ export function OnboardingFlow({
 
           setCurrentStep(2);
         } catch {
-          setWorkspaceError("The workspace could not be saved.");
+          setWorkspaceError(t("The workspace could not be saved.", "No se pudo guardar el espacio de trabajo."));
         }
       })();
     });
@@ -340,7 +313,7 @@ export function OnboardingFlow({
     const normalizedUnitCount = Math.max(2, Math.trunc(Number(unitCount) || 0));
 
     if (!normalizedPropertyName) {
-      setPropertyError("Add a property name before continuing.");
+      setPropertyError(t("Add a property name before continuing.", "Añade un nombre de propiedad antes de continuar."));
       return;
     }
 
@@ -366,7 +339,7 @@ export function OnboardingFlow({
           };
 
           if (!propertyResponse.ok) {
-            setPropertyError(propertyPayload.error ?? "The property could not be created.");
+            setPropertyError(propertyPayload.error ?? t("The property could not be created.", "No se pudo crear la propiedad."));
             return;
           }
 
@@ -410,7 +383,7 @@ export function OnboardingFlow({
           ]);
           setCurrentStep(3);
         } catch {
-          setPropertyError("The property could not be created.");
+          setPropertyError(t("The property could not be created.", "No se pudo crear la propiedad."));
         }
       })();
     });
@@ -434,13 +407,13 @@ export function OnboardingFlow({
           const payload = (await response.json()) as { error?: string };
 
           if (!response.ok) {
-            setTaxError(payload.error ?? "The tax rate could not be saved.");
+            setTaxError(payload.error ?? t("The tax rate could not be saved.", "No se pudo guardar la tasa de impuestos."));
             return;
           }
 
           setCurrentStep(5);
         } catch {
-          setTaxError("The tax rate could not be saved.");
+          setTaxError(t("The tax rate could not be saved.", "No se pudo guardar la tasa de impuestos."));
         }
       })();
     });
@@ -452,32 +425,32 @@ export function OnboardingFlow({
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Workspace setup
+              {t("Workspace setup", "Espacio de trabajo")}
             </p>
             <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-              Name your workspace and pick your market.
+              {t("Name your workspace and pick your market.", "Ponle nombre a tu espacio y elige tu mercado.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              The market sets your default currency and tax context. You can change both later in Settings.
+              {t("The market sets your default currency and tax context. You can change both later in Settings.", "El mercado define tu moneda y tus impuestos por defecto. Puedes cambiar ambos después en Ajustes.")}
             </p>
           </div>
 
           <form onSubmit={handleWorkspaceSubmit} className="space-y-5">
             <label className="block space-y-2">
-              <span className="text-sm font-medium text-[var(--workspace-text)]">Workspace name</span>
+              <span className="text-sm font-medium text-[var(--workspace-text)]">{t("Workspace name", "Nombre del espacio")}</span>
               <input
                 className={inputClassName()}
                 value={businessName}
                 onChange={(event) => setBusinessName(event.target.value)}
-                placeholder="My rental business"
+                placeholder={t("My rental business", "Mi negocio de alquiler")}
                 required
               />
             </label>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-[var(--workspace-text)]">Market</p>
+              <p className="text-sm font-medium text-[var(--workspace-text)]">{t("Market", "Mercado")}</p>
               <div className="grid gap-3 sm:grid-cols-3">
-                {marketDefinitions.map((entry) => {
+                {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((entry) => {
                   const isSelected = entry.countryCode === countryCode;
 
                   return (
@@ -520,7 +493,7 @@ export function OnboardingFlow({
                 disabled={isWorkspacePending}
                 className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isWorkspacePending ? "Saving workspace..." : "Continue to property"}
+                {isWorkspacePending ? "Saving workspace..." : t("Continue to property", "Continuar a la propiedad")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -534,19 +507,19 @@ export function OnboardingFlow({
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Property setup
+              {t("Property setup", "Propiedad")}
             </p>
             <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-              Add your first property.
+              {t("Add your first property.", "Añade tu primera propiedad.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              Bookings, expenses and calendars are tracked per property. You can add more properties later.
+              {t("Bookings, expenses and calendars are tracked per property. You can add more properties later.", "Reservas, gastos y calendarios se organizan por propiedad. Puedes añadir más después.")}
             </p>
           </div>
 
           <form onSubmit={handlePropertySubmit} className="space-y-5">
             <label className="block space-y-2">
-              <span className="text-sm font-medium text-[var(--workspace-text)]">Property name</span>
+              <span className="text-sm font-medium text-[var(--workspace-text)]">{t("Property name", "Nombre de la propiedad")}</span>
               <input
                 className={inputClassName()}
                 value={propertyName}
@@ -557,7 +530,7 @@ export function OnboardingFlow({
             </label>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-[var(--workspace-text)]">How do you rent it?</p>
+              <p className="text-sm font-medium text-[var(--workspace-text)]">{t("How do you rent it?", "¿Cómo la alquilas?")}</p>
 
               <div className="grid gap-3 md:grid-cols-2">
                 <button
@@ -574,9 +547,9 @@ export function OnboardingFlow({
                       <House className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[var(--workspace-text)]">As one listing</p>
+                      <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("As one listing", "Como un solo listing")}</p>
                       <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-                        The whole home is rented as a single unit.
+                        {t("The whole home is rented as a single unit.", "La vivienda entera se alquila como una unidad.")}
                       </p>
                     </div>
                   </div>
@@ -596,9 +569,9 @@ export function OnboardingFlow({
                       <Layers3 className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[var(--workspace-text)]">As several listings</p>
+                      <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("As several listings", "Como varios listings")}</p>
                       <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-                        Rooms or units listed separately, each with its own calendar.
+                        {t("Rooms or units listed separately, each with its own calendar.", "Habitaciones o unidades anunciadas por separado, cada una con su calendario.")}
                       </p>
                     </div>
                   </div>
@@ -609,7 +582,7 @@ export function OnboardingFlow({
             {propertyMode === "multi" ? (
               <div>
                 <label className="block space-y-2">
-                  <span className="text-sm font-medium text-[var(--workspace-text)]">How many listings?</span>
+                  <span className="text-sm font-medium text-[var(--workspace-text)]">{t("How many listings?", "¿Cuántos listings?")}</span>
                   <input
                     className={inputClassName()}
                     type="number"
@@ -623,10 +596,10 @@ export function OnboardingFlow({
             ) : null}
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-[var(--workspace-text)]">Where is it?</p>
+              <p className="text-sm font-medium text-[var(--workspace-text)]">{t("Where is it?", "¿Dónde está?")}</p>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                {marketDefinitions.map((entry) => {
+                {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((entry) => {
                   const isSelected = entry.countryCode === propertyCountryCode;
 
                   return (
@@ -668,14 +641,14 @@ export function OnboardingFlow({
                 className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                {t("Back", "Atrás")}
               </button>
               <button
                 type="submit"
                 disabled={isPropertyPending}
                 className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isPropertyPending ? "Creating property..." : "Continue"}
+                {isPropertyPending ? "Creating property..." : t("Continue", "Continuar")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -689,14 +662,13 @@ export function OnboardingFlow({
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Optional financial data
+              {t("Optional financial data", "Datos financieros opcionales")}
             </p>
             <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-              Import your numbers, or skip for now.
+              {t("Import your numbers, or skip for now.", "Importa tus números o sáltalo por ahora.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              Upload an Airbnb or Booking.com export, an expenses sheet or a payout statement to see real
-              numbers right away. If your bookings will come in through calendar sync, skip this.
+              {t("Upload an Airbnb or Booking.com export, an expenses sheet or a payout statement to see real numbers right away. If your bookings will come in through calendar sync, skip this.", "Sube una exportación de Airbnb o Booking.com, una hoja de gastos o un extracto de payout para ver números reales enseguida. Si tus reservas llegarán por el calendario, sáltalo.")}
             </p>
           </div>
 
@@ -717,14 +689,13 @@ export function OnboardingFlow({
           {hasUploadedData && uploadNeedsReview ? (
             <div className="workspace-card rounded-xl border border-amber-300/18 bg-[rgba(122,97,14,0.08)] p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-100/80">
-                Import review
+                {t("Import review", "Revisión de la importación")}
               </p>
               <h3 className="mt-3 text-xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)]">
-                Clean rows are already in GoHostlyx.
+                {t("Clean rows are already in GoHostlyx.", "Las filas limpias ya están en GoHostlyx.")}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-                You can keep reviewing this file here, replace it, or move on. Upload is optional now,
-                not a blocker.
+                {t("You can keep reviewing this file here, replace it, or move on. Upload is optional now, not a blocker.", "Puedes seguir revisando este archivo, reemplazarlo o continuar. Subir archivos es opcional.")}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
@@ -732,7 +703,7 @@ export function OnboardingFlow({
                   onClick={() => setCurrentStep(4)}
                   className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
-                  Continue to tax
+                  {t("Continue to tax", "Continuar a impuestos")}
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -746,14 +717,14 @@ export function OnboardingFlow({
               className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back
+              {t("Back", "Atrás")}
             </button>
             <button
               type="button"
               onClick={() => setCurrentStep(4)}
               className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
-              Skip for now
+              {t("Skip for now", "Saltar por ahora")}
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
@@ -771,14 +742,13 @@ export function OnboardingFlow({
 
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Optional tax setup
+              {t("Optional tax setup", "Impuestos (opcional)")}
             </p>
             <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
-              Set your tax estimate.
+              {t("Set your tax estimate.", "Configura tu estimación de impuestos.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              This only helps the dashboard show what to set aside and what you keep. You can skip it
-              now and change it later in Settings.
+              {t("This only helps the dashboard show what to set aside and what you keep. You can skip it now and change it later in Settings.", "Solo sirve para que el dashboard muestre cuánto reservar y cuánto te quedas. Puedes saltarlo y cambiarlo después en Ajustes.")}
             </p>
           </div>
 
@@ -786,10 +756,10 @@ export function OnboardingFlow({
             <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
               <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                  Tax market
+                  {t("Tax market", "Mercado fiscal")}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  {marketDefinitions.map((entry) => {
+                  {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((entry) => {
                     const isSelected = entry.countryCode === taxCountryCode;
 
                     return (
@@ -821,7 +791,7 @@ export function OnboardingFlow({
                 <div className="workspace-soft-card rounded-xl p-5">
                   <label className="space-y-2">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                      Tax rate
+                      {t("Tax rate", "Tasa de impuestos")}
                     </span>
                     <div className="relative">
                       <input
@@ -845,7 +815,7 @@ export function OnboardingFlow({
 
                 <div className="workspace-card rounded-xl p-6">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Preview
+                    {t("Preview", "Vista previa")}
                   </p>
                   <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)]">
                     {selectedTaxMarket.countryName} • {normalizedTaxRate}%
@@ -866,14 +836,14 @@ export function OnboardingFlow({
                 className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                {t("Back", "Atrás")}
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentStep(5)}
                 className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
-                Skip for now
+                {t("Skip for now", "Saltar por ahora")}
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
@@ -881,7 +851,7 @@ export function OnboardingFlow({
                 disabled={isTaxPending}
                 className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isTaxPending ? "Saving tax rate..." : "Continue to dashboard"}
+                {isTaxPending ? "Saving tax rate..." : t("Continue to dashboard", "Continuar al dashboard")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -897,14 +867,13 @@ export function OnboardingFlow({
         ) : (
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              All set
+              {t("All set", "Todo listo")}
             </p>
             <h2 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)] sm:text-3xl">
-              Your workspace is ready.
+              {t("Your workspace is ready.", "Tu espacio está listo.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              Next, connect your Airbnb or Booking.com calendar from the Calendar page, or upload a file
-              from the dashboard. Your numbers appear as soon as bookings come in.
+              {t("Next, connect your Airbnb or Booking.com calendar from the Calendar page, or upload a file from the dashboard. Your numbers appear as soon as bookings come in.", "Ahora conecta tu calendario de Airbnb o Booking.com desde la página Calendario, o sube un archivo desde el dashboard. Tus números aparecen en cuanto entren reservas.")}
             </p>
           </div>
         )}
@@ -915,7 +884,7 @@ export function OnboardingFlow({
             onClick={() => router.push("/dashboard")}
             className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
           >
-            Go to dashboard
+            {t("Go to dashboard", "Ir al dashboard")}
             <ArrowRight className="h-4 w-4" />
           </button>
           <button
@@ -923,7 +892,7 @@ export function OnboardingFlow({
             onClick={() => setCurrentStep(4)}
             className="workspace-button-secondary inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
           >
-            Review tax rate
+            {t("Review tax rate", "Revisar tasa de impuestos")}
           </button>
         </div>
       </section>
@@ -932,7 +901,7 @@ export function OnboardingFlow({
 
   const visibleSteps = steps.slice(1);
   const visibleIndex = Math.max(0, currentStep - 1);
-  const firstName = userName.split(" ")[0] || "there";
+  const firstName = userName.split(" ")[0] || (isSpanish ? "" : "there");
 
   return (
     <main className="min-h-screen bg-[var(--workspace-bg)] px-4 pb-16 pt-6 sm:px-6">
@@ -940,11 +909,11 @@ export function OnboardingFlow({
         <header className="flex items-center justify-between gap-4">
           <BrandLogo href="/" compact />
           <p className="text-sm font-medium text-[var(--workspace-muted)]">
-            Step {visibleIndex + 1} of {visibleSteps.length}
+            {t("Step", "Paso")} {visibleIndex + 1} {t("of", "de")} {visibleSteps.length}
           </p>
         </header>
 
-        <ol className="mt-8 grid grid-cols-5 gap-2" aria-label="Onboarding progress">
+        <ol className="mt-8 grid grid-cols-5 gap-2" aria-label={t("Onboarding progress", "Progreso de la configuración")}>
           {visibleSteps.map((step, index) => {
             const isActive = index === visibleIndex;
             const isDone = index < visibleIndex;
@@ -965,7 +934,7 @@ export function OnboardingFlow({
                         : "text-[var(--workspace-muted)]"
                   }`}
                 >
-                  {step.label}
+                  {step.label[locale]}
                 </p>
               </li>
             );
@@ -974,7 +943,9 @@ export function OnboardingFlow({
 
         {currentStep === 1 ? (
           <p className="mt-10 text-sm leading-7 text-[var(--workspace-muted)]">
-            Hi {firstName}. Setup takes about two minutes, and you can change everything later.
+            {isSpanish
+              ? `Hola ${firstName}. La configuración lleva unos dos minutos y puedes cambiarlo todo después.`
+              : `Hi ${firstName}. Setup takes about two minutes, and you can change everything later.`}
           </p>
         ) : null}
 

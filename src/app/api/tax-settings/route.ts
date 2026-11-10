@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireUserEmail } from "@/lib/auth";
 import { getUserSettings, upsertUserSettings } from "@/lib/db";
 import { normalizeCountryCode } from "@/lib/markets";
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const ownerEmail = await requireUserEmail();
 
     if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return await localizedJson({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -30,11 +30,11 @@ export async function POST(request: Request) {
       taxRate,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Saved tax defaults for ${taxCountryCode}.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The tax estimation settings could not be saved."),

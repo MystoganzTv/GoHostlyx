@@ -1,5 +1,5 @@
 import { clientErrorMessage } from "@/lib/client-error";
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { requireApiAccess } from "@/lib/access";
 import { getPropertyDefinitions } from "@/lib/db";
 import { saveAndSyncIcalFeed, validateIcalFeedUrl } from "@/lib/ical-feeds";
@@ -34,11 +34,11 @@ export async function POST(request: Request) {
     const icalUrl = String(formData.get("icalUrl") ?? "").trim();
 
     if (!propertyName) {
-      return NextResponse.json({ error: "Choose a property first." }, { status: 400 });
+      return await localizedJson({ error: "Choose a property first." }, { status: 400 });
     }
 
     if (!icalUrl) {
-      return NextResponse.json({ error: "Paste the public iCal URL first." }, { status: 400 });
+      return await localizedJson({ error: "Paste the public iCal URL first." }, { status: 400 });
     }
 
     const normalizedFeedUrl = validateIcalFeedUrl(icalUrl);
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       properties.find((property) => property.name.trim().toLowerCase() === propertyName.toLowerCase()) ?? null;
 
     if (!selectedProperty) {
-      return NextResponse.json({ error: "That property no longer exists." }, { status: 400 });
+      return await localizedJson({ error: "That property no longer exists." }, { status: 400 });
     }
 
     if (
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         (unit) => unit.name.trim().toLowerCase() === unitName.toLowerCase(),
       )
     ) {
-      return NextResponse.json({ error: "That listing no longer exists on the property." }, { status: 400 });
+      return await localizedJson({ error: "That listing no longer exists on the property." }, { status: 400 });
     }
 
     const result = await saveAndSyncIcalFeed({
@@ -73,11 +73,11 @@ export async function POST(request: Request) {
       feedUrl: normalizedFeedUrl,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Saved feed and synced ${result.eventCount} iCal event${result.eventCount === 1 ? "" : "s"} for ${unitName || "Primary listing"}.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           clientErrorMessage(error, "The iCal feed could not be imported."),

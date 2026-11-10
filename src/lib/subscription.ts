@@ -65,20 +65,28 @@ export function canAccessReports(subscription: SubscriptionState) {
   return canAccessInsights(subscription);
 }
 
-export function getSubscriptionBadge(subscription: SubscriptionState) {
+export function getSubscriptionBadge(subscription: SubscriptionState, locale: "en" | "es" = "en") {
+  const isSpanish = locale === "es";
   if (subscription.status === "trialing") {
     const daysLeft = getTrialDaysLeft(subscription);
     return {
-      label: "Trial",
-      detail: daysLeft > 0 ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left` : "Ends today",
+      label: isSpanish ? "Prueba" : "Trial",
+      detail:
+        daysLeft > 0
+          ? isSpanish
+            ? `Quedan ${daysLeft} día${daysLeft === 1 ? "" : "s"}`
+            : `${daysLeft} day${daysLeft === 1 ? "" : "s"} left`
+          : isSpanish
+            ? "Termina hoy"
+            : "Ends today",
       tone: "trial" as const,
     };
   }
 
   if (subscription.status === "expired") {
     return {
-      label: "Trial",
-      detail: "0 days left",
+      label: isSpanish ? "Prueba" : "Trial",
+      detail: isSpanish ? "Quedan 0 días" : "0 days left",
       tone: "expired" as const,
     };
   }
@@ -90,7 +98,7 @@ export function getSubscriptionBadge(subscription: SubscriptionState) {
         : subscription.plan === "pro"
           ? "Pro"
           : "Starter",
-    detail: "Active plan",
+    detail: isSpanish ? "Plan activo" : "Active plan",
     tone: subscription.plan,
   };
 }
