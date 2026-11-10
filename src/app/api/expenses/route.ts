@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 import { getPropertyDefinitions, insertManualExpense } from "@/lib/db";
 import { normalizeManualExpense } from "@/lib/manual-entry";
 
@@ -7,11 +7,13 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const properties = await getPropertyDefinitions(ownerEmail);
 

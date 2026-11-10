@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 import { disconnectIcalFeed } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -9,11 +9,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const feedId = Number((await params).id);
 

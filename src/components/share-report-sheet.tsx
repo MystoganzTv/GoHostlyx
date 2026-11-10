@@ -1,4 +1,4 @@
-import { formatCurrency, formatDateLabel, formatNumber, formatPercent } from "@/lib/format";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
 import type { DashboardView } from "@/lib/types";
 
 function ShareMetricCard({

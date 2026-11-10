@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 import { syncDueIcalFeeds } from "@/lib/ical-feeds";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const force = new URL(request.url).searchParams.get("force") === "1";
     const result = await syncDueIcalFeeds(ownerEmail, force ? { maxAgeMs: 0 } : undefined);

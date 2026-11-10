@@ -7,6 +7,7 @@ import { getSubscriptionBadge } from "@/lib/subscription";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { MarketingHeader } from "@/components/marketing-header";
 import { SubscriptionPlanButton } from "@/components/subscription-plan-button";
+import { ManageBillingButton } from "@/components/manage-billing-button";
 import { getRequestLocale } from "@/lib/server-locale";
 
 export const metadata: Metadata = {
@@ -118,6 +119,16 @@ export default async function PricingPage({
               <span className="text-slate-400">{subscriptionBadge.detail}</span>
             </div>
           ) : null}
+          {subscription?.stripeCustomerId && subscription.status === "active" ? (
+            <ManageBillingButton
+              label={isSpanish ? "Gestionar facturación" : "Manage billing"}
+              errorLabel={
+                isSpanish
+                  ? "No se pudo abrir el portal de facturación."
+                  : "The billing portal could not be opened."
+              }
+            />
+          ) : null}
           {billingState === "success" ? (
             <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-emerald-400/18 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
               {isSpanish
@@ -181,7 +192,7 @@ export default async function PricingPage({
                   currentPlan={subscription?.status === "active" ? subscription.plan : "trial"}
                   redirectTo="/pricing"
                   labels={{
-                    currentPlan: "Plan actual",
+                    currentPlan: isSpanish ? "Plan actual" : "Current plan",
                     starter: isSpanish ? "Empezar" : "Start",
                     pro: isSpanish ? "Empezar" : "Start",
                     portfolio: isSpanish ? "Empezar" : "Start",

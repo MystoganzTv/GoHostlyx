@@ -16,7 +16,7 @@ import {
 export const runtime = "nodejs";
 
 function sanitizeReturnPath(value: string | undefined) {
-  if (!value || !value.startsWith("/")) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
     return "/pricing";
   }
 
@@ -70,6 +70,23 @@ export async function POST(request: Request) {
     }
 
     const subscription = await getSubscriptionState(ownerEmail);
+
+    // A customer with a live paid subscription must change plans through the
+    // Stripe Customer Portal. Creating another Checkout session here would open
+    // a second, concurrent subscription and bill the customer twice.
+    if (
+      subscription.status === "active" &&
+      subscription.plan !== "trial" &&
+      subscription.stripeCustomerId &&
+      subscription.stripeSubscriptionId
+    ) {
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: subscription.stripeCustomerId,
+        return_url: buildAppUrl(returnPath),
+      });
+
+      return NextResponse.json({ url: portalSession.url, mode: "portal" });
+    }
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",

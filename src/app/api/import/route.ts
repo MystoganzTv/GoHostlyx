@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 import {
   appendFinancialStatementImport,
   appendImportData,
@@ -13,15 +13,19 @@ import type { ImportManualMapping, ImportRowResolution } from "@/lib/import/type
 
 export const runtime = "nodejs";
 
-const MAX_IMPORT_FILE_BYTES = 15 * 1024 * 1024; // 15 MB
+// Vercel rejects request bodies over 4.5 MB before they reach this route, so
+// the limit has to sit below that for users to see a helpful message.
+const MAX_IMPORT_FILE_BYTES = 4 * 1024 * 1024; // 4 MB
 
 export async function POST(request: Request) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const formData = await request.formData();
     const action = String(formData.get("action") ?? "preview").trim().toLowerCase();
@@ -46,7 +50,7 @@ export async function POST(request: Request) {
 
     if (fileValue.size > MAX_IMPORT_FILE_BYTES) {
       return NextResponse.json(
-        { error: "That file is too large. Imports are limited to 15 MB." },
+        { error: "That file is too large. Imports are limited to 4 MB. Export a shorter date range and try again." },
         { status: 413 },
       );
     }

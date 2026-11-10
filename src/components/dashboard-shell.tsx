@@ -409,6 +409,13 @@ export function DashboardShell({
         }
       >
         <div className="space-y-8">
+          {view.mixedCurrencyMode ? (
+            <div className="rounded-2xl border border-amber-200/18 bg-amber-400/10 px-4 py-3 text-sm leading-6 text-amber-50">
+              {isSpanish
+                ? "Estás viendo varios mercados con monedas distintas. Los totales de abajo suman importes sin convertir, así que no son exactos. Filtra por un país para ver cifras correctas, o usa el desglose por mercado."
+                : "You are viewing several markets with different currencies. The totals below add amounts without conversion, so they are not exact. Filter by one country for accurate figures, or use the per-market breakdown."}
+            </div>
+          ) : null}
           <section className="space-y-5">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
               <div className="space-y-3">

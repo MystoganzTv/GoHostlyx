@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
 import { BookOpenText, Home } from "lucide-react";
 import { BookingsManager } from "@/components/bookings-manager";
@@ -40,6 +41,8 @@ export default async function BookingsPage({
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);

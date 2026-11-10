@@ -114,6 +114,11 @@ export function TaxEstimationCard({
           <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
             Tax values are estimates only and may not reflect your actual tax obligation.
           </p>
+          <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
+            GoHostlyx applies one flat rate to net profit. Real rules differ: income tax is usually progressive,
+            occupancy and tourist taxes are not included, and in Spain non-residents outside the EU are taxed on
+            gross rental income without deducting expenses. Confirm with your accountant.
+          </p>
         </div>
       </div>
     </SectionCard>

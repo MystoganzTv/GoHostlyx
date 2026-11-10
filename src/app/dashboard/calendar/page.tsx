@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import {
   addMonths,
   eachMonthOfInterval,
@@ -160,6 +161,8 @@ export default async function CalendarPage({
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);
