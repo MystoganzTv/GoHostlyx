@@ -194,9 +194,9 @@ export function WorkspaceShell({
     : null;
 
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-4 py-5 sm:px-6 xl:h-screen xl:overflow-hidden xl:px-8 xl:py-6">
-      <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-5 xl:h-[calc(100vh-3rem)] xl:flex-row xl:items-stretch">
-        <div className="flex items-center justify-between gap-3 rounded-[22px] border border-[var(--workspace-sidebar-border)] bg-[var(--workspace-sidebar)] px-4 py-3 xl:hidden">
+    <main className="min-h-screen bg-[var(--workspace-bg)] px-4 py-5 sm:px-6 xl:h-screen xl:overflow-hidden xl:p-0">
+      <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-5 xl:h-screen xl:flex-row xl:items-stretch xl:gap-0">
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--workspace-border)] pb-3 xl:hidden">
           <BrandLogo href="/dashboard" compact />
           <button
             type="button"
@@ -220,7 +220,7 @@ export function WorkspaceShell({
         ) : null}
 
         <aside
-          className={`rounded-[30px] border border-[var(--workspace-sidebar-border)] bg-[var(--workspace-sidebar)] shadow-[0_18px_42px_rgba(2,6,23,0.2)] xl:static xl:z-auto xl:block xl:max-h-full xl:w-auto xl:shrink-0 xl:self-stretch xl:overflow-y-auto xl:overscroll-contain ${
+          className={`border-[var(--workspace-sidebar-border)] bg-[var(--workspace-bg)] max-xl:rounded-[24px] max-xl:border xl:static xl:rounded-none xl:border-0 xl:border-r xl:bg-transparent xl:z-auto xl:block xl:max-h-full xl:w-auto xl:shrink-0 xl:self-stretch xl:overflow-y-auto xl:overscroll-contain ${
             isMobileMenuOpen ? "fixed inset-y-3 left-3 z-50 block w-[min(320px,calc(100vw-1.5rem))] overflow-y-auto" : "hidden"
           } ${isCollapsed ? "p-4 xl:w-[104px]" : "p-5 xl:w-[272px]"}`}
         >
@@ -248,7 +248,7 @@ export function WorkspaceShell({
               </button>
             </div>
             {!isCollapsed ? (
-              <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+              <div className="mt-4">
                 <div className="flex flex-wrap items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-white">{businessName}</p>
@@ -377,7 +377,7 @@ export function WorkspaceShell({
                   <LanguageToggle compact />
                 </div>
 
-                <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--workspace-sidebar-muted)]">
                     {isSpanish ? "Última importación" : "Last import"}
                   </p>
@@ -393,7 +393,7 @@ export function WorkspaceShell({
                   </p>
                 </div>
 
-                <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                <div>
                   <p className="text-sm font-medium text-white">{userName}</p>
                   <p className="mt-1 text-xs text-[var(--workspace-sidebar-muted)]">
                     {userEmail}
@@ -415,17 +415,17 @@ export function WorkspaceShell({
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1 rounded-[36px] border border-[var(--workspace-border)] bg-[rgba(9,17,29,0.74)] shadow-[0_22px_54px_rgba(2,6,23,0.26)] xl:min-h-0 xl:overflow-hidden">
+        <div className="min-w-0 flex-1 xl:min-h-0 xl:overflow-hidden">
           <div
             data-workspace-scroll-region={contentScrollable ? "true" : undefined}
-            className={`min-h-full rounded-[36px] bg-[linear-gradient(180deg,rgba(11,22,38,0.9)_0%,rgba(8,17,29,0.97)_100%)] p-6 sm:p-7 xl:flex xl:h-full xl:flex-col xl:p-9 ${
+            className={`min-h-full px-1 py-2 sm:px-2 xl:flex xl:h-full xl:flex-col xl:px-10 xl:py-8 ${
               contentScrollable ? "xl:overflow-y-auto xl:overscroll-contain" : "xl:overflow-hidden"
             }`}
           >
             <div
               className={
                 stickyHeader
-                  ? "mb-8 xl:sticky xl:top-0 xl:z-20 xl:-mx-9 xl:-mt-9 xl:bg-[linear-gradient(180deg,rgba(10,18,31,1)_0%,rgba(10,18,31,1)_82%,rgba(10,18,31,0.98)_100%)] xl:px-9 xl:pt-9 xl:pb-6 xl:shadow-[0_18px_34px_rgba(2,6,23,0.28)]"
+                  ? "mb-8 xl:sticky xl:top-0 xl:z-20 xl:-mx-10 xl:-mt-8 xl:bg-[var(--workspace-bg)] xl:px-10 xl:pt-8 xl:pb-6 xl:border-b xl:border-[var(--workspace-border)]"
                   : "mb-8"
               }
             >

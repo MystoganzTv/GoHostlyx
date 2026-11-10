@@ -206,7 +206,7 @@ export function TaxSettingsPanel({
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {behaviorCards.map((card) => (
-              <div key={card.label} className="rounded-[18px] bg-white/[0.03] p-4">
+              <div key={card.label} className="py-4 border-t border-[var(--workspace-border)]">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {card.label}
                 </p>

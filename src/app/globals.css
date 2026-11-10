@@ -399,3 +399,50 @@ textarea {
     box-shadow: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Flat workspace style.
+   Structure comes from spacing and hairline dividers instead of boxes: no
+   gradients, shadows or cards inside cards. These rules are unlayered, so they
+   take precedence over the Tailwind utilities still present on the elements.
+   --------------------------------------------------------------------------- */
+.workspace-card {
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--workspace-border);
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+.workspace-soft-card {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.workspace-icon-chip {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  color: var(--workspace-accent);
+}
+
+.workspace-button-primary,
+.workspace-button-primary:hover {
+  background: var(--workspace-accent);
+  color: #061714;
+  box-shadow: none;
+}
+
+.workspace-button-secondary {
+  background: transparent;
+  box-shadow: none;
+}

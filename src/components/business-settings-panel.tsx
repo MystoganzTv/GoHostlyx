@@ -165,7 +165,7 @@ export function BusinessSettingsPanel({
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-3">
-            <div className="rounded-[18px] bg-white/[0.03] p-4">
+            <div className="py-4 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Moneda por defecto" : "Default currency"}
               </p>
@@ -179,7 +179,7 @@ export function BusinessSettingsPanel({
               </p>
             </div>
 
-            <div className="rounded-[18px] bg-white/[0.03] p-4">
+            <div className="py-4 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Vista todos los países" : "All-countries view"}
               </p>
@@ -193,7 +193,7 @@ export function BusinessSettingsPanel({
               </p>
             </div>
 
-            <div className="rounded-[18px] bg-white/[0.03] p-4">
+            <div className="py-4 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Nuevo valor por defecto para propiedad" : "New property default"}
               </p>

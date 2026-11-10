@@ -159,7 +159,7 @@ export function CalendarIcalLauncher({
                 </label>
               </div>
 
-              <div className="rounded-[22px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
+              <div className="py-4 text-sm leading-6 text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
                 {isSpanish
                   ? "iCal es ideal para la visibilidad del calendario. Normalmente trae check-ins, check-outs, reservas y días bloqueados, pero no datos financieros completos como payout, comisiones o impuestos."
                   : "iCal is great for calendar visibility. It usually brings check-ins, check-outs, reservations, and blocked days, but not full payout statement data like payout, fees, or taxes."}

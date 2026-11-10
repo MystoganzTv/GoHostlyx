@@ -448,7 +448,7 @@ export function BookingsManager({
         </div>
 
         {visibleBookings.length === 0 ? (
-          <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.03] px-4 py-6 text-sm text-[var(--workspace-muted)]">
+          <div className="py-6 text-sm text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
             {reviewFilter === "needs-review"
               ? isSpanish
                 ? "No hay reservas pendientes de revisión con los filtros actuales."

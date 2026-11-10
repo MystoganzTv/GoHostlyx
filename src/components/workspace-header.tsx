@@ -75,7 +75,7 @@ export function WorkspaceHeader({
 
           <div className="flex flex-wrap items-center gap-3">
             {actions}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left">
+            <div className="py-3 text-left border-t border-[var(--workspace-border)]">
               <p className="text-sm font-medium text-slate-100">{userName}</p>
               <p className="text-xs text-slate-400">
                 {userEmail} • {currencyCode}

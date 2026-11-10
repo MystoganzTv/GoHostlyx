@@ -178,7 +178,7 @@ export function AdminUsersPanel({
               </div>
 
               <div className="min-w-0 xl:w-[360px]">
-                <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+                <div className="py-4 border-t border-[var(--workspace-border)]">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                     Access control
                   </p>

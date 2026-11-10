@@ -207,7 +207,7 @@ export function CalendarFeedsManager({
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.02] px-3 py-3">
+              <div className="py-3 border-t border-[var(--workspace-border)]">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Origen" : "Source"}
                 </p>
@@ -215,7 +215,7 @@ export function CalendarFeedsManager({
                   {getSourceLabel(feed.source, locale)}
                 </p>
               </div>
-              <div className="rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.02] px-3 py-3">
+              <div className="py-3 border-t border-[var(--workspace-border)]">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Eventos" : "Events"}
                 </p>
@@ -223,7 +223,7 @@ export function CalendarFeedsManager({
                   {feed.eventCount}
                 </p>
               </div>
-              <div className="rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.02] px-3 py-3">
+              <div className="py-3 border-t border-[var(--workspace-border)]">
                 <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Última sincronización" : "Last synced"}
                 </p>

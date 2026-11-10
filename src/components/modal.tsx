@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+
+const noopSubscribe = () => () => {};
 
 export function Modal({
   open,
@@ -22,6 +24,10 @@ export function Modal({
 }) {
   const modalCardRef = useRef<HTMLDivElement | null>(null);
   const modalViewportRef = useRef<HTMLDivElement | null>(null);
+  // False on the server and during hydration, true afterwards. A modal that is
+  // open on first render (e.g. "Create your first property") used to render a
+  // portal on the client but nothing on the server: a hydration mismatch.
+  const isClient = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   useEffect(() => {
     if (!open || !modalCardRef.current) {
@@ -41,7 +47,7 @@ export function Modal({
     };
   }, [open]);
 
-  if (!open) {
+  if (!open || !isClient) {
     return null;
   }
 
@@ -97,10 +103,6 @@ export function Modal({
       </div>
     </div>
   );
-
-  if (typeof document === "undefined") {
-    return null;
-  }
 
   return createPortal(modalContent, document.body);
 }

@@ -50,7 +50,7 @@ export function TaxEstimationCard({
       title="Tax Estimation"
       subtitle="Estimate what to set aside and what you actually keep."
       action={
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+        <div className="inline-flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
           <ShieldAlert className="h-4 w-4 text-[var(--workspace-accent)]" />
           Estimate only
         </div>

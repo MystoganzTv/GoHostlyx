@@ -122,7 +122,7 @@ export default async function ReportsPage({
       subscriptionBadge={subscriptionBadge}
       actions={
         <div className="flex flex-col gap-3 xl:items-end">
-          <div className="rounded-[28px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-3 shadow-[0_12px_28px_rgba(15,23,42,0.04)]">
+          <div className="py-3 border-t border-[var(--workspace-border)]">
             <FilterBar
               channels={view.availableChannels}
               countries={view.availableCountries}

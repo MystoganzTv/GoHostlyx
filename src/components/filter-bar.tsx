@@ -309,7 +309,7 @@ export function FilterBar(props: FilterBarProps) {
       className={`flex flex-wrap items-center gap-3 ${
         embedded
           ? ""
-          : "rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-3 shadow-[0_12px_28px_rgba(15,23,42,0.04)]"
+          : ""
       }`}
     >
       <div className="flex items-center gap-2 px-2 text-sm font-semibold text-[var(--workspace-muted)]">

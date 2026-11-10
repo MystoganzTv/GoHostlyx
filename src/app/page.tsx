@@ -120,13 +120,13 @@ function ProfitPreview({ isSpanish }: { isSpanish: boolean }) {
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white/[0.04] p-4">
+        <div className="py-4 border-t border-[var(--workspace-border)]">
           <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
             {isSpanish ? "Ingresos" : "Revenue"}
           </p>
           <p className="mt-2 font-mono text-xl font-semibold text-slate-100">€46,857</p>
         </div>
-        <div className="rounded-2xl bg-white/[0.04] p-4">
+        <div className="py-4 border-t border-[var(--workspace-border)]">
           <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
             {isSpanish ? "Gastos" : "Expenses"}
           </p>
@@ -247,10 +247,10 @@ export default async function LandingPage() {
               return (
                 <article
                   key={prop.title}
-                  className="rounded-3xl border border-white/[0.08] bg-white/[0.025] p-6"
+                  className="py-6 border-t border-[var(--workspace-border)]"
                 >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)]">
-                    <Icon className="h-5 w-5 text-[var(--accent-text)]" aria-hidden="true" />
+                  <span className="inline-flex text-[var(--accent)]">
+                    <Icon className="h-6 w-6" aria-hidden="true" />
                   </span>
                   <h3 className="mt-5 text-lg font-semibold text-white">{prop.title}</h3>
                   <p className="mt-2 text-sm leading-7 text-slate-400">{prop.description}</p>
@@ -270,7 +270,7 @@ export default async function LandingPage() {
 
           <ol className="mt-12 grid gap-4 md:grid-cols-3">
             {steps.map((step, index) => (
-              <li key={step.title} className="rounded-3xl border border-white/[0.08] bg-white/[0.025] p-6">
+              <li key={step.title} className="py-6 border-t border-[var(--workspace-border)]">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-sm font-bold text-[var(--accent-contrast)]">
                   {index + 1}
                 </span>
@@ -295,10 +295,10 @@ export default async function LandingPage() {
               return (
                 <article
                   key={feature.title}
-                  className="group rounded-3xl border border-white/[0.08] bg-white/[0.025] p-6 transition-colors hover:border-[var(--accent-soft-strong)]"
+                  className="group py-6 transition-colors border-t border-[var(--workspace-border)]"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] transition-colors group-hover:bg-[rgba(88,196,182,0.22)]">
-                    <Icon className="h-4 w-4 text-[var(--accent-text)]" aria-hidden="true" />
+                  <span className="inline-flex text-[var(--accent)]">
+                    <Icon className="h-6 w-6" aria-hidden="true" />
                   </span>
                   <h3 className="mt-5 text-base font-semibold text-white">{feature.title}</h3>
                   <p className="mt-2 text-sm leading-7 text-slate-400">{feature.description}</p>
@@ -371,8 +371,7 @@ export default async function LandingPage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-5 pb-24 pt-4 sm:px-6">
-          <div className="relative overflow-hidden rounded-[32px] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(88,196,182,0.14)_0%,rgba(17,28,44,0.9)_45%,rgba(11,22,37,0.95)_100%)] px-6 py-14 text-center sm:px-16 sm:py-20">
-            <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-[var(--accent-soft)] blur-3xl" />
+          <div className="relative py-14 text-center sm:py-20 border-t border-[var(--workspace-border)]">
             <div className="relative">
               <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
                 {isSpanish ? "Empieza con tus datos. Quédate con la claridad." : "Start with your data. Keep the clarity."}

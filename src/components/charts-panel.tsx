@@ -106,7 +106,7 @@ export function ChartsPanel({
         subtitle="The fastest way to see if the business is actually becoming more profitable."
         action={
           monthlySummary.length > 0 ? (
-            <div className="inline-flex rounded-2xl border border-white/8 bg-white/[0.03] p-1">
+            <div className="inline-flex py-1 border-t border-[var(--workspace-border)]">
               {[
                 { value: "trend", label: "Trend" },
                 { value: "bars", label: "Bars" },
@@ -176,7 +176,7 @@ export function ChartsPanel({
                   className="flex w-[54px] shrink-0 flex-col items-center gap-2"
                 >
                   <div
-                    className="flex h-[118px] w-[36px] items-end rounded-[16px] bg-white/[0.03] p-1.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)]"
+                    className="flex h-[118px] w-[36px] items-end py-1.5 border-t border-[var(--workspace-border)]"
                     onMouseEnter={() => setActiveProfitBarKey(month.key ?? month.label)}
                     onMouseLeave={() => setActiveProfitBarKey((current) => (current === (month.key ?? month.label) ? null : current))}
                   >
@@ -222,7 +222,7 @@ export function ChartsPanel({
           subtitle="See how top-line inflow compares against cost load each month."
           action={
             monthlySummary.length > 12 ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
+              <div className="inline-flex items-center gap-2 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
                 Last 12 months
               </div>
             ) : null

@@ -203,7 +203,7 @@ export function WorkspaceDateField({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] max-w-[calc(100vw-2rem)] rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,28,46,0.98)_0%,rgba(10,19,31,0.98)_100%)] p-4 shadow-[0_24px_60px_rgba(2,6,23,0.48)]">
+        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] max-w-[calc(100vw-2rem)] py-4 border-t border-[var(--workspace-border)]">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
@@ -256,7 +256,7 @@ export function WorkspaceDateField({
           </div>
 
           {activePicker === "month" ? (
-            <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.025] p-3">
+            <div className="mt-4 py-3 border-t border-[var(--workspace-border)]">
               <div className="grid grid-cols-3 gap-2">
                 {monthOptions.map((month) => {
                   const isActive = month.value === getMonth(visibleMonth);
@@ -283,7 +283,7 @@ export function WorkspaceDateField({
               </div>
             </div>
           ) : activePicker === "year" ? (
-            <div className="mt-4 rounded-[22px] border border-white/8 bg-white/[0.025] p-3">
+            <div className="mt-4 py-3 border-t border-[var(--workspace-border)]">
               <div className="grid max-h-[228px] grid-cols-3 gap-2 overflow-y-auto pr-1">
                 {yearOptions.map((year) => {
                   const isActive = year === getYear(visibleMonth);

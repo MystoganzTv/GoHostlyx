@@ -15,9 +15,9 @@ export function SectionCard({
 }) {
   return (
     <section
-      className={`workspace-card rounded-[30px] p-6 sm:p-7 ${className}`}
+      className={`workspace-card pt-8 ${className}`}
     >
-      <div className="mb-6 flex flex-col gap-3 border-b border-white/6 pb-5 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold tracking-[-0.02em] text-[var(--workspace-text)]">
             {title}

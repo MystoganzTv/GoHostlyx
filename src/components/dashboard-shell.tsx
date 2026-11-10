@@ -389,7 +389,7 @@ export function DashboardShell({
               </Link>
             ) : null}
             {reportExportEnabled ? (
-              <ExportReportLink className="h-14 rounded-[24px] border border-[var(--workspace-accent)]/28 bg-[linear-gradient(180deg,rgba(31,83,93,0.88)_0%,rgba(22,65,74,0.88)_100%)] px-5 text-sm font-semibold text-slate-100 shadow-[0_18px_34px_rgba(6,20,35,0.2),inset_0_1px_0_rgba(255,255,255,0.05)] transition hover:border-[var(--workspace-accent)]/42 hover:bg-[linear-gradient(180deg,rgba(37,94,104,0.92)_0%,rgba(26,72,82,0.92)_100%)]" />
+              <ExportReportLink className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition" />
             ) : null}
             <button
               type="button"
@@ -776,7 +776,7 @@ export function DashboardShell({
                   <div className="grid gap-4 border-t border-white/6 pt-4 md:grid-cols-2 xl:grid-cols-4">
                     <article className="workspace-soft-card rounded-[24px] p-5">
                       <div className="flex items-center gap-3">
-                        <div className="rounded-[18px] border border-white/8 bg-white/[0.04] p-3 text-[var(--workspace-text)]">
+                        <div className="py-3 text-[var(--workspace-text)] border-t border-[var(--workspace-border)]">
                           <ReceiptText className="h-4 w-4" />
                         </div>
                         <div>
