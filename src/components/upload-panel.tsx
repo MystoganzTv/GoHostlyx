@@ -354,6 +354,7 @@ export function UploadPanel({
   subtitle = "Upload your Airbnb, Booking.com, or Excel files to see your real numbers.",
   refreshOnSuccess = true,
   appearance = "default",
+  hideHeader = false,
   onImportComplete,
   onCancel,
 }: {
@@ -362,6 +363,8 @@ export function UploadPanel({
   subtitle?: string;
   refreshOnSuccess?: boolean;
   appearance?: "default" | "compact";
+  /** Hide the title block when the surrounding page already explains the upload. */
+  hideHeader?: boolean;
   onImportComplete?: (payload: ImportCompletePayload) => void;
   onCancel?: () => void;
 }) {
@@ -1008,6 +1011,7 @@ export function UploadPanel({
         ) : null}
 
         <div className="relative">
+          {hideHeader ? null : (
           <div className={`flex flex-wrap items-start justify-between gap-4 ${isCompactAppearance ? "sm:gap-3" : ""}`}>
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-[var(--workspace-border)] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
@@ -1044,8 +1048,9 @@ export function UploadPanel({
               </p>
             </div>
           </div>
+          )}
 
-        <div className={`${isCompactAppearance ? "mt-6" : "mt-8"} space-y-6`}>
+        <div className={`${hideHeader ? "" : isCompactAppearance ? "mt-6" : "mt-8"} space-y-6`}>
           <input
             ref={inputRef}
             type="file"
