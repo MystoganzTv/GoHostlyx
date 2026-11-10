@@ -1,9 +1,17 @@
+import { parseMoney as parseImportedMoney } from "@/lib/import/money";
 import { differenceInCalendarDays, isValid, parseISO } from "date-fns";
 import type { BookingRecord, ExpenseRecord } from "./types";
 
+// Same parser as file imports, so "$1,200" or "1.200,50 €" are read correctly
+// instead of silently becoming 0.
 function parseMoney(value: FormDataEntryValue | null) {
-  const amount = Number(String(value ?? "0").trim());
-  return Number.isFinite(amount) ? amount : 0;
+  const parsed = parseImportedMoney(typeof value === "string" ? value : "");
+
+  if (parsed.malformed) {
+    throw new Error(`"${String(value)}" is not a valid amount.`);
+  }
+
+  return parsed.value;
 }
 
 function parseInteger(value: FormDataEntryValue | null) {

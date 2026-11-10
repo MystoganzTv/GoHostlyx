@@ -1,45 +1,23 @@
-// Database connection and shared state layer, extracted from db.ts.
-// Owns the SQLite/Postgres/in-memory singletons and the accessors used by the
-// per-domain query functions. Depends on the schema modules but nothing else
-// in the data layer, so there are no import cycles.
+// Database connection layer. GoHostlyx stores everything in Postgres (Supabase)
+// in every environment; the schema lives in supabase/migrations and is applied by
+// the Supabase GitHub integration, not at runtime.
 
-import { createRequire } from "node:module";
-import { Pool } from "pg";
+import { Pool, type PoolConfig } from "pg";
 import type { UserSettings } from "./types";
-import type { MemoryStore } from "./db-types";
-import { getSQLiteDatabasePath, initializeSQLiteSchema } from "./db-schema";
-import { runPostgresSchema } from "./db-schema-pg";
 import { getCurrencyForCountry } from "./markets";
 import { getDefaultTaxRateByCountry } from "./tax";
 
-type SQLiteDatabase = import("better-sqlite3").Database;
-type SQLiteModule = typeof import("better-sqlite3");
-
-const require = createRequire(import.meta.url);
-
-let sqliteDatabase: SQLiteDatabase | null = null;
-let sqliteModule: SQLiteModule | null = null;
 let postgresPool: Pool | null = null;
-let postgresInitialization: Promise<void> | null = null;
 
-declare global {
-  var __gohostlyxMemoryStore: MemoryStore | undefined;
+// DATABASE_URL is set by hand for production and local development.
+// POSTGRES_URL is what the Supabase <-> Vercel integration injects, including
+// the per-branch databases used by preview deployments.
+function getDatabaseConnectionString() {
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
 }
 
 export function isPostgresConfigured() {
   return Boolean(getDatabaseConnectionString());
-}
-
-function getDatabaseConnectionString() {
-  return process.env.DATABASE_URL ?? "";
-}
-
-function shouldUseSQLiteFallback() {
-  return !isPostgresConfigured() && process.env.NODE_ENV !== "production";
-}
-
-export function shouldUseMemoryFallback() {
-  return !isPostgresConfigured() && !shouldUseSQLiteFallback();
 }
 
 export function normalizeOwnerEmail(ownerEmail: string) {
@@ -57,162 +35,70 @@ export function getDefaultUserSettings(fallbackBusinessName: string): UserSettin
   };
 }
 
-function getSQLiteModule() {
-  if (!sqliteModule) {
-    sqliteModule = require("better-sqlite3") as SQLiteModule;
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+/**
+ * Parse the connection URL ourselves so TLS is decided here, not by query
+ * parameters. node-postgres lets `sslmode` in the URL override the `ssl`
+ * option, and the Supabase integration adds `sslmode=require`, which would
+ * reject Supabase's own certificate chain.
+ */
+export function buildPoolConfig(connectionString: string): PoolConfig {
+  const url = new URL(connectionString);
+  for (const param of ["sslmode", "sslrootcert", "sslcert", "sslkey", "supa", "pgbouncer"]) {
+    url.searchParams.delete(param);
   }
 
-  return sqliteModule;
+  return {
+    connectionString: url.toString(),
+    ssl: getSslConfig(url.hostname),
+    // Serverless functions each hold their own pool; keep it small so the
+    // Supabase pooler is not exhausted by many concurrent instances.
+    max: 5,
+    idleTimeoutMillis: 10_000,
+  };
 }
 
-export function getMemoryStore() {
-  if (!globalThis.__gohostlyxMemoryStore) {
-    globalThis.__gohostlyxMemoryStore = {
-      nextImportId: 1,
-      nextBookingId: 1,
-      nextExpenseId: 1,
-      nextClosureId: 1,
-      nextCalendarEventId: 1,
-      nextIcalFeedId: 1,
-      nextFinancialDocumentId: 1,
-      nextPropertyId: 1,
-      nextPropertyUnitId: 1,
-      imports: [],
-      bookings: [],
-      expenses: [],
-      closures: [],
-      calendarEvents: [],
-      icalFeeds: [],
-      financialDocuments: [],
-      settings: [],
-      authUsers: [],
-      subscriptions: [],
-      properties: [],
-      propertyUnits: [],
-    };
+function getSslConfig(hostname: string): PoolConfig["ssl"] {
+  // A Postgres on this machine (tests, CI) has no TLS.
+  if (LOCAL_HOSTS.has(hostname)) {
+    return false;
   }
 
-  if (!globalThis.__gohostlyxMemoryStore.authUsers) {
-    globalThis.__gohostlyxMemoryStore.authUsers = [];
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.subscriptions) {
-    globalThis.__gohostlyxMemoryStore.subscriptions = [];
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.financialDocuments) {
-    globalThis.__gohostlyxMemoryStore.financialDocuments = [];
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.calendarEvents) {
-    globalThis.__gohostlyxMemoryStore.calendarEvents = [];
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.icalFeeds) {
-    globalThis.__gohostlyxMemoryStore.icalFeeds = [];
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.nextCalendarEventId) {
-    globalThis.__gohostlyxMemoryStore.nextCalendarEventId = 1;
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.nextIcalFeedId) {
-    globalThis.__gohostlyxMemoryStore.nextIcalFeedId = 1;
-  }
-
-  if (!globalThis.__gohostlyxMemoryStore.nextFinancialDocumentId) {
-    globalThis.__gohostlyxMemoryStore.nextFinancialDocumentId = 1;
-  }
-
-  return globalThis.__gohostlyxMemoryStore;
-}
-
-
-export function getSQLiteDatabase() {
-  if (!sqliteDatabase) {
-    const SQLite = getSQLiteModule();
-    sqliteDatabase = new SQLite(getSQLiteDatabasePath());
-    sqliteDatabase.pragma("journal_mode = WAL");
-    initializeSQLiteSchema(sqliteDatabase);
-  }
-
-  return sqliteDatabase;
-}
-
-function getPostgresSslConfig() {
-  // Outside production we connect without TLS settings (local/dev databases).
-  if (process.env.NODE_ENV !== "production") {
-    return undefined;
-  }
-
-  // Preferred: validate the server certificate against a provided CA.
-  // Accept the PEM either with real line breaks or with literal "\n" escapes,
-  // which is how it often ends up after pasting into a dashboard field.
+  // Preferred: validate the server certificate against the provider's CA.
+  // Accept the PEM with real line breaks or with literal "\n" escapes, which is
+  // how it often ends up after pasting into a dashboard field.
   const ca = process.env.DATABASE_CA_CERT?.replace(/\\n/g, "\n").trim();
   if (ca) {
     return { ca, rejectUnauthorized: true };
   }
 
-  // Escape hatch for managed providers whose certs aren't in Node's trust
-  // store. Set DATABASE_SSL_INSECURE=true only if the connection otherwise
-  // fails — it disables certificate validation (MITM risk).
+  // Escape hatch for providers whose CA is not in Node's trust store (the
+  // Supabase pooler). Encrypted, but the certificate is not verified.
   if (process.env.DATABASE_SSL_INSECURE === "true") {
     return { rejectUnauthorized: false };
   }
 
-  // Secure default: validate against the system CA bundle.
   return { rejectUnauthorized: true };
 }
 
 export function getPostgresPool() {
   if (!postgresPool) {
-    postgresPool = new Pool({
-      connectionString: getDatabaseConnectionString(),
-      ssl: getPostgresSslConfig(),
-    });
+    const connectionString = getDatabaseConnectionString();
+
+    if (!connectionString) {
+      throw new Error(
+        "DATABASE_URL is not configured. Point it at a Supabase database (see README → Local development).",
+      );
+    }
+
+    postgresPool = new Pool(buildPoolConfig(connectionString));
   }
 
   return postgresPool;
 }
 
-async function initializePostgresSchema() {
-  if (!isPostgresConfigured()) {
-    return;
-  }
-
-  if (!postgresInitialization) {
-    const pool = getPostgresPool();
-
-    // Do not cache a failed attempt: a transient outage at cold start would
-    // otherwise break every request on this instance until it is recycled.
-    postgresInitialization = runPostgresSchema(pool).catch((error: unknown) => {
-      postgresInitialization = null;
-      throw error;
-    });
-  }
-
-  await postgresInitialization;
-}
-
+/** Kept so callers can fail fast with a clear error when no database is configured. */
 export async function ensureDatabase() {
-  if (isPostgresConfigured()) {
-    await initializePostgresSchema();
-    return;
-  }
-
-  if (shouldUseSQLiteFallback()) {
-    getSQLiteDatabase();
-    return;
-  }
-
-  // In production, an in-memory store silently loses every write between
-  // deployments and across serverless instances. Fail loudly unless it has
-  // been explicitly allowed (for example on a throwaway preview).
-  if (process.env.ALLOW_MEMORY_DATABASE !== "true") {
-    throw new Error(
-      "DATABASE_URL is not configured. Set it in the environment (or ALLOW_MEMORY_DATABASE=true for a throwaway preview).",
-    );
-  }
-
-  getMemoryStore();
+  getPostgresPool();
 }
