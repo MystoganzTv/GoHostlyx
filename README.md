@@ -48,7 +48,7 @@ they actually keep after platform fees, operating costs, and estimated taxes.
 - Next.js 16 App Router, React 19, and TypeScript
 - Tailwind CSS 4 and Recharts
 - NextAuth with Google and email/password authentication
-- PostgreSQL in production and SQLite for local development
+- PostgreSQL on Supabase in every environment, with schema migrations in `supabase/migrations`
 - Stripe Checkout and subscription webhooks
 - `xlsx` for workbook imports and `pdf-lib` for report exports
 - Vercel for production deployment
@@ -67,7 +67,12 @@ npm install
 cp .env.example .env.local
 ```
 
-Configure the values you need in `.env.local`, then start the app:
+Set `DATABASE_URL` in `.env.local` to a Supabase database. Use a persistent
+development branch of the GoHostlyx Supabase project (Supabase → Branches →
+create a branch named `develop` and enable "Persistent"), and copy its
+Transaction pooler URL. Never point local development at production.
+
+Configure the other values you need in `.env.local`, then start the app:
 
 ```bash
 npm run dev
@@ -85,7 +90,7 @@ The application will be available at `http://localhost:3000`.
 | `GOOGLE_CLIENT_SECRET` | Optional | Enables Google authentication |
 | `ALLOWED_EMAILS` | Optional | Comma-separated sign-up allowlist; empty means open registration |
 | `ADMIN_EMAILS` | Optional | Comma-separated admin accounts (admin panel and Pro access) |
-| `DATABASE_URL` | Production | PostgreSQL connection string (required; the app refuses to run without it in production) |
+| `DATABASE_URL` | Yes | Supabase Transaction pooler URL (production; local development uses a dev branch) |
 | `DATABASE_CA_CERT` | Production | PEM of the database provider's CA, used to verify TLS (Supabase: Database settings → SSL) |
 | `DATABASE_SSL_INSECURE` | Optional | `true` disables TLS certificate checks; last resort only |
 | `UPSTASH_REDIS_REST_URL` | Production | Shared rate-limit store (in-memory limits are per instance) |
@@ -117,13 +122,26 @@ Google authentication additionally requires `GOOGLE_CLIENT_ID` and
 
 ## Persistence
 
-- Local development without `DATABASE_URL` uses SQLite at `data/gohostlyx.sqlite`.
-- Production uses PostgreSQL through `DATABASE_URL`.
-- In production the app refuses to start a request without `DATABASE_URL`, so data
-  is never silently written to memory. Set `ALLOW_MEMORY_DATABASE=true` only for a
-  throwaway preview.
+- All data lives in PostgreSQL on Supabase: production, preview deployments and
+  local development. There is no SQLite or in-memory fallback; without a database
+  URL the app stops with a clear error.
+- The app reads `DATABASE_URL`, then `POSTGRES_URL` (the variable the
+  Supabase ↔ Vercel integration sets for preview branches).
 - Functions run in `pdx1` (Oregon) to sit next to the Supabase database in
   `us-west-2`; see `vercel.json`.
+
+## Database Migrations
+
+The schema lives in `supabase/migrations`. The Supabase GitHub integration:
+
+- creates a preview database branch for every pull request, applies the
+  migrations, and hands its URL to the Vercel preview deployment;
+- applies new migrations to production when the pull request merges into `main`.
+
+To change the schema, add a new timestamped file, for example
+`supabase/migrations/20261201000000_add_cleaning_fee.sql`. Never edit a
+migration that has already been applied. New tables need
+`ENABLE ROW LEVEL SECURITY` like the existing ones.
 
 ## Stripe Setup
 
