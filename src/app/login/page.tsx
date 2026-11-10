@@ -30,10 +30,43 @@ function GoogleMark() {
   );
 }
 
-export default async function LoginPage() {
-  const locale = await getRequestLocale();
+const signInErrors = {
+  AccessDenied: {
+    es: "Esta cuenta no tiene acceso a GoHostlyx. Prueba con otra cuenta de Google.",
+    en: "This account does not have access to GoHostlyx. Try another Google account.",
+  },
+  Configuration: {
+    es: "El inicio de sesión no está disponible en este momento. Vuelve a intentarlo más tarde.",
+    en: "Sign-in is unavailable right now. Try again later.",
+  },
+  Google: {
+    es: "No se pudo completar el acceso con Google. Inténtalo otra vez o entra con tu correo.",
+    en: "Google sign-in could not be completed. Try again or sign in with email.",
+  },
+  Default: {
+    es: "No se pudo completar el inicio de sesión. Vuelve a intentarlo.",
+    en: "Sign-in could not be completed. Please try again.",
+  },
+};
+
+function getSignInError(error: string | string[] | undefined) {
+  if (typeof error !== "string" || !error) return null;
+  if (error === "AccessDenied" || error === "Configuration") return signInErrors[error];
+  if (error.startsWith("OAuth") || error === "Callback") return signInErrors.Google;
+  return signInErrors.Default;
+}
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string | string[]; error?: string | string[] }>;
+}) {
+  const [locale, session, { mode, error }] = await Promise.all([
+    getRequestLocale(), getAuthSession(), searchParams,
+  ]);
+  const isSignUp = mode === "sign-up";
+  const signInError = getSignInError(error)?.[locale];
   const isSpanish = locale === "es";
-  const session = await getAuthSession();
   const authReady = hasAuthSecretConfig;
   const googleReady = hasGoogleAuthConfig && authReady;
 
@@ -60,10 +93,19 @@ export default async function LoginPage() {
           <h1 className="text-3xl font-semibold tracking-[-0.03em] text-slate-950">
             {isSpanish ? "Bienvenido a GoHostlyx" : "Welcome to GoHostlyx"}
           </h1>
-          <p className="mt-2 text-base text-slate-500">{isSpanish ? "Inicia sesión para continuar" : "Sign in to continue"}</p>
+          <p className="mt-2 text-base text-slate-600">
+            {isSignUp
+              ? (isSpanish ? "Crea tu cuenta para empezar la prueba" : "Create an account to start your trial")
+              : (isSpanish ? "Inicia sesión para continuar" : "Sign in to continue")}
+          </p>
         </div>
 
         <div className="mt-8 space-y-6">
+          {signInError ? (
+            <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+              {signInError}
+            </p>
+          ) : null}
           {googleReady ? (
             <>
               <SignInButton
@@ -82,7 +124,7 @@ export default async function LoginPage() {
             </>
           ) : null}
 
-          {authReady ? <EmailAuthForm /> : null}
+          {authReady ? <EmailAuthForm key={String(isSignUp)} initialMode={isSignUp ? "sign-up" : "sign-in"} /> : null}
 
           {process.env.NODE_ENV !== "production" && (!authReady || !hasGoogleAuthConfig) ? (
             <div className="rounded-[16px] border border-amber-400/25 bg-amber-400/12 px-4 py-3 text-sm leading-6 text-amber-900">

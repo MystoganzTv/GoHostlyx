@@ -10,7 +10,8 @@ const googleClientId = process.env.GOOGLE_CLIENT_ID ?? "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
 
 export const hasGoogleAuthConfig = Boolean(googleClientId && googleClientSecret);
-export const hasAuthSecretConfig = Boolean(process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET);
+const authSecret = process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
+export const hasAuthSecretConfig = Boolean(authSecret);
 
 // Sign-up / sign-in allowlist (ALLOWED_EMAILS, comma-separated). When the list
 // is empty, registration is OPEN to anyone (intended for public SaaS). It no
@@ -80,6 +81,7 @@ export const authOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   session: {
     strategy: "jwt",
@@ -117,7 +119,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
 };
 
 export function getAuthSession() {

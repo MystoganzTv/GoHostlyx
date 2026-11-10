@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { signIn, signOut } from "next-auth/react";
 import { useLocale } from "@/components/locale-provider";
 
@@ -19,30 +19,48 @@ export function SignInButton({
 }: SignInButtonProps) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
+  const [isOpeningGoogle, setIsOpeningGoogle] = useState(false);
+  const [failedToOpenGoogle, setFailedToOpenGoogle] = useState(false);
+
+  async function handleGoogleSignIn() {
+    setIsOpeningGoogle(true);
+    setFailedToOpenGoogle(false);
+
+    try {
+      await signIn("google", { callbackUrl: "/onboarding" }, { prompt: "select_account" });
+    } catch {
+      setFailedToOpenGoogle(true);
+      setIsOpeningGoogle(false);
+    }
+  }
+
+  const buttonLabel = isOpeningGoogle
+    ? (isSpanish ? "Abriendo Google…" : "Opening Google…")
+    : label ?? (isSpanish ? "Continuar con Google" : "Continue with Google");
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (disabled) {
-          return;
+    <>
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={disabled || isOpeningGoogle}
+        aria-busy={isOpeningGoogle}
+        className={
+          className ??
+          "brand-button rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
         }
-
-        void signIn("google", { callbackUrl: "/onboarding" });
-      }}
-      disabled={disabled}
-      className={
-        className ??
-        "brand-button rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
-      }
-    >
-      {icon}
-      {disabled
-        ? isSpanish
-          ? "Google login no configurado"
-          : "Google login not configured"
-        : label ?? (isSpanish ? "Continuar con Google" : "Continue with Google")}
-    </button>
+      >
+        {icon}
+        {buttonLabel}
+      </button>
+      {failedToOpenGoogle ? (
+        <p role="alert" className="text-sm text-red-900">
+          {isSpanish
+            ? "No se pudo abrir Google. Revisa tu conexión e inténtalo otra vez."
+            : "Google could not be opened. Check your connection and try again."}
+        </p>
+      ) : null}
+    </>
   );
 }
 
