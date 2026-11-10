@@ -146,7 +146,9 @@ function getPostgresSslConfig() {
   }
 
   // Preferred: validate the server certificate against a provided CA.
-  const ca = process.env.DATABASE_CA_CERT;
+  // Accept the PEM either with real line breaks or with literal "\n" escapes,
+  // which is how it often ends up after pasting into a dashboard field.
+  const ca = process.env.DATABASE_CA_CERT?.replace(/\\n/g, "\n").trim();
   if (ca) {
     return { ca, rejectUnauthorized: true };
   }
@@ -181,7 +183,12 @@ async function initializePostgresSchema() {
   if (!postgresInitialization) {
     const pool = getPostgresPool();
 
-    postgresInitialization = runPostgresSchema(pool);
+    // Do not cache a failed attempt: a transient outage at cold start would
+    // otherwise break every request on this instance until it is recycled.
+    postgresInitialization = runPostgresSchema(pool).catch((error: unknown) => {
+      postgresInitialization = null;
+      throw error;
+    });
   }
 
   await postgresInitialization;
@@ -196,6 +203,15 @@ export async function ensureDatabase() {
   if (shouldUseSQLiteFallback()) {
     getSQLiteDatabase();
     return;
+  }
+
+  // In production, an in-memory store silently loses every write between
+  // deployments and across serverless instances. Fail loudly unless it has
+  // been explicitly allowed (for example on a throwaway preview).
+  if (process.env.ALLOW_MEMORY_DATABASE !== "true") {
+    throw new Error(
+      "DATABASE_URL is not configured. Set it in the environment (or ALLOW_MEMORY_DATABASE=true for a throwaway preview).",
+    );
   }
 
   getMemoryStore();

@@ -19,6 +19,9 @@ import {
 import type { PropertyDefinition } from "@/lib/types";
 import type { ImportEditableBooking } from "@/lib/import/types";
 import { useLocale } from "@/components/locale-provider";
+
+// Keep in sync with MAX_IMPORT_FILE_BYTES in /api/import (Vercel caps bodies at 4.5 MB).
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 import { WorkspaceSelect } from "@/components/workspace-select";
 
 type UploadPhase = "idle" | "previewing" | "ready" | "importing";
@@ -430,17 +433,18 @@ export function UploadPanel({
       preview.canImport,
   );
 
+  const financialStatementRawData = preview?.financialStatement?.rawData;
   const financialStatementPreviewData = useMemo<FinancialStatementRawPreview | null>(() => {
-    if (!preview?.financialStatement?.rawData) {
+    if (!financialStatementRawData) {
       return null;
     }
 
     try {
-      return JSON.parse(preview.financialStatement.rawData) as FinancialStatementRawPreview;
+      return JSON.parse(financialStatementRawData) as FinancialStatementRawPreview;
     } catch {
       return null;
     }
-  }, [preview?.financialStatement?.rawData]);
+  }, [financialStatementRawData]);
 
   const isCompactAppearance = appearance === "compact";
 
@@ -600,6 +604,21 @@ export function UploadPanel({
   }
 
   function resetSelection(nextFile: File | null) {
+    if (nextFile && nextFile.size > MAX_UPLOAD_BYTES) {
+      setSelectedFile(null);
+      setPreview(null);
+      setToast({
+        tone: "error",
+        message: isSpanish
+          ? "El archivo supera 4 MB. Exporta un rango de fechas más corto e inténtalo de nuevo."
+          : "That file is larger than 4 MB. Export a shorter date range and try again.",
+      });
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+      return;
+    }
+
     setSelectedFile(nextFile);
     setPreview(null);
     setManualMapping(null);

@@ -83,8 +83,13 @@ The application will be available at `http://localhost:3000`.
 | `NEXTAUTH_SECRET` | Yes | Encrypts and signs authentication sessions |
 | `GOOGLE_CLIENT_ID` | Optional | Enables Google authentication |
 | `GOOGLE_CLIENT_SECRET` | Optional | Enables Google authentication |
-| `ADMIN_EMAILS` | Optional | Comma-separated admin allowlist |
-| `DATABASE_URL` | Production | PostgreSQL connection string |
+| `ALLOWED_EMAILS` | Optional | Comma-separated sign-up allowlist; empty means open registration |
+| `ADMIN_EMAILS` | Optional | Comma-separated admin accounts (admin panel and Pro access) |
+| `DATABASE_URL` | Production | PostgreSQL connection string (required; the app refuses to run without it in production) |
+| `DATABASE_CA_CERT` | Production | PEM of the database provider's CA, used to verify TLS (Supabase: Database settings → SSL) |
+| `DATABASE_SSL_INSECURE` | Optional | `true` disables TLS certificate checks; last resort only |
+| `UPSTASH_REDIS_REST_URL` | Production | Shared rate-limit store (in-memory limits are per instance) |
+| `UPSTASH_REDIS_REST_TOKEN` | Production | Token for the rate-limit store |
 | `STRIPE_SECRET_KEY` | Billing | Stripe server API key |
 | `STRIPE_WEBHOOK_SECRET` | Billing | Verifies Stripe webhook events |
 | `STRIPE_PRICE_STARTER` | Billing | Stripe price ID for Starter |
@@ -114,8 +119,11 @@ Google authentication additionally requires `GOOGLE_CLIENT_ID` and
 
 - Local development without `DATABASE_URL` uses SQLite at `data/gohostlyx.sqlite`.
 - Production uses PostgreSQL through `DATABASE_URL`.
-- When no production database is configured, the application uses an in-memory
-  fallback and data will not persist between deployments.
+- In production the app refuses to start a request without `DATABASE_URL`, so data
+  is never silently written to memory. Set `ALLOW_MEMORY_DATABASE=true` only for a
+  throwaway preview.
+- Functions run in `pdx1` (Oregon) to sit next to the Supabase database in
+  `us-west-2`; see `vercel.json`.
 
 ## Stripe Setup
 
@@ -124,6 +132,10 @@ Configure Stripe Checkout prices and subscribe the production webhook to:
 ```text
 https://gohostlyx.vercel.app/api/stripe/webhook
 ```
+
+Enable the Stripe Customer Portal (Settings → Billing → Customer portal) and allow
+plan switching and cancellation. Subscribers change plans there; the app no longer
+opens a second Checkout for someone who already pays.
 
 Recommended webhook events:
 
@@ -136,6 +148,7 @@ Recommended webhook events:
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
 

@@ -12,11 +12,11 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
 export const hasGoogleAuthConfig = Boolean(googleClientId && googleClientSecret);
 export const hasAuthSecretConfig = Boolean(process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET);
 
-// Sign-up / sign-in allowlist. Uses the dedicated ALLOWED_EMAILS var, falling
-// back to the legacy ADMIN_EMAILS for backward compatibility. NOTE: when the
-// list is empty, registration is OPEN to anyone (intended for public SaaS).
-// Trial abuse is mitigated by rate limiting on /api/auth/register.
-const allowedEmails = (process.env.ALLOWED_EMAILS ?? process.env.ADMIN_EMAILS ?? "")
+// Sign-up / sign-in allowlist (ALLOWED_EMAILS, comma-separated). When the list
+// is empty, registration is OPEN to anyone (intended for public SaaS). It no
+// longer falls back to ADMIN_EMAILS: setting an admin must not silently close
+// public sign-up. Trial abuse is mitigated by rate limiting on registration.
+const allowedEmails = (process.env.ALLOWED_EMAILS ?? "")
   .split(",")
   .map((email) => email.trim().toLowerCase())
   .filter(Boolean);

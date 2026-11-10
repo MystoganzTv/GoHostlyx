@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 import { getPropertyDefinitions } from "@/lib/db";
 import { saveAndSyncIcalFeed, validateIcalFeedUrl } from "@/lib/ical-feeds";
 import type { CalendarEventSource } from "@/lib/types";
@@ -18,11 +18,13 @@ function normalizeSource(value: FormDataEntryValue | null): CalendarEventSource 
 
 export async function POST(request: Request) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const formData = await request.formData();
     const propertyName = String(formData.get("propertyName") ?? "").trim();

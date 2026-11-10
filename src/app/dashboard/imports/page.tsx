@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileSpreadsheet, Layers3 } from "lucide-react";
@@ -26,6 +27,8 @@ export default async function ImportsPage() {
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);

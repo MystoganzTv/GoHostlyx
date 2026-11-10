@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 import { deletePropertyDefinition, updatePropertyDefinition } from "@/lib/db";
 import { normalizeCountryCode } from "@/lib/markets";
 
@@ -10,11 +10,13 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const propertyId = Number((await params).id);
 
@@ -52,11 +54,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const propertyId = Number((await params).id);
 

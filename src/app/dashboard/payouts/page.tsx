@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FilterBar } from "@/components/filter-bar";
@@ -35,6 +36,8 @@ export default async function PayoutsPage({
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);

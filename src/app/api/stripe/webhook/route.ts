@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import {
   findOwnerEmailByStripeCustomerId,
+  getSubscriptionState,
   syncSubscriptionFromStripe,
   updateSubscriptionStripeReferences,
 } from "@/lib/db";
@@ -20,15 +21,17 @@ function getOwnerEmailFromMetadata(metadata: Stripe.Metadata | null | undefined)
   return ownerEmail || null;
 }
 
+// The price is the source of truth: plan changes made in the Customer Portal
+// or the Stripe dashboard update the price but not the checkout metadata.
 function getPlanFromSubscription(subscription: Stripe.Subscription) {
-  const metadataPlan = normalizeSubscriptionPlan(subscription.metadata?.plan);
+  const priceId = subscription.items.data[0]?.price?.id ?? null;
+  const pricePlan = getPlanFromStripePriceId(priceId);
 
-  if (metadataPlan !== "trial") {
-    return metadataPlan;
+  if (pricePlan !== "trial") {
+    return pricePlan;
   }
 
-  const priceId = subscription.items.data[0]?.price?.id ?? null;
-  return getPlanFromStripePriceId(priceId);
+  return normalizeSubscriptionPlan(subscription.metadata?.plan);
 }
 
 export async function POST(request: Request) {
@@ -91,13 +94,27 @@ export async function POST(request: Request) {
           break;
         }
 
+        const status =
+          event.type === "customer.subscription.deleted"
+            ? "expired"
+            : mapStripeSubscriptionStatus(subscription.status);
+        const current = await getSubscriptionState(ownerEmail);
+
+        // Ignore events about a subscription other than the one on file unless
+        // they activate access. Otherwise cancelling an old subscription would
+        // revoke access from a customer who is paying for a newer one.
+        if (
+          current.stripeSubscriptionId &&
+          current.stripeSubscriptionId !== subscription.id &&
+          status !== "active"
+        ) {
+          break;
+        }
+
         await syncSubscriptionFromStripe({
           ownerEmail,
           plan,
-          status:
-            event.type === "customer.subscription.deleted"
-              ? "expired"
-              : mapStripeSubscriptionStatus(subscription.status),
+          status,
           stripeCustomerId: customerId,
           stripeSubscriptionId: subscription.id,
           stripePriceId: priceId,
@@ -111,14 +128,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Stripe webhook processing failed.",
-      },
-      { status: 500 },
-    );
+    console.error("[stripe-webhook]", event.type, error);
+    return NextResponse.json({ error: "Stripe webhook processing failed." }, { status: 500 });
   }
 }
