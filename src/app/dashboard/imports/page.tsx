@@ -75,7 +75,7 @@ export default async function ImportsPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <SectionCard title={isSpanish ? "Archivos importados" : "Imported files"}>
             <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <FileSpreadsheet className="h-5 w-5" />
               </div>
               <p className="text-2xl font-semibold text-[var(--workspace-text)]">
@@ -86,7 +86,7 @@ export default async function ImportsPage() {
 
           <SectionCard title={isSpanish ? "Registros operativos" : "Operational records"}>
             <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <Layers3 className="h-5 w-5" />
               </div>
               <div>
@@ -102,7 +102,7 @@ export default async function ImportsPage() {
 
           <SectionCard title={isSpanish ? "Statements de payout" : "Payout statements"}>
             <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <Layers3 className="h-5 w-5" />
               </div>
               <p className="text-2xl font-semibold text-[var(--workspace-text)]">
@@ -119,7 +119,7 @@ export default async function ImportsPage() {
                 ? "Piensa en esta página como la capa de control. Las reservas viven mejor en Reservas, los gastos en Gastos y los payout statements en Liquidaciones. Aquí revisas qué cayó y cuándo."
                 : "Think of this page as the control layer. Bookings belong naturally in Bookings, expenses in Expenses, and payout statements in Payouts. This is where you review what landed and when."}
             </p>
-            <div className="workspace-soft-card rounded-[22px] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
               <p>
                 {isSpanish
                   ? "Cada archivo de abajo sigue visible como historial de importación para que entiendas qué cambió, cuándo cayó y si creó reservas, gastos o un statement de payout."
@@ -128,19 +128,19 @@ export default async function ImportsPage() {
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   href="/dashboard/bookings"
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition"
+                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   {isSpanish ? "Ir a Reservas" : "Go to Bookings"}
                 </Link>
                 <Link
                   href="/dashboard/expenses"
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition"
+                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   {isSpanish ? "Ir a Gastos" : "Go to Expenses"}
                 </Link>
                 <Link
                   href="/dashboard/payouts"
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition"
+                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   {isSpanish ? "Ir a Liquidaciones" : "Go to Payouts"}
                 </Link>

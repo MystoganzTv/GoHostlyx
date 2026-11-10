@@ -55,12 +55,21 @@ export function FilterBar(props: FilterBarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const mode = props.mode ?? "range";
-  const rangeProps = mode === "range" ? (props as Extract<FilterBarProps, { mode?: "range" }>) : null;
+  const rangeProps =
+    mode === "range"
+      ? (props as Extract<FilterBarProps, { mode?: "range" }>)
+      : null;
   const calendarProps =
-    mode === "calendar" ? (props as Extract<FilterBarProps, { mode: "calendar" }>) : null;
+    mode === "calendar"
+      ? (props as Extract<FilterBarProps, { mode: "calendar" }>)
+      : null;
   const embedded = props.embedded ?? false;
-  const [draftStartDate, setDraftStartDate] = useState(rangeProps?.selectedStartDate ?? "");
-  const [draftEndDate, setDraftEndDate] = useState(rangeProps?.selectedEndDate ?? "");
+  const [draftStartDate, setDraftStartDate] = useState(
+    rangeProps?.selectedStartDate ?? "",
+  );
+  const [draftEndDate, setDraftEndDate] = useState(
+    rangeProps?.selectedEndDate ?? "",
+  );
   const monthOptions = [
     { value: "all", label: isSpanish ? "Todos los meses" : "All months" },
     { value: "1", label: isSpanish ? "Enero" : "January" },
@@ -76,12 +85,18 @@ export function FilterBar(props: FilterBarProps) {
     { value: "11", label: isSpanish ? "Noviembre" : "November" },
     { value: "12", label: isSpanish ? "Diciembre" : "December" },
   ];
-  const rangeOptions: Array<{ value: DashboardDateRangePreset; label: string }> = [
+  const rangeOptions: Array<{
+    value: DashboardDateRangePreset;
+    label: string;
+  }> = [
     { value: "all-time", label: isSpanish ? "Todo el tiempo" : "All time" },
     { value: "this-year", label: isSpanish ? "Este año" : "This year" },
     { value: "last-year", label: isSpanish ? "Año pasado" : "Last year" },
     { value: "this-month", label: isSpanish ? "Este mes" : "This month" },
-    { value: "last-90-days", label: isSpanish ? "Últimos 90 días" : "Last 90 days" },
+    {
+      value: "last-90-days",
+      label: isSpanish ? "Últimos 90 días" : "Last 90 days",
+    },
     { value: "custom", label: isSpanish ? "Personalizado" : "Custom" },
   ];
 
@@ -128,7 +143,10 @@ export function FilterBar(props: FilterBarProps) {
     }
 
     try {
-      const parsed = JSON.parse(savedFilters) as Record<string, string | undefined>;
+      const parsed = JSON.parse(savedFilters) as Record<
+        string,
+        string | undefined
+      >;
       const shouldRestoreCalendarFilters =
         mode === "range"
           ? true
@@ -207,7 +225,9 @@ export function FilterBar(props: FilterBarProps) {
 
   function replaceParams(params: URLSearchParams) {
     startTransition(() => {
-      router.replace(buildFilterHref(pathname, params), { scroll: mode === "calendar" });
+      router.replace(buildFilterHref(pathname, params), {
+        scroll: mode === "calendar",
+      });
     });
   }
 
@@ -219,7 +239,10 @@ export function FilterBar(props: FilterBarProps) {
     })),
   ];
 
-  function updateRangeFilter(key: "range" | "start" | "end" | "channel" | "country", value: string) {
+  function updateRangeFilter(
+    key: "range" | "start" | "end" | "channel" | "country",
+    value: string,
+  ) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("year");
     params.delete("month");
@@ -289,7 +312,10 @@ export function FilterBar(props: FilterBarProps) {
     }
   }
 
-  function updateCalendarFilter(key: "year" | "month" | "channel" | "country", value: string) {
+  function updateCalendarFilter(
+    key: "year" | "month" | "channel" | "country",
+    value: string,
+  ) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("range");
     params.delete("start");
@@ -306,18 +332,16 @@ export function FilterBar(props: FilterBarProps) {
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-3 ${
-        embedded
-          ? ""
-          : ""
-      }`}
+      className={`filter-bar flex flex-wrap items-center gap-1 ${embedded ? "" : ""}`}
+      role="group"
+      aria-label={isSpanish ? "Filtros" : "Filters"}
     >
-      <div className="flex items-center gap-2 px-2 text-sm font-semibold text-[var(--workspace-muted)]">
-        <Funnel className="h-4 w-4 text-[var(--workspace-accent)]" />
-        {isSpanish ? "Filtros" : "Filters"}
-      </div>
+      <Funnel
+        className="mx-2 h-3.5 w-3.5 shrink-0 text-[var(--workspace-muted)]"
+        aria-hidden
+      />
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-0.5">
         <button
           type="button"
           onClick={() =>
@@ -325,11 +349,7 @@ export function FilterBar(props: FilterBarProps) {
               ? updateRangeFilter("country", "all")
               : updateCalendarFilter("country", "all")
           }
-          className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-            props.selectedCountryCode === "all"
-              ? "workspace-button-primary"
-              : "workspace-button-secondary"
-          }`}
+          className={`filter-segment ${props.selectedCountryCode === "all" ? "filter-segment-active" : ""}`}
         >
           {isSpanish ? "Todos los mercados" : "All markets"}
         </button>
@@ -345,11 +365,7 @@ export function FilterBar(props: FilterBarProps) {
                   ? updateRangeFilter("country", countryCode)
                   : updateCalendarFilter("country", countryCode)
               }
-              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                props.selectedCountryCode === countryCode
-                  ? "workspace-button-primary"
-                  : "workspace-button-secondary"
-              }`}
+              className={`filter-segment ${props.selectedCountryCode === countryCode ? "filter-segment-active" : ""}`}
             >
               {market.shortLabel}
             </button>
@@ -360,31 +376,33 @@ export function FilterBar(props: FilterBarProps) {
       {rangeProps ? (
         <>
           {props.rangeShortcutYears && props.rangeShortcutYears.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-2">
-              {props.rangeShortcutYears.map((year) => {
-                const isActiveFullYear =
-                  rangeProps.selectedRangePreset === "custom" &&
-                  rangeProps.selectedStartDate === `${year}-01-01` &&
-                  rangeProps.selectedEndDate === `${year}-12-31`;
+            <>
+              <span className="filter-divider" aria-hidden />
+              <div className="flex flex-wrap items-center gap-0.5">
+                {props.rangeShortcutYears.map((year) => {
+                  const isActiveFullYear =
+                    rangeProps.selectedRangePreset === "custom" &&
+                    rangeProps.selectedStartDate === `${year}-01-01` &&
+                    rangeProps.selectedEndDate === `${year}-12-31`;
 
-                return (
-                  <button
-                    key={year}
-                    type="button"
-                    onClick={() => applyFullYearShortcut(year)}
-                    className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                      isActiveFullYear ? "workspace-button-primary" : "workspace-button-secondary"
-                    }`}
-                  >
-                    {year}
-                  </button>
-                );
-              })}
-            </div>
+                  return (
+                    <button
+                      key={year}
+                      type="button"
+                      onClick={() => applyFullYearShortcut(year)}
+                      className={`filter-segment ${isActiveFullYear ? "filter-segment-active" : ""}`}
+                    >
+                      {year}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           ) : null}
+          <span className="filter-divider" aria-hidden />
           <WorkspaceSelect
             compact
-            className="min-w-[170px]"
+            className="min-w-[150px]"
             value={rangeProps.selectedRangePreset}
             onChange={(value) => updateRangeFilter("range", value)}
             options={rangeOptions}
@@ -399,7 +417,7 @@ export function FilterBar(props: FilterBarProps) {
                 placeholder={isSpanish ? "Fecha inicial" : "Start date"}
                 compact
                 hideLabel
-                className="min-w-[170px]"
+                className="min-w-[150px]"
               />
               <WorkspaceDateField
                 name="end"
@@ -409,27 +427,34 @@ export function FilterBar(props: FilterBarProps) {
                 placeholder={isSpanish ? "Fecha final" : "End date"}
                 compact
                 hideLabel
-                className="min-w-[170px]"
+                className="min-w-[150px]"
               />
             </>
           ) : null}
         </>
       ) : (
         <>
+          <span className="filter-divider" aria-hidden />
           <WorkspaceSelect
             compact
             className="min-w-[150px]"
             value={String(calendarProps?.selectedYear ?? "all")}
             onChange={(value) => updateCalendarFilter("year", value)}
             options={[
-              { value: "all", label: isSpanish ? "Todos los años" : "All years" },
-              ...(calendarProps?.years ?? []).map((year) => ({ value: String(year), label: String(year) })),
+              {
+                value: "all",
+                label: isSpanish ? "Todos los años" : "All years",
+              },
+              ...(calendarProps?.years ?? []).map((year) => ({
+                value: String(year),
+                label: String(year),
+              })),
             ]}
           />
           {(calendarProps?.showMonthSelect ?? true) ? (
             <WorkspaceSelect
               compact
-              className="min-w-[170px]"
+              className="min-w-[150px]"
               value={String(calendarProps?.selectedMonth ?? "all")}
               onChange={(value) => updateCalendarFilter("month", value)}
               options={monthOptions}
@@ -438,18 +463,21 @@ export function FilterBar(props: FilterBarProps) {
         </>
       )}
 
-      {props.showChannelSelect ?? true ? (
-        <WorkspaceSelect
-          compact
-          className="min-w-[170px]"
-          value={props.selectedChannel}
-          onChange={(value) =>
-            mode === "range"
-              ? updateRangeFilter("channel", value)
-              : updateCalendarFilter("channel", value)
-          }
-          options={channelOptions}
-        />
+      {(props.showChannelSelect ?? true) ? (
+        <>
+          <span className="filter-divider" aria-hidden />
+          <WorkspaceSelect
+            compact
+            className="min-w-[150px]"
+            value={props.selectedChannel}
+            onChange={(value) =>
+              mode === "range"
+                ? updateRangeFilter("channel", value)
+                : updateCalendarFilter("channel", value)
+            }
+            options={channelOptions}
+          />
+        </>
       ) : null}
     </div>
   );

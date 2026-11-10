@@ -10,7 +10,7 @@ import { getDefaultTaxRateByCountry, normalizeTaxRate } from "@/lib/tax";
 import type { CountryCode } from "@/lib/types";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function TaxSettingsPanel({
@@ -105,7 +105,7 @@ export function TaxSettingsPanel({
   }
 
   return (
-    <div className="workspace-card rounded-[30px] p-5 sm:p-6">
+    <div className="workspace-card rounded-xl p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
@@ -117,14 +117,14 @@ export function TaxSettingsPanel({
               : "Set the market GoHostlyx should use when it estimates what you need to set aside."}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-3xl p-3">
+        <div className="workspace-icon-chip rounded-xl p-3">
           <ReceiptText className="h-6 w-6" />
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div className="grid gap-4 xl:grid-cols-[1fr_0.8fr]">
-          <div className="workspace-soft-card rounded-[24px] p-4">
+          <div className="workspace-soft-card rounded-xl p-4">
             <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               <Landmark className="h-4 w-4 text-[var(--workspace-accent)]" />
               {isSpanish ? "País" : "Country"}
@@ -147,7 +147,7 @@ export function TaxSettingsPanel({
             />
           </div>
 
-          <div className="workspace-soft-card rounded-[24px] p-4">
+          <div className="workspace-soft-card rounded-xl p-4">
             <label className="space-y-2">
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 <Percent className="h-4 w-4 text-[var(--workspace-accent)]" />
@@ -181,7 +181,7 @@ export function TaxSettingsPanel({
           </div>
         </div>
 
-        <div className="workspace-soft-card rounded-[24px] p-4">
+        <div className="workspace-soft-card rounded-xl p-4">
           <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
             <div>
               <p className="text-sm font-semibold text-[var(--workspace-text)]">
@@ -220,7 +220,7 @@ export function TaxSettingsPanel({
         <button
           type="submit"
           disabled={isPending || !hasChanges}
-          className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+          className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending
             ? isSpanish

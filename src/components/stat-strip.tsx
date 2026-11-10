@@ -20,18 +20,16 @@ export function StatStrip({ items, className = "" }: { items: StatStripItem[]; c
   return (
     <div className={`workspace-card stat-strip grid grid-cols-1 overflow-hidden ${columns} ${className}`}>
       {items.map((item) => (
-        <div key={item.label} className="stat-strip-item px-6 py-5">
+        <div key={item.label} className="stat-strip-item px-5 py-4">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-              {item.label}
-            </p>
+            <p className="label-xs">{item.label}</p>
             {item.icon ? <span className="text-[var(--workspace-accent)]">{item.icon}</span> : null}
           </div>
-          <p className="mt-3 text-2xl font-semibold tracking-tight text-[var(--workspace-text)] sm:text-[1.7rem]">
+          <p className="tnum mt-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)]">
             {item.value}
           </p>
           {item.hint ? (
-            <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">{item.hint}</p>
+            <p className="mt-1.5 text-xs leading-5 text-[var(--workspace-muted)]">{item.hint}</p>
           ) : null}
         </div>
       ))}

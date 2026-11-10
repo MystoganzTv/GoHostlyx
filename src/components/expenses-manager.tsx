@@ -11,7 +11,7 @@ import type { CurrencyCode, ExpenseRecord, PropertyDefinition } from "@/lib/type
 import { Modal } from "@/components/modal";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function ExpensesManager({
@@ -141,7 +141,7 @@ export function ExpensesManager({
                       <button
                         type="button"
                         onClick={() => setEditingExpense(expense)}
-                        className="workspace-button-secondary inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition"
+                        className="workspace-button-secondary inline-flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-semibold transition"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                         {isSpanish ? "Editar" : "Edit"}
@@ -197,7 +197,7 @@ export function ExpensesManager({
               <button
                 type="submit"
                 disabled={isPending}
-                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending ? "Saving expense..." : "Save expense"}
               </button>
@@ -213,12 +213,12 @@ export function ExpensesManager({
       >
         {expenseToDelete ? (
           <div className="space-y-5">
-            <div className="rounded-[22px] border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
+            <div className="rounded-lg border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
               This will remove the expense <span className="font-semibold text-rose-900">&ldquo;{expenseToDelete.description}&rdquo;</span> from your workspace.
               The action cannot be undone from the app.
             </div>
 
-            <div className="workspace-soft-card grid gap-3 rounded-[22px] p-4 sm:grid-cols-2">
+            <div className="workspace-soft-card grid gap-3 rounded-lg p-4 sm:grid-cols-2">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Property</p>
                 <p className="mt-1 text-sm text-[var(--workspace-text)]">
@@ -238,7 +238,7 @@ export function ExpensesManager({
               <button
                 type="button"
                 onClick={() => setExpenseToDelete(null)}
-                className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 Cancel
               </button>
@@ -246,7 +246,7 @@ export function ExpensesManager({
                 type="button"
                 onClick={confirmDeleteExpense}
                 disabled={isPending}
-                className="inline-flex items-center justify-center rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending ? "Deleting expense..." : "Delete expense"}
               </button>

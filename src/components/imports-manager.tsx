@@ -52,7 +52,7 @@ export function ImportsManager({
 
   if (importSummaries.length === 0) {
     return (
-      <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
+      <div className="workspace-soft-card rounded-lg p-5 text-sm text-[var(--workspace-muted)]">
         No imports yet. When you upload Excel files, GoHostlyx will keep the history here for backup context and traceability.
       </div>
     );
@@ -82,7 +82,7 @@ export function ImportsManager({
               <tr key={entry.id}>
                 <td className="py-4 pr-4">
                   <div className="flex items-start gap-3">
-                    <div className="workspace-icon-chip rounded-2xl p-2.5">
+                    <div className="workspace-icon-chip rounded-lg p-2.5">
                       <DatabaseZap className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
@@ -114,7 +114,7 @@ export function ImportsManager({
                       setError(null);
                       setImportToDelete(entry);
                     }}
-                    className="inline-flex items-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Trash2 className="h-4 w-4" />
                     Delete
@@ -133,7 +133,7 @@ export function ImportsManager({
       >
         {importToDelete ? (
           <div className="space-y-5">
-            <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
               Deleting <span className="font-medium text-[var(--workspace-text)]">{importToDelete.fileName}</span> will remove the import from history and permanently delete{" "}
               {importToDelete.importedSource === "financial_statement"
                 ? "the payout statement saved by that batch."
@@ -141,13 +141,13 @@ export function ImportsManager({
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              <div className="workspace-soft-card rounded-2xl px-4 py-3">
+              <div className="workspace-soft-card rounded-lg px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Property</p>
                 <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                   {importToDelete.propertyName}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-2xl px-4 py-3">
+              <div className="workspace-soft-card rounded-lg px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
                   {importToDelete.importedSource === "financial_statement" ? "Saved record" : "Bookings to remove"}
                 </p>
@@ -157,7 +157,7 @@ export function ImportsManager({
                     : formatNumber(importToDelete.bookingsCount)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-2xl px-4 py-3">
+              <div className="workspace-soft-card rounded-lg px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
                   {importToDelete.importedSource === "financial_statement" ? "Expenses to remove" : "Expenses to remove"}
                 </p>
@@ -175,7 +175,7 @@ export function ImportsManager({
               <button
                 type="button"
                 onClick={() => setImportToDelete(null)}
-                className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 Cancel
               </button>
@@ -183,7 +183,7 @@ export function ImportsManager({
                 type="button"
                 disabled={isPending}
                 onClick={confirmDeleteImport}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Trash2 className="h-4 w-4" />
                 {isPending ? "Deleting import..." : "Delete import"}

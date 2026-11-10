@@ -28,7 +28,13 @@ export function LanguageToggle({
         key={nextLocale}
         type="button"
         onClick={() => setLocale(nextLocale)}
-        className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${buttonClassName(isActive)}`}
+        className={
+          compact
+            ? `rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] transition ${
+                isActive ? "bg-[var(--workspace-sidebar-active)] text-white" : "text-slate-400 hover:text-white"
+              }`
+            : `rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${buttonClassName(isActive)}`
+        }
         aria-pressed={isActive}
       >
         {label}
@@ -38,18 +44,18 @@ export function LanguageToggle({
 
   return (
     <div
-      className={`inline-flex items-center gap-1 rounded-full border border-white/10 bg-[rgba(10,18,31,0.82)] p-1 shadow-[0_12px_28px_rgba(2,6,23,0.18)] ${compact ? "" : ""} ${className}`}
+      className={`inline-flex items-center ${
+        compact
+          ? "gap-0.5 rounded-md border border-[var(--workspace-sidebar-border)] p-0.5"
+          : "gap-1 rounded-full border border-white/10 bg-[rgba(10,18,31,0.82)] p-1 shadow-[0_12px_28px_rgba(2,6,23,0.18)]"
+      } ${className}`}
     >
       {!compact ? (
         <span className="inline-flex items-center gap-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
           <Languages className="h-3.5 w-3.5" />
           {isSpanish ? "Idioma" : "Language"}
         </span>
-      ) : (
-        <span className="inline-flex items-center px-2 text-slate-400">
-          <Languages className="h-3.5 w-3.5" />
-        </span>
-      )}
+      ) : null}
       {renderOption("en", "EN")}
       {renderOption("es", "ES")}
     </div>

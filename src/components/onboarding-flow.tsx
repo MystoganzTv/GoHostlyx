@@ -62,7 +62,7 @@ const steps = [
 ] as const;
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 type OnboardingPreview = {
@@ -170,7 +170,7 @@ export function OnboardingFlow({
   function renderValueMoment() {
     if (!hasUploadedData) {
       return (
-        <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+        <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
             Financial snapshot
           </p>
@@ -187,7 +187,7 @@ export function OnboardingFlow({
 
     if (previewState === "loading" || previewState === "idle") {
       return (
-        <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+        <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
             First look
           </p>
@@ -203,7 +203,7 @@ export function OnboardingFlow({
 
     if (previewState === "error" || !preview?.hasData) {
       return (
-        <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+        <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
             First look
           </p>
@@ -235,7 +235,7 @@ export function OnboardingFlow({
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(260px,0.7fr)]">
           <article
-            className={`workspace-card rounded-[32px] p-6 sm:p-7 ring-1 ${
+            className={`workspace-card rounded-xl p-6 sm:p-7 ring-1 ${
               youKeepPositive
                 ? "bg-[linear-gradient(180deg,rgba(29,78,60,0.2)_0%,rgba(11,22,38,0.98)_100%)] ring-emerald-300/14"
                 : "bg-[linear-gradient(180deg,rgba(120,28,50,0.16)_0%,rgba(11,22,38,0.98)_100%)] ring-rose-300/12"
@@ -257,7 +257,7 @@ export function OnboardingFlow({
           </article>
 
           <div className="grid gap-4">
-            <article className="workspace-soft-card rounded-[26px] p-5">
+            <article className="workspace-soft-card rounded-xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 Set Aside
               </p>
@@ -269,7 +269,7 @@ export function OnboardingFlow({
               </p>
             </article>
 
-            <article className="workspace-soft-card rounded-[26px] p-5">
+            <article className="workspace-soft-card rounded-xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 Net Profit
               </p>
@@ -485,7 +485,7 @@ export function OnboardingFlow({
                       key={entry.countryCode}
                       type="button"
                       onClick={() => setCountryCode(entry.countryCode)}
-                      className={`rounded-2xl border p-4 text-left transition ${
+                      className={`rounded-lg border p-4 text-left transition ${
                         isSelected
                           ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                           : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
@@ -518,7 +518,7 @@ export function OnboardingFlow({
               <button
                 type="submit"
                 disabled={isWorkspacePending}
-                className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isWorkspacePending ? "Saving workspace..." : "Continue to property"}
                 <ArrowRight className="h-4 w-4" />
@@ -563,14 +563,14 @@ export function OnboardingFlow({
                 <button
                   type="button"
                   onClick={() => setPropertyMode("single")}
-                  className={`rounded-2xl border p-4 text-left transition ${
+                  className={`rounded-lg border p-4 text-left transition ${
                     propertyMode === "single"
                       ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                       : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="workspace-icon-chip rounded-[18px] p-3">
+                    <div className="workspace-icon-chip rounded-lg p-3">
                       <House className="h-4 w-4" />
                     </div>
                     <div>
@@ -585,14 +585,14 @@ export function OnboardingFlow({
                 <button
                   type="button"
                   onClick={() => setPropertyMode("multi")}
-                  className={`rounded-2xl border p-4 text-left transition ${
+                  className={`rounded-lg border p-4 text-left transition ${
                     propertyMode === "multi"
                       ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                       : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="workspace-icon-chip rounded-[18px] p-3">
+                    <div className="workspace-icon-chip rounded-lg p-3">
                       <Layers3 className="h-4 w-4" />
                     </div>
                     <div>
@@ -634,7 +634,7 @@ export function OnboardingFlow({
                       key={`property-market-${entry.countryCode}`}
                       type="button"
                       onClick={() => setPropertyCountryCode(entry.countryCode)}
-                      className={`rounded-2xl border p-4 text-left transition ${
+                      className={`rounded-lg border p-4 text-left transition ${
                         isSelected
                           ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                           : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
@@ -665,7 +665,7 @@ export function OnboardingFlow({
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -673,7 +673,7 @@ export function OnboardingFlow({
               <button
                 type="submit"
                 disabled={isPropertyPending}
-                className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPropertyPending ? "Creating property..." : "Continue"}
                 <ArrowRight className="h-4 w-4" />
@@ -715,7 +715,7 @@ export function OnboardingFlow({
           />
 
           {hasUploadedData && uploadNeedsReview ? (
-            <div className="workspace-card rounded-[28px] border border-amber-300/18 bg-[rgba(122,97,14,0.08)] p-5">
+            <div className="workspace-card rounded-xl border border-amber-300/18 bg-[rgba(122,97,14,0.08)] p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-100/80">
                 Import review
               </p>
@@ -730,7 +730,7 @@ export function OnboardingFlow({
                 <button
                   type="button"
                   onClick={() => setCurrentStep(4)}
-                  className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                  className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   Continue to tax
                   <ArrowRight className="h-4 w-4" />
@@ -743,7 +743,7 @@ export function OnboardingFlow({
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+              className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               <ArrowLeft className="h-4 w-4" />
               Back
@@ -751,7 +751,7 @@ export function OnboardingFlow({
             <button
               type="button"
               onClick={() => setCurrentStep(4)}
-              className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+              className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               Skip for now
               <ArrowRight className="h-4 w-4" />
@@ -784,7 +784,7 @@ export function OnboardingFlow({
 
           <form onSubmit={handleTaxSubmit} className="space-y-5">
             <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
-              <div className="workspace-soft-card rounded-[26px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   Tax market
                 </p>
@@ -801,7 +801,7 @@ export function OnboardingFlow({
                           setTaxRate(String(getDefaultTaxRateByCountry(entry.countryCode)));
                           setTaxError(null);
                         }}
-                        className={`rounded-[20px] border px-4 py-4 text-left transition ${
+                        className={`rounded-lg border px-4 py-4 text-left transition ${
                           isSelected
                             ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)]"
                             : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)]"
@@ -818,7 +818,7 @@ export function OnboardingFlow({
               </div>
 
               <div className="space-y-4">
-                <div className="workspace-soft-card rounded-[26px] p-5">
+                <div className="workspace-soft-card rounded-xl p-5">
                   <label className="space-y-2">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                       Tax rate
@@ -843,7 +843,7 @@ export function OnboardingFlow({
                   </label>
                 </div>
 
-                <div className="workspace-card rounded-[28px] p-6">
+                <div className="workspace-card rounded-xl p-6">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                     Preview
                   </p>
@@ -863,7 +863,7 @@ export function OnboardingFlow({
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -871,7 +871,7 @@ export function OnboardingFlow({
               <button
                 type="button"
                 onClick={() => setCurrentStep(5)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 Skip for now
                 <ArrowRight className="h-4 w-4" />
@@ -879,7 +879,7 @@ export function OnboardingFlow({
               <button
                 type="submit"
                 disabled={isTaxPending}
-                className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isTaxPending ? "Saving tax rate..." : "Continue to dashboard"}
                 <ArrowRight className="h-4 w-4" />
@@ -913,7 +913,7 @@ export function OnboardingFlow({
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
+            className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
           >
             Go to dashboard
             <ArrowRight className="h-4 w-4" />
@@ -921,7 +921,7 @@ export function OnboardingFlow({
           <button
             type="button"
             onClick={() => setCurrentStep(4)}
-            className="workspace-button-secondary inline-flex items-center rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
+            className="workspace-button-secondary inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
           >
             Review tax rate
           </button>
@@ -978,7 +978,7 @@ export function OnboardingFlow({
           </p>
         ) : null}
 
-        <section className={`workspace-card rounded-[28px] p-6 sm:p-8 ${currentStep === 1 ? "mt-4" : "mt-10"}`}>
+        <section className={`workspace-card rounded-xl p-6 sm:p-8 ${currentStep === 1 ? "mt-4" : "mt-10"}`}>
           {renderStep()}
         </section>
       </div>

@@ -10,7 +10,7 @@ import { PropertyUnitFieldGroup } from "@/components/property-unit-field-group";
 import type { IcalFeedRecord, PropertyDefinition } from "@/lib/types";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function CalendarIcalLauncher({
@@ -76,7 +76,7 @@ export function CalendarIcalLauncher({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+        className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
       >
         <Link2 className="h-4 w-4" />
         {hasFeeds
@@ -112,7 +112,7 @@ export function CalendarIcalLauncher({
           ) : null}
 
           <section className={hasFeeds ? "space-y-5 border-t border-white/8 pt-6" : "space-y-5"}>
-            <div className="workspace-soft-card rounded-[24px] p-5">
+            <div className="workspace-soft-card rounded-xl p-5">
               <p className="text-sm font-semibold text-[var(--workspace-text)]">
                 {hasFeeds
                   ? isSpanish
@@ -168,7 +168,7 @@ export function CalendarIcalLauncher({
               <button
                 type="submit"
                 disabled={isPending}
-                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending
                   ? isSpanish

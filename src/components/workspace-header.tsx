@@ -7,8 +7,8 @@ import type { CurrencyCode, ImportSummary } from "@/lib/types";
 
 function navClassName(active: boolean) {
   return active
-    ? "brand-tab-active rounded-2xl px-4 py-2.5 text-sm font-semibold"
-    : "rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/[0.06]";
+    ? "brand-tab-active rounded-lg px-4 py-2.5 text-sm font-semibold"
+    : "rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/[0.06]";
 }
 
 export function WorkspaceHeader({
@@ -29,7 +29,7 @@ export function WorkspaceHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="card-surface rounded-[30px] px-5 py-4 sm:px-6">
+    <header className="card-surface rounded-xl px-5 py-4 sm:px-6">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="space-y-3">

@@ -46,7 +46,7 @@ export function ImportCenterLauncher({
             <button
               type="button"
               onClick={() => setIsUploadOpen(true)}
-              className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+              className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               <ArrowUpFromLine className="h-4 w-4" />
               {isSpanish ? "Importar desde aquí" : "Import from here"}
@@ -54,13 +54,13 @@ export function ImportCenterLauncher({
             <ReconcileStatementLauncher
               properties={properties}
               buttonLabel={isSpanish ? "Estado de payout" : "Payout statement"}
-              buttonClassName="workspace-button-secondary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+              buttonClassName="workspace-button-secondary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             />
           </div>
         }
       >
         <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
-          <div className="workspace-soft-card rounded-[24px] p-5">
+          <div className="workspace-soft-card rounded-xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Flujo enfocado" : "Focused flow"}
             </p>
@@ -74,7 +74,7 @@ export function ImportCenterLauncher({
             </p>
           </div>
 
-          <div className="workspace-soft-card rounded-[24px] p-5">
+          <div className="workspace-soft-card rounded-xl p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Compatible" : "Supported"}
             </p>

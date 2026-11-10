@@ -22,7 +22,7 @@ type PropertySummary = {
 };
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function PropertiesManager({
@@ -247,9 +247,9 @@ export function PropertiesManager({
   return (
     <div className="space-y-6">
       <div className="grid gap-4 xl:grid-cols-[0.62fr_1.38fr]">
-        <div className="workspace-card rounded-[26px] p-5">
+        <div className="workspace-card rounded-xl p-5">
           <div className="flex items-center gap-3">
-            <div className="workspace-icon-chip rounded-2xl p-3">
+            <div className="workspace-icon-chip rounded-lg p-3">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
@@ -263,7 +263,7 @@ export function PropertiesManager({
           </div>
 
           <div className="mt-5 space-y-3">
-            <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
               Create properties from a modal so region, rental structure, and listings are handled in one compact flow instead of sitting permanently on the page.
             </div>
 
@@ -274,7 +274,7 @@ export function PropertiesManager({
                 setError(null);
                 setIsCreateOpen(true);
               }}
-              className="workspace-button-primary inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="workspace-button-primary inline-flex w-full items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Plus className="h-4 w-4" />
               {properties.length === 0 ? "Create first property" : "Open listings setup"}
@@ -282,7 +282,7 @@ export function PropertiesManager({
           </div>
         </div>
 
-        <div className="workspace-card rounded-[26px] p-5">
+        <div className="workspace-card rounded-xl p-5">
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Saved properties</p>
@@ -325,7 +325,7 @@ export function PropertiesManager({
           return (
             <article
               key={summary.name}
-              className="workspace-card rounded-[26px] p-5"
+              className="workspace-card rounded-xl p-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -342,7 +342,7 @@ export function PropertiesManager({
                     </p>
                   ) : null}
                 </div>
-                <div className="workspace-icon-chip rounded-2xl p-3">
+                <div className="workspace-icon-chip rounded-lg p-3">
                   <Layers3 className="h-5 w-5" />
                 </div>
               </div>
@@ -352,7 +352,7 @@ export function PropertiesManager({
                   type="button"
                   onClick={() => openEditProperty(propertySummary)}
                   disabled={!propertyId || isPending}
-                  className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                  className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Edit3 className="h-4 w-4" />
                   Edit
@@ -361,7 +361,7 @@ export function PropertiesManager({
                   type="button"
                   onClick={() => setPropertyToDelete(propertySummary)}
                   disabled={!propertyId || isPending}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete
@@ -369,31 +369,31 @@ export function PropertiesManager({
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="workspace-soft-card rounded-2xl px-4 py-3">
+                <div className="workspace-soft-card rounded-lg px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Imports</p>
                   <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                     {formatNumber(summary.importsCount)}
                   </p>
                 </div>
-                <div className="workspace-soft-card rounded-2xl px-4 py-3">
+                <div className="workspace-soft-card rounded-lg px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Bookings</p>
                   <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                     {formatNumber(summary.bookings)}
                   </p>
                 </div>
-                <div className="workspace-soft-card rounded-2xl px-4 py-3">
+                <div className="workspace-soft-card rounded-lg px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Expenses</p>
                   <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                     {formatCurrency(summary.expenses, false, propertyCurrencyCode)}
                   </p>
                 </div>
-                <div className="workspace-soft-card rounded-2xl px-4 py-3">
+                <div className="workspace-soft-card rounded-lg px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Payout</p>
                   <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                     {formatCurrency(summary.payout, false, propertyCurrencyCode)}
                   </p>
                 </div>
-                <div className="workspace-soft-card rounded-2xl px-4 py-3">
+                <div className="workspace-soft-card rounded-lg px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Profit</p>
                   <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">
                     {formatCurrency(summary.profit, false, propertyCurrencyCode)}
@@ -435,7 +435,7 @@ export function PropertiesManager({
                     type="button"
                     disabled={isPending}
                     onClick={() => createUnit(propertyId)}
-                    className="workspace-button-secondary inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                    className="workspace-button-secondary inline-flex shrink-0 items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Plus className="h-4 w-4" />
                     Add listing
@@ -486,7 +486,7 @@ export function PropertiesManager({
                     key={market.countryCode}
                     type="button"
                     onClick={() => setPropertyCountryCode(market.countryCode)}
-                    className={`rounded-[22px] border px-4 py-4 text-left transition ${
+                    className={`rounded-lg border px-4 py-4 text-left transition ${
                       isSelected
                         ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)]"
                         : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] text-[var(--workspace-muted)]"
@@ -509,7 +509,7 @@ export function PropertiesManager({
             <button
               type="button"
               onClick={() => setPropertyMode("single")}
-              className={`rounded-[22px] border px-4 py-4 text-left transition ${
+              className={`rounded-lg border px-4 py-4 text-left transition ${
                 propertyMode === "single"
                   ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)]"
                   : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] text-[var(--workspace-muted)]"
@@ -526,7 +526,7 @@ export function PropertiesManager({
             <button
               type="button"
               onClick={() => setPropertyMode("multi")}
-              className={`rounded-[22px] border px-4 py-4 text-left transition ${
+              className={`rounded-lg border px-4 py-4 text-left transition ${
                 propertyMode === "multi"
                   ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)]"
                   : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] text-[var(--workspace-muted)]"
@@ -557,13 +557,13 @@ export function PropertiesManager({
               />
             </label>
           ) : (
-            <div className="workspace-soft-card rounded-[22px] px-4 py-3 text-sm text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg px-4 py-3 text-sm text-[var(--workspace-muted)]">
               This property will be treated as one full-home listing. You can still add more listings later if needed.
             </div>
           )}
 
           {forceCreateOnEmpty ? (
-            <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
               Finish this first property and listing setup to unlock imports, dashboard reporting, bookings, and expenses.
             </div>
           ) : null}
@@ -571,7 +571,7 @@ export function PropertiesManager({
           <button
             type="submit"
             disabled={isPending}
-            className="workspace-button-primary inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+            className="workspace-button-primary inline-flex w-full items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Plus className="h-4 w-4" />
             {isPending ? "Creating property..." : "Save property"}
@@ -616,7 +616,7 @@ export function PropertiesManager({
                       key={market.countryCode}
                       type="button"
                       onClick={() => setEditingPropertyCountryCode(market.countryCode)}
-                      className={`rounded-[22px] border px-4 py-4 text-left transition ${
+                      className={`rounded-lg border px-4 py-4 text-left transition ${
                         isSelected
                           ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)]"
                           : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] text-[var(--workspace-muted)]"
@@ -635,14 +635,14 @@ export function PropertiesManager({
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
               Renaming a property updates the property name across existing bookings and expenses in this workspace. Changing the market also moves all linked reporting and listings for this property to the new country and currency.
             </div>
 
             <button
               type="submit"
               disabled={isPending}
-              className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending ? "Saving property..." : "Save property"}
             </button>
@@ -657,7 +657,7 @@ export function PropertiesManager({
       >
         {propertyToDelete ? (
           <div className="space-y-5">
-            <div className="rounded-[22px] border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
+            <div className="rounded-lg border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
               {properties.length === 1
                 ? "This is your last property. Deleting it will also erase every linked import, booking, and expense, and the rest of GoHostlyx will stay locked until you create a new property."
                 : propertyToDelete.bookings > 0 ||
@@ -668,7 +668,7 @@ export function PropertiesManager({
             </div>
 
             {propertyToDelete.importsCount > 0 ? (
-              <div className="rounded-[22px] border border-amber-400/18 bg-amber-300/[0.08] p-4">
+              <div className="rounded-lg border border-amber-400/18 bg-amber-300/[0.08] p-4">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-medium text-amber-100">Imported something by mistake?</p>
@@ -688,7 +688,7 @@ export function PropertiesManager({
                       setPropertyToDelete(null);
                       router.push("/dashboard/imports");
                     }}
-                    className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                    className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                   >
                     Go to Import Center
                   </button>
@@ -696,7 +696,7 @@ export function PropertiesManager({
               </div>
             ) : null}
 
-            <div className="workspace-soft-card grid gap-3 rounded-[22px] p-4 sm:grid-cols-4">
+            <div className="workspace-soft-card grid gap-3 rounded-lg p-4 sm:grid-cols-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Imports</p>
                 <p className="mt-1 text-sm text-[var(--workspace-text)]">
@@ -727,7 +727,7 @@ export function PropertiesManager({
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
               Delete the property only when you really want to remove the whole reporting container with all linked data under it.
             </div>
 
@@ -735,14 +735,14 @@ export function PropertiesManager({
               <button
                 type="button"
                 onClick={() => setPropertyToDelete(null)}
-                className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={confirmDeleteProperty}
-                className="inline-flex items-center justify-center rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending
                   ? "Deleting property..."

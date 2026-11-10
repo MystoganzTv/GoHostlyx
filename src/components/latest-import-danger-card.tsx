@@ -58,7 +58,7 @@ export function LatestImportDangerCard({
 
   return (
     <>
-      <div className="rounded-[28px] border border-amber-400/18 bg-[linear-gradient(180deg,rgba(244,198,105,0.10),rgba(15,24,38,0.88))] p-5 sm:p-6">
+      <div className="rounded-xl border border-amber-400/18 bg-[linear-gradient(180deg,rgba(244,198,105,0.10),rgba(15,24,38,0.88))] p-5 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/18 bg-amber-300/[0.08] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-100">
@@ -81,7 +81,7 @@ export function LatestImportDangerCard({
               setIsConfirmOpen(true);
             }}
             disabled={isPending}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Trash2 className="h-4 w-4" />
             {isPending ? "Deleting..." : "Delete latest import"}
@@ -89,20 +89,20 @@ export function LatestImportDangerCard({
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-4">
-          <div className="workspace-soft-card rounded-[22px] px-4 py-4">
+          <div className="workspace-soft-card rounded-lg px-4 py-4">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">File</p>
             <p className="mt-2 truncate text-sm font-medium text-[var(--workspace-text)]">{latestImport.fileName}</p>
             <p className="mt-1 text-xs text-[var(--workspace-muted)]">{getImportedSourceLabel(latestImport.importedSource)}</p>
           </div>
-          <div className="workspace-soft-card rounded-[22px] px-4 py-4">
+          <div className="workspace-soft-card rounded-lg px-4 py-4">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Property</p>
             <p className="mt-2 text-sm font-medium text-[var(--workspace-text)]">{latestImport.propertyName}</p>
           </div>
-          <div className="workspace-soft-card rounded-[22px] px-4 py-4">
+          <div className="workspace-soft-card rounded-lg px-4 py-4">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Imported</p>
             <p className="mt-2 text-sm font-medium text-[var(--workspace-text)]">{formatDateLabel(latestImport.importedAt.slice(0, 10))}</p>
           </div>
-          <div className="workspace-soft-card rounded-[22px] px-4 py-4">
+          <div className="workspace-soft-card rounded-lg px-4 py-4">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Data created</p>
             <p className="mt-2 text-sm font-medium text-[var(--workspace-text)]">
               {isFinancialStatement
@@ -122,7 +122,7 @@ export function LatestImportDangerCard({
         onClose={() => setIsConfirmOpen(false)}
       >
         <div className="space-y-5">
-          <div className="rounded-[22px] border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
+          <div className="rounded-lg border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
             <div className="flex items-start gap-3">
               <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
               <p>
@@ -135,15 +135,15 @@ export function LatestImportDangerCard({
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="workspace-soft-card rounded-2xl px-4 py-3">
+            <div className="workspace-soft-card rounded-lg px-4 py-3">
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Property</p>
               <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">{latestImport.propertyName}</p>
             </div>
-            <div className="workspace-soft-card rounded-2xl px-4 py-3">
+            <div className="workspace-soft-card rounded-lg px-4 py-3">
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Bookings to remove</p>
               <p className="mt-1 text-sm font-medium text-[var(--workspace-text)]">{formatNumber(latestImport.bookingsCount)}</p>
             </div>
-            <div className="workspace-soft-card rounded-2xl px-4 py-3">
+            <div className="workspace-soft-card rounded-lg px-4 py-3">
               <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
                 {isFinancialStatement ? "Statement rows" : "Expenses to remove"}
               </p>
@@ -159,7 +159,7 @@ export function LatestImportDangerCard({
             <button
               type="button"
               onClick={() => setIsConfirmOpen(false)}
-              className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+              className="workspace-button-secondary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               Cancel
             </button>
@@ -167,7 +167,7 @@ export function LatestImportDangerCard({
               type="button"
               disabled={isPending}
               onClick={handleDelete}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Trash2 className="h-4 w-4" />
               {isPending ? "Deleting import..." : "Delete latest import"}

@@ -133,7 +133,7 @@ export default async function ReportsPage({
         />
       }
       actions={
-        <ExportReportLink className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition" />
+        <ExportReportLink className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition" />
       }
     >
       <div className="space-y-6">
@@ -193,7 +193,7 @@ export default async function ReportsPage({
           >
             <div className="space-y-3">
               {view.revenueByChannel.map((channel) => (
-                <div key={channel.label} className="workspace-soft-card rounded-[22px] p-4">
+                <div key={channel.label} className="workspace-soft-card rounded-lg p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold text-[var(--workspace-text)]">{channel.label}</p>
@@ -224,7 +224,7 @@ export default async function ReportsPage({
                 const share = totalExpenses > 0 ? item.value / totalExpenses : 0;
 
                 return (
-                  <div key={item.label} className="workspace-soft-card rounded-[22px] p-4">
+                  <div key={item.label} className="workspace-soft-card rounded-lg p-4">
                     <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold text-[var(--workspace-text)]">{item.label}</p>

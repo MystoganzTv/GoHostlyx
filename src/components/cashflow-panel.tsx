@@ -86,7 +86,7 @@ export function CashflowPanel({
         }
       >
         <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="workspace-soft-card rounded-[22px] p-5">
+          <div className="workspace-soft-card rounded-lg p-5">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Ventana de reporte" : "Reporting window"}
             </p>
@@ -97,7 +97,7 @@ export function CashflowPanel({
                 : "GoHostlyx treats channel payout as operating inflow and expenses as operating outflow. This does not replace bank reconciliation."}
             </p>
           </div>
-          <div className="workspace-soft-card rounded-[22px] p-5">
+          <div className="workspace-soft-card rounded-lg p-5">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Promedio mensual" : "Monthly average"}
             </p>
@@ -123,7 +123,7 @@ export function CashflowPanel({
           }
         >
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="workspace-soft-card rounded-[22px] p-5">
+            <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Cobertura" : "Coverage"}
               </p>
@@ -131,7 +131,7 @@ export function CashflowPanel({
                 {formatPercent(coverageRatio, locale)}
               </p>
             </div>
-            <div className="workspace-soft-card rounded-[22px] p-5">
+            <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Peso del gasto" : "Expense Share"}
               </p>
@@ -139,7 +139,7 @@ export function CashflowPanel({
                 {formatPercent(view.metrics.netPayout > 0 ? view.metrics.totalExpenses / view.metrics.netPayout : 0, locale)}
               </p>
             </div>
-            <div className="workspace-soft-card rounded-[22px] p-5">
+            <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Margen neto" : "Net Margin"}
               </p>
@@ -162,7 +162,7 @@ export function CashflowPanel({
         >
           <div className="grid gap-4 xl:grid-cols-3">
             {view.marketBreakdown.map((market) => (
-              <article key={market.countryCode} className="workspace-soft-card rounded-[22px] p-4">
+              <article key={market.countryCode} className="workspace-soft-card rounded-lg p-4">
                 <p className="text-base font-semibold text-[var(--workspace-text)]">{market.countryCode}</p>
                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {market.currencyCode}
@@ -208,7 +208,7 @@ export function CashflowPanel({
         >
           <div className="space-y-3 md:hidden">
             {view.monthlySummary.map((month) => (
-              <article key={month.label} className="workspace-soft-card rounded-[22px] p-4">
+              <article key={month.label} className="workspace-soft-card rounded-lg p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-base font-semibold text-[var(--workspace-text)]">{month.label}</p>

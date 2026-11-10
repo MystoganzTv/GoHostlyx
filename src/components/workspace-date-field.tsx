@@ -188,8 +188,8 @@ export function WorkspaceDateField({
             return nextOpen;
           });
         }}
-        className={`input-surface flex w-full items-center justify-between rounded-2xl text-left text-sm ${
-          compact ? "min-w-[170px] px-4 py-3" : "px-4 py-3"
+        className={`input-surface flex w-full items-center justify-between text-left ${
+          compact ? "h-8 min-w-[150px] rounded-md px-3 text-xs" : "h-10 rounded-lg px-3 text-sm"
         }`}
       >
         <span className={currentValue ? "text-[var(--workspace-text)]" : "text-[var(--workspace-muted)]"}>
@@ -203,7 +203,7 @@ export function WorkspaceDateField({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] max-w-[calc(100vw-2rem)] rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,28,46,0.98)_0%,rgba(10,19,31,0.98)_100%)] p-4 shadow-[0_24px_60px_rgba(2,6,23,0.48)]">
+        <div className="absolute left-0 top-full z-30 mt-2 w-[320px] max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-popover)] p-3 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
@@ -211,7 +211,7 @@ export function WorkspaceDateField({
                 setActivePicker(null);
                 setVisibleMonth((current) => subMonths(current, 1));
               }}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08]"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08]"
               aria-label={isSpanish ? "Mes anterior" : "Previous month"}
             >
               <ChevronLeft className="h-4 w-4" />
@@ -221,7 +221,7 @@ export function WorkspaceDateField({
                 type="button"
                 aria-label={isSpanish ? "Seleccionar mes" : "Select month"}
                 onClick={() => setActivePicker((current) => (current === "month" ? null : "month"))}
-                className={`rounded-2xl border px-3 py-2 text-sm font-semibold text-white outline-none transition ${
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold text-white outline-none transition ${
                   activePicker === "month"
                     ? "border-[var(--workspace-accent)]/45 bg-[var(--workspace-accent)]/12"
                     : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"
@@ -233,7 +233,7 @@ export function WorkspaceDateField({
                 type="button"
                 aria-label={isSpanish ? "Seleccionar año" : "Select year"}
                 onClick={() => setActivePicker((current) => (current === "year" ? null : "year"))}
-                className={`rounded-2xl border px-3 py-2 text-sm font-semibold text-white outline-none transition ${
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold text-white outline-none transition ${
                   activePicker === "year"
                     ? "border-[var(--workspace-accent)]/45 bg-[var(--workspace-accent)]/12"
                     : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"
@@ -248,7 +248,7 @@ export function WorkspaceDateField({
                 setActivePicker(null);
                 setVisibleMonth((current) => addMonths(current, 1));
               }}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08]"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/[0.08]"
               aria-label={isSpanish ? "Mes siguiente" : "Next month"}
             >
               <ChevronRight className="h-4 w-4" />
@@ -270,7 +270,7 @@ export function WorkspaceDateField({
                         setActivePicker(null);
                       }}
                       title={month.label}
-                      className={`rounded-2xl px-3 py-3 text-sm font-medium transition ${
+                      className={`rounded-lg px-3 py-3 text-sm font-medium transition ${
                         isActive
                           ? "bg-[var(--workspace-accent)] text-slate-950 shadow-[0_12px_30px_rgba(88,196,182,0.28)]"
                           : "bg-white/[0.03] text-[var(--workspace-text)] hover:bg-white/[0.08]"
@@ -296,7 +296,7 @@ export function WorkspaceDateField({
                         setVisibleMonth(new Date(year, getMonth(visibleMonth), 1));
                         setActivePicker(null);
                       }}
-                      className={`rounded-2xl px-3 py-3 text-sm font-medium transition ${
+                      className={`rounded-lg px-3 py-3 text-sm font-medium transition ${
                         isActive
                           ? "bg-[var(--workspace-accent)] text-slate-950 shadow-[0_12px_30px_rgba(88,196,182,0.28)]"
                           : "bg-white/[0.03] text-[var(--workspace-text)] hover:bg-white/[0.08]"
@@ -329,7 +329,7 @@ export function WorkspaceDateField({
                       key={day.toISOString()}
                       type="button"
                       onClick={() => chooseDate(day)}
-                      className={`flex h-10 items-center justify-center rounded-2xl text-sm transition ${
+                      className={`flex h-10 items-center justify-center rounded-lg text-sm transition ${
                         selected
                           ? "bg-[var(--workspace-accent)] text-slate-950 shadow-[0_12px_30px_rgba(88,196,182,0.28)]"
                           : currentMonth

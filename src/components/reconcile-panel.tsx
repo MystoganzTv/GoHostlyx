@@ -73,7 +73,7 @@ export function ReconcileSummaryCard({
             {reconcile.message}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-[18px] p-3">
+        <div className="workspace-icon-chip rounded-lg p-3">
           <Scale className="h-4 w-4" />
         </div>
       </div>
@@ -112,7 +112,7 @@ export function ReconcileSummaryCard({
         <p className="text-sm leading-6 text-[var(--workspace-muted)]">{reconcile.trustLabel}</p>
         <Link
           href="/dashboard/payouts"
-          className="workspace-button-secondary inline-flex rounded-2xl px-4 py-3 text-sm font-semibold transition"
+          className="workspace-button-secondary inline-flex rounded-lg px-3.5 py-2 text-sm font-semibold transition"
         >
           {isSpanish ? "Ver detalles" : "View details"}
         </Link>
@@ -163,13 +163,13 @@ export function ReconcilePanel({
             {reconcile.trustLabel}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-[18px] p-3">
+        <div className="workspace-icon-chip rounded-lg p-3">
           <Scale className="h-4 w-4" />
         </div>
       </div>
 
       {reconcile.alertMessage ? (
-        <div className="mt-5 flex items-start gap-3 rounded-[22px] border border-amber-200/14 bg-[linear-gradient(135deg,rgba(245,158,11,0.12)_0%,rgba(31,41,55,0.1)_100%)] px-4 py-4">
+        <div className="mt-5 flex items-start gap-3 rounded-lg border border-amber-200/14 bg-[linear-gradient(135deg,rgba(245,158,11,0.12)_0%,rgba(31,41,55,0.1)_100%)] px-4 py-4">
           <div className="mt-0.5 rounded-full bg-amber-300/12 p-2 text-amber-100">
             <TriangleAlert className="h-4 w-4" />
           </div>
@@ -360,7 +360,7 @@ export function ReconcilePanel({
               {reconcile.insights.map((insight) => (
                 <article
                   key={`${insight.title}-${insight.body}`}
-                  className={`rounded-[22px] border px-4 py-4 ${
+                  className={`rounded-lg border px-4 py-4 ${
                     insight.tone === "positive"
                       ? "border-emerald-300/12 bg-emerald-400/[0.06]"
                       : insight.tone === "caution"

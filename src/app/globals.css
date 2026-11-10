@@ -18,25 +18,45 @@
   --muted: #94a3b8;
   --success: #22c55e;
   --danger: #fb7185;
-  --workspace-bg: #08111a;
-  --workspace-panel: #111c2c;
-  --workspace-panel-soft: #0d1726;
-  --workspace-border: rgba(148, 163, 184, 0.12);
-  --workspace-text: #e7edf5;
-  --workspace-muted: #9aa8bd;
-  --workspace-sidebar: rgba(12, 22, 37, 0.9);
-  --workspace-sidebar-border: rgba(255, 255, 255, 0.05);
-  --workspace-sidebar-muted: #96a6be;
-  --workspace-sidebar-active: rgba(20, 37, 59, 0.9);
+  --workspace-bg: #0c1118;
+  --workspace-panel: #131920;
+  --workspace-panel-soft: #131920;
+  --workspace-raised: #19202a;
+  --workspace-sunken: #0a0e14;
+  --workspace-popover: #161d27;
+  --workspace-border: #232b37;
+  --workspace-text: #e5eaf0;
+  --workspace-muted: #8794a6;
+  --workspace-sidebar: #0e131b;
+  --workspace-sidebar-border: #1f2732;
+  --workspace-sidebar-muted: #9ca8b8;
+  --workspace-sidebar-active: #1a212c;
   --workspace-accent: #58c4b6;
-  --workspace-accent-soft: rgba(88, 196, 182, 0.16);
+  --workspace-accent-soft: rgba(88, 196, 182, 0.14);
+  --workspace-pos: #33c283;
+  --workspace-pos-soft: rgba(51, 194, 131, 0.12);
+  --workspace-neg: #ec5f5f;
+  --workspace-neg-soft: rgba(236, 95, 95, 0.12);
+  --workspace-warn: #f6a623;
+  --workspace-warn-soft: rgba(246, 166, 35, 0.12);
+  --workspace-info: #4b9bf8;
+  --workspace-info-soft: rgba(75, 155, 248, 0.12);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-outfit);
-  --font-mono: var(--font-outfit);
+  --font-sans: var(--font-barlow);
+  --font-mono: var(--font-barlow);
+}
+
+/* Reading scale for a dense financial UI (same as OnRoad Books): the two
+   smallest steps are one pixel larger than Tailwind's defaults. */
+@theme {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
 }
 
 * {
@@ -46,7 +66,9 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-outfit), sans-serif;
+  font-family: var(--font-barlow), sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
   background-image:
     radial-gradient(circle at top left, rgba(104, 132, 173, 0.2), transparent 30%),
     radial-gradient(circle at top right, rgba(88, 196, 182, 0.18), transparent 28%),
@@ -76,11 +98,14 @@ a {
   text-decoration: none;
 }
 
-button,
-input,
-select,
-textarea {
-  font: inherit;
+/* In the base layer so Tailwind's text-* utilities can still size controls. */
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
 }
 
 ::selection {
@@ -401,21 +426,42 @@ textarea {
 }
 
 /* ---------------------------------------------------------------------------
-   Workspace style "A · Balanced": one card per section, never a card inside a
-   card. Top-level cards get a single quiet surface (no gradient or shadow);
-   anything that was a card nested inside another card renders flat, separated
-   by a hairline. These rules are unlayered, so they win over the Tailwind
-   utilities still present on the elements.
+   Workspace style, modelled on OnRoad Books: a plain dark canvas, quiet panels
+   with a hairline header, small uppercase labels, compact controls and
+   color-coded money (green in, red out, amber reserved, blue cash).
+   These rules are unlayered, so they win over the Tailwind utilities still
+   present on older elements; that is what keeps every page consistent.
    --------------------------------------------------------------------------- */
+.workspace-app {
+  position: relative;
+  z-index: 1;
+  color: var(--workspace-text);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.label-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--workspace-muted);
+}
+
+/* Panels */
 .workspace-card,
 .workspace-soft-card {
-  background: var(--workspace-panel-soft);
+  background: var(--workspace-panel);
   border: 1px solid var(--workspace-border);
-  border-radius: 16px;
-  box-shadow: none;
+  border-radius: 12px;
+  box-shadow: 0 20px 55px -42px rgba(0, 0, 0, 0.85);
   backdrop-filter: none;
 }
 
+/* Never a card inside a card: nested ones render flat, spaced by their grid. */
 .workspace-card .workspace-card,
 .workspace-card .workspace-soft-card,
 .workspace-soft-card .workspace-soft-card,
@@ -424,11 +470,23 @@ textarea {
 .modal-surface .workspace-soft-card {
   background: none;
   border: 0;
-  border-top: 1px solid var(--workspace-border);
   border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* In a vertical stack, nested items are split by a hairline instead. */
+.workspace-card [class*="space-y-"] > :is(.workspace-card, .workspace-soft-card) + :is(.workspace-card, .workspace-soft-card) {
+  border-top: 1px solid var(--workspace-border);
+  padding-top: 1rem;
+}
+
+.workspace-card .section-card > .section-card-head,
+.workspace-card .section-card > .section-card-body,
+.modal-surface .section-card > .section-card-head,
+.modal-surface .section-card > .section-card-body {
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 0;
 }
 
 .workspace-icon-chip {
@@ -439,25 +497,151 @@ textarea {
   color: var(--workspace-accent);
 }
 
+/* Buttons */
 .workspace-button-primary,
-.workspace-button-primary:hover {
+.workspace-button-secondary {
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.workspace-button-primary {
   background: var(--workspace-accent);
+  border: 1px solid transparent;
   color: #061714;
   box-shadow: none;
 }
 
+.workspace-button-primary:hover {
+  background: #6fd4c7;
+  color: #061714;
+}
+
 .workspace-button-secondary {
   background: transparent;
+  border: 1px solid var(--workspace-border);
+  color: var(--workspace-text);
   box-shadow: none;
 }
 
-/* Floating layers (modals) keep a solid surface: content behind them must not
-   show through, unlike in-page sections which are flat. */
-.modal-surface {
-  background: var(--workspace-panel-soft);
+.workspace-button-secondary:hover {
+  background: var(--workspace-raised);
+}
+
+/* Inputs */
+.input-surface {
+  background: var(--workspace-sunken);
   border: 1px solid var(--workspace-border);
-  border-radius: 28px;
-  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.55);
+  border-radius: 8px;
+}
+
+.input-surface:focus {
+  border-color: rgba(88, 196, 182, 0.6);
+  background: var(--workspace-sunken);
+  box-shadow: 0 0 0 3px rgba(88, 196, 182, 0.14);
+}
+
+/* Sidebar */
+.workspace-sidebar-link {
+  color: var(--workspace-sidebar-muted);
+}
+
+.workspace-sidebar-link:hover {
+  background: rgba(26, 33, 44, 0.6);
+  color: #fff;
+}
+
+.workspace-sidebar-link-active {
+  background: var(--workspace-sidebar-active);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Filter toolbar: one bordered group of segments, like a period control. */
+.filter-bar {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 4px;
+  background: var(--workspace-panel);
+  border: 1px solid var(--workspace-border);
+  border-radius: 10px;
+}
+
+.filter-segment {
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--workspace-muted);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.filter-segment:hover {
+  color: var(--workspace-text);
+}
+
+.filter-segment-active {
+  background: var(--workspace-raised);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(88, 196, 182, 0.35);
+}
+
+.filter-divider {
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 0.25rem;
+  background: var(--workspace-border);
+}
+
+.filter-bar .input-surface {
+  background: transparent;
+  border-color: transparent;
+}
+
+.filter-bar .input-surface:hover {
+  background: var(--workspace-raised);
+}
+
+/* Tables: muted uppercase header on a sunken band, compact rows. */
+.workspace-card table {
+  font-size: 0.875rem;
+}
+
+.workspace-card thead th {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--workspace-muted);
+  background: rgba(10, 14, 20, 0.6);
+}
+
+.workspace-card tbody td {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.workspace-card tbody tr {
+  border-color: var(--workspace-border);
+}
+
+.workspace-card tbody tr:hover {
+  background: rgba(25, 32, 42, 0.45);
+}
+
+/* Money colors */
+.text-pos { color: var(--workspace-pos); }
+.text-neg { color: var(--workspace-neg); }
+.text-warn { color: var(--workspace-warn); }
+.text-info { color: var(--workspace-info); }
+
+/* Floating layers (modals) keep a solid surface. */
+.modal-surface {
+  background: var(--workspace-panel);
+  border: 1px solid var(--workspace-border);
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
 }
 
 .modal-surface > .workspace-card {
@@ -465,27 +649,32 @@ textarea {
   padding-top: 0;
 }
 
-/* One card holding several stats, separated by hairlines instead of separate boxes. */
+/* One card holding several stats, separated by hairlines instead of boxes. */
 .stat-strip {
   gap: 1px;
   background: var(--workspace-border);
 }
 
 .stat-strip > .stat-strip-item {
-  background: var(--workspace-panel-soft);
+  background: var(--workspace-panel);
 }
 
-/* A grid of MetricCards reads as one card split by hairlines. */
 .metric-strip {
   gap: 1px;
   overflow: hidden;
   background: var(--workspace-border);
   border: 1px solid var(--workspace-border);
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .metric-strip > .workspace-card {
   border: 0;
   border-radius: 0;
-  background: var(--workspace-panel-soft);
+  box-shadow: none;
+  background: var(--workspace-panel);
+}
+
+.calendar-day {
+  background: var(--workspace-sunken);
+  border: 1px solid var(--workspace-border);
 }

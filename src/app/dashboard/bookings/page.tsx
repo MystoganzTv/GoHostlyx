@@ -127,7 +127,7 @@ export default async function BookingsPage({
         <OperationalImportLauncher
           properties={properties}
           context="bookings"
-          buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+          buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
         />
       }
     >

@@ -168,7 +168,7 @@ export function PerformancePanel({
         }
       >
         <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="workspace-soft-card rounded-[22px] p-5">
+          <div className="workspace-soft-card rounded-lg p-5">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Ventana de reporte" : "Reporting window"}
             </p>
@@ -181,7 +181,7 @@ export function PerformancePanel({
                 : "Performance is best read as a mix of volume, rate, occupancy, and consistency. This page keeps those signals together."}
             </p>
           </div>
-          <div className="workspace-soft-card rounded-[22px] p-5">
+          <div className="workspace-soft-card rounded-lg p-5">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Consejo de lectura" : "Reading tip"}
             </p>
@@ -204,7 +204,7 @@ export function PerformancePanel({
           }
         >
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="workspace-soft-card rounded-[22px] p-5">
+            <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Mes más fuerte" : "Strongest month"}
               </p>
@@ -222,7 +222,7 @@ export function PerformancePanel({
                     : "Import or add some bookings to start reading month-level performance."}
               </p>
             </div>
-            <div className="workspace-soft-card rounded-[22px] p-5">
+            <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Canal líder" : "Leading channel"}
               </p>
@@ -253,7 +253,7 @@ export function PerformancePanel({
         >
           <div className="space-y-3">
             {view.revenueByChannel.length === 0 ? (
-              <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
+              <div className="workspace-soft-card rounded-lg p-5 text-sm text-[var(--workspace-muted)]">
                 {isSpanish
                   ? "Todavía no hay canales. Añade reservas o importa un archivo para poblar el rendimiento por canal."
                   : "No channels yet. Add bookings or import a workbook to populate channel performance."}
@@ -268,7 +268,7 @@ export function PerformancePanel({
                 return (
                   <article
                     key={channel.label}
-                    className="workspace-soft-card rounded-[22px] p-4"
+                    className="workspace-soft-card rounded-lg p-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>

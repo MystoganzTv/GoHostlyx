@@ -295,7 +295,7 @@ export default async function CalendarPage({
       }
     >
       <div className="space-y-6">
-        <div className="workspace-card rounded-[30px] p-5 sm:p-6">
+        <div className="workspace-card rounded-xl p-5 sm:p-6">
           <CalendarAutoSync
             enabled={icalFeeds.some((feed) => feed.isActive)}
             force={hasLegacySyncedEventDetails}
@@ -303,13 +303,13 @@ export default async function CalendarPage({
           <div className="space-y-6">
             <CalendarFeedsPanel feeds={icalFeeds} embedded />
             <div className="grid gap-4 md:grid-cols-4">
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Rango" : "Range"}
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">{rangeLabel}</p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Reservas seguidas" : "Reservations tracked"}
                 </p>
@@ -317,7 +317,7 @@ export default async function CalendarPage({
                   {formatNumber(reservationCount, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Check-ins" : "Check-ins"}
                 </p>
@@ -325,7 +325,7 @@ export default async function CalendarPage({
                   {formatNumber(countryAndChannelBookings.length, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Días cerrados" : "Closed days"}
                 </p>

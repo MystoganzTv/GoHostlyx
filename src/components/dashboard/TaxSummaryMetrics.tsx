@@ -17,7 +17,7 @@ export function TaxSummaryMetrics({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-      <div className="workspace-soft-card rounded-[24px] p-5 sm:p-6">
+      <div className="workspace-soft-card rounded-xl p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -30,14 +30,14 @@ export function TaxSummaryMetrics({
               Based on the tax rate in this view.
             </p>
           </div>
-          <div className="workspace-icon-chip rounded-2xl p-3">
+          <div className="workspace-icon-chip rounded-lg p-3">
             <ReceiptText className="h-5 w-5" />
           </div>
         </div>
       </div>
 
       <div
-        className={`workspace-card rounded-[28px] p-6 sm:p-7 ring-1 ${
+        className={`workspace-card rounded-xl p-6 sm:p-7 ring-1 ${
           afterTaxPositive
             ? "bg-[linear-gradient(180deg,rgba(29,78,60,0.22)_0%,rgba(11,22,38,0.98)_100%)] ring-emerald-300/14"
             : "bg-[linear-gradient(180deg,rgba(120,28,50,0.16)_0%,rgba(11,22,38,0.98)_100%)] ring-rose-300/12"
@@ -60,7 +60,7 @@ export function TaxSummaryMetrics({
             </p>
           </div>
           <div
-            className={`rounded-2xl p-3 ${
+            className={`rounded-lg p-3 ${
               afterTaxPositive
                 ? "bg-emerald-400/14 text-emerald-200"
                 : "bg-rose-400/14 text-rose-200"

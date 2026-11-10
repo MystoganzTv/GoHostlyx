@@ -14,7 +14,7 @@ function ShareMetricCard({
 }) {
   return (
     <article
-      className={`report-metric-card rounded-[24px] border px-5 py-5 ${
+      className={`report-metric-card rounded-xl border px-5 py-5 ${
         emphasis
           ? "report-metric-card--primary border-emerald-200 bg-[linear-gradient(180deg,rgba(236,253,245,0.95)_0%,rgba(240,249,255,0.96)_100%)]"
           : "border-slate-200 bg-white"
@@ -53,7 +53,7 @@ export function ShareReportSheet({
 
   if (view.mixedCurrencyMode) {
     return (
-      <section className="report-sheet mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-[0_18px_46px_rgba(15,23,42,0.08)] sm:p-10">
+      <section className="report-sheet mx-auto max-w-5xl rounded-xl border border-slate-200 bg-white p-8 shadow-[0_18px_46px_rgba(15,23,42,0.08)] sm:p-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">
           Share Report
         </p>
@@ -69,7 +69,7 @@ export function ShareReportSheet({
   }
 
   return (
-    <section className="report-sheet mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.98)_100%)] p-8 shadow-[0_18px_46px_rgba(15,23,42,0.08)] sm:p-10">
+    <section className="report-sheet mx-auto max-w-5xl rounded-xl border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.98)_100%)] p-8 shadow-[0_18px_46px_rgba(15,23,42,0.08)] sm:p-10">
       <div className="report-sheet-header flex flex-col gap-6 border-b border-slate-200 pb-8 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-4">
           <div>
@@ -87,20 +87,20 @@ export function ShareReportSheet({
         </div>
 
         <div className="report-sheet-meta grid gap-4 sm:min-w-[260px]">
-          <div className="report-meta-card rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+          <div className="report-meta-card rounded-lg border border-slate-200 bg-white px-4 py-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
               Reporting period
             </p>
             <p className="mt-2 text-base font-semibold text-slate-900">{view.rangeLabel}</p>
           </div>
-          <div className="report-meta-card rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+          <div className="report-meta-card rounded-lg border border-slate-200 bg-white px-4 py-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
               Generated
             </p>
             <p className="mt-2 text-base font-semibold text-slate-900">{generatedAt}</p>
           </div>
           {latestImportFileName ? (
-            <div className="report-meta-card rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+            <div className="report-meta-card rounded-lg border border-slate-200 bg-white px-4 py-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Source file
               </p>
@@ -156,7 +156,7 @@ export function ShareReportSheet({
       </div>
 
       <div className="report-sheet-details mt-8 grid gap-6 xl:grid-cols-2">
-        <article className="report-detail-card rounded-[24px] border border-slate-200 bg-white px-5 py-5">
+        <article className="report-detail-card rounded-xl border border-slate-200 bg-white px-5 py-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
             Revenue by channel
           </p>
@@ -177,7 +177,7 @@ export function ShareReportSheet({
           </div>
         </article>
 
-        <article className="report-detail-card rounded-[24px] border border-slate-200 bg-white px-5 py-5">
+        <article className="report-detail-card rounded-xl border border-slate-200 bg-white px-5 py-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
             Expense structure
           </p>

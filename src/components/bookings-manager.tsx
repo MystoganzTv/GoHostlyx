@@ -13,7 +13,7 @@ import type { BookingRecord, CurrencyCode, PropertyDefinition } from "@/lib/type
 import { Modal } from "@/components/modal";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 function getGuestBreakdownLabel(booking: BookingRecord) {
@@ -255,44 +255,32 @@ export function BookingsManager({
       <div className="space-y-4">
         {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
         {error ? <p className="text-sm text-rose-500">{error}</p> : null}
-        <div className="flex flex-wrap gap-2">
+        <div className="filter-bar flex-wrap gap-0.5">
           <button
             type="button"
             onClick={() => setReviewFilter("all")}
-            className={`rounded-full border px-3 py-2 text-sm font-medium transition ${
-              reviewFilter === "all"
-                ? "border-[var(--workspace-accent)]/28 bg-[rgba(125,211,197,0.12)] text-[var(--workspace-text)]"
-                : "border-[var(--workspace-border)] bg-white/[0.03] text-[var(--workspace-muted)]"
-            }`}
+            className={`filter-segment ${reviewFilter === "all" ? "filter-segment-active" : ""}`}
           >
             {isSpanish ? "Todas" : "All"} · {formatNumber(reviewCounts.all, locale)}
           </button>
           <button
             type="button"
             onClick={() => setReviewFilter("needs-review")}
-            className={`rounded-full border px-3 py-2 text-sm font-medium transition ${
-              reviewFilter === "needs-review"
-                ? "border-amber-300/28 bg-amber-300/[0.12] text-amber-100"
-                : "border-[var(--workspace-border)] bg-white/[0.03] text-[var(--workspace-muted)]"
-            }`}
+            className={`filter-segment ${reviewFilter === "needs-review" ? "filter-segment-active" : ""}`}
           >
             {isSpanish ? "Necesitan revisión" : "Need review"} · {formatNumber(reviewCounts.needsReview, locale)}
           </button>
           <button
             type="button"
             onClick={() => setReviewFilter("ready")}
-            className={`rounded-full border px-3 py-2 text-sm font-medium transition ${
-              reviewFilter === "ready"
-                ? "border-teal-300/28 bg-teal-300/[0.12] text-teal-100"
-                : "border-[var(--workspace-border)] bg-white/[0.03] text-[var(--workspace-muted)]"
-            }`}
+            className={`filter-segment ${reviewFilter === "ready" ? "filter-segment-active" : ""}`}
           >
             {isSpanish ? "Listas" : "Ready"} · {formatNumber(reviewCounts.ready, locale)}
           </button>
         </div>
 
         {reviewCounts.needsReview > 0 ? (
-          <div className="rounded-[20px] border border-amber-300/18 bg-amber-300/[0.08] px-4 py-3 text-sm text-amber-100">
+          <div className="rounded-lg border border-amber-300/18 bg-amber-300/[0.08] px-4 py-3 text-sm text-amber-100">
             {isSpanish
               ? "Las reservas con revisión pendiente ya están dentro de GoHostlyx. Puedes corregirlas aquí y marcarlas como revisadas sin volver al modal de importación."
               : "Bookings that need review are already inside GoHostlyx. You can fix them here and mark them as reviewed without going back to the import modal."}
@@ -300,7 +288,7 @@ export function BookingsManager({
         ) : null}
 
         {highlightedBooking ? (
-          <div className="rounded-[20px] border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-3 text-sm text-[var(--accent-text)]">
+          <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-3 text-sm text-[var(--accent-text)]">
             {isSpanish ? (
               <>
                 Resaltando <span className="font-semibold text-white">{highlightedBooking.guestName}</span> desde la vista de calendario.
@@ -363,7 +351,7 @@ export function BookingsManager({
                         <p className="mt-1 text-xs text-slate-400">{booking.guestContact}</p>
                       ) : null}
                       {booking.reviewStatus === "needs_review" && booking.reviewReason ? (
-                        <p className="mt-2 rounded-2xl border border-amber-300/18 bg-amber-300/[0.08] px-3 py-2 text-xs leading-5 text-amber-100">
+                        <p className="mt-2 rounded-lg border border-amber-300/18 bg-amber-300/[0.08] px-3 py-2 text-xs leading-5 text-amber-100">
                           {booking.reviewReason}
                         </p>
                       ) : null}
@@ -419,7 +407,7 @@ export function BookingsManager({
                       <button
                         type="button"
                         onClick={() => setEditingBooking(booking)}
-                        className="workspace-button-secondary inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition"
+                        className="workspace-button-secondary inline-flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-semibold transition"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                         {booking.reviewStatus === "needs_review"
@@ -480,7 +468,7 @@ export function BookingsManager({
         {editingBooking ? (
           <form key={editingBooking.id ?? editingBooking.checkIn} onSubmit={submitUpdate} className="grid gap-4 sm:grid-cols-2">
             {editingBooking.reviewStatus === "needs_review" ? (
-              <div className="rounded-[20px] border border-amber-300/18 bg-amber-300/[0.08] px-4 py-4 text-sm leading-6 text-amber-100 sm:col-span-2">
+              <div className="rounded-lg border border-amber-300/18 bg-amber-300/[0.08] px-4 py-4 text-sm leading-6 text-amber-100 sm:col-span-2">
                 <p className="font-medium text-[var(--workspace-text)]">
                   {isSpanish ? "Esta reserva necesita una revisión rápida." : "This booking needs a quick review."}
                 </p>
@@ -581,7 +569,7 @@ export function BookingsManager({
               <button
                 type="submit"
                 disabled={isPending}
-                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending
                   ? isSpanish
@@ -611,7 +599,7 @@ export function BookingsManager({
       >
         {bookingToDelete ? (
           <div className="space-y-5">
-            <div className="rounded-[22px] border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
+            <div className="rounded-lg border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
               {isSpanish ? (
                 <>
                   Esto eliminará la reserva de <span className="font-semibold text-rose-900">{bookingToDelete.guestName}</span> de tu espacio de trabajo.
@@ -625,7 +613,7 @@ export function BookingsManager({
               )}
             </div>
 
-            <div className="workspace-soft-card grid gap-3 rounded-[22px] p-4 sm:grid-cols-2">
+            <div className="workspace-soft-card grid gap-3 rounded-lg p-4 sm:grid-cols-2">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{isSpanish ? "Propiedad" : "Property"}</p>
                 <p className="mt-1 text-sm text-[var(--workspace-text)]">
@@ -645,7 +633,7 @@ export function BookingsManager({
               <button
                 type="button"
                 onClick={() => setBookingToDelete(null)}
-                className="workspace-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 {isSpanish ? "Cancelar" : "Cancel"}
               </button>
@@ -653,7 +641,7 @@ export function BookingsManager({
                 type="button"
                 onClick={confirmDeleteBooking}
                 disabled={isPending}
-                className="inline-flex items-center justify-center rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-lg border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending
                   ? isSpanish

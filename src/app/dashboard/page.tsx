@@ -77,7 +77,7 @@ export default async function DashboardPage({
         actions={
           <Link
             href="/pricing"
-            className="rounded-2xl border border-amber-200/18 bg-[linear-gradient(135deg,rgba(251,191,36,0.24)_0%,rgba(245,158,11,0.16)_100%)] px-4 py-3 text-sm font-semibold text-amber-50 shadow-[0_18px_36px_rgba(245,158,11,0.18)] transition hover:border-amber-200/28 hover:bg-[linear-gradient(135deg,rgba(251,191,36,0.3)_0%,rgba(245,158,11,0.2)_100%)]"
+            className="rounded-lg border border-amber-200/18 bg-[linear-gradient(135deg,rgba(251,191,36,0.24)_0%,rgba(245,158,11,0.16)_100%)] px-4 py-3 text-sm font-semibold text-amber-50 shadow-[0_18px_36px_rgba(245,158,11,0.18)] transition hover:border-amber-200/28 hover:bg-[linear-gradient(135deg,rgba(251,191,36,0.3)_0%,rgba(245,158,11,0.2)_100%)]"
           >
             {isSpanish ? "Elegir un plan" : "Choose a Plan"}
           </Link>

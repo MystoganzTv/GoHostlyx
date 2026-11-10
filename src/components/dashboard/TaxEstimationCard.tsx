@@ -58,12 +58,12 @@ export function TaxEstimationCard({
     >
       <div className="space-y-5">
         <div className="grid gap-4 xl:grid-cols-[0.85fr_0.85fr_auto]">
-          <div className="workspace-soft-card rounded-[22px] p-4">
+          <div className="workspace-soft-card rounded-lg p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               Market in view
             </p>
             <div className="mt-3 flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <Landmark className="h-4 w-4" />
               </div>
               <div>
@@ -75,7 +75,7 @@ export function TaxEstimationCard({
             </div>
           </div>
 
-          <div className="workspace-soft-card rounded-[22px] p-4">
+          <div className="workspace-soft-card rounded-lg p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               Rate applied
             </p>
@@ -87,7 +87,7 @@ export function TaxEstimationCard({
 
           <Link
             href="/settings"
-            className="workspace-button-secondary inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition xl:self-end"
+            className="workspace-button-secondary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition xl:self-end"
           >
             Edit in Settings
             <ArrowRight className="h-4 w-4" />
@@ -95,7 +95,7 @@ export function TaxEstimationCard({
         </div>
 
         {mixedCurrencyMode ? (
-          <div className="workspace-soft-card rounded-[24px] p-5">
+          <div className="workspace-soft-card rounded-xl p-5">
             <p className="text-sm font-semibold text-[var(--workspace-text)]">Pick one market for after-tax clarity</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--workspace-muted)]">
               GoHostlyx will not estimate after-tax profit across mixed currencies. Filter to one country, or use Settings to choose the baseline market that should guide your estimate.

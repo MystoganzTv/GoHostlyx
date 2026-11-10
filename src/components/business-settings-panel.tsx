@@ -8,7 +8,7 @@ import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
 import type { CountryCode } from "@/lib/types";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function BusinessSettingsPanel({
@@ -68,7 +68,7 @@ export function BusinessSettingsPanel({
   }
 
   return (
-    <div className="workspace-card rounded-[30px] p-5 sm:p-6">
+    <div className="workspace-card rounded-xl p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
@@ -80,7 +80,7 @@ export function BusinessSettingsPanel({
               : "Each account keeps its own business identity, reporting market, imports, and manual entries."}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-3xl p-3">
+        <div className="workspace-icon-chip rounded-xl p-3">
           <Settings2 className="h-6 w-6" />
         </div>
       </div>
@@ -117,14 +117,14 @@ export function BusinessSettingsPanel({
                   key={market.countryCode}
                   type="button"
                   onClick={() => setPrimaryCountryCode(market.countryCode)}
-                  className={`rounded-[24px] border px-4 py-4 text-left transition ${
+                  className={`rounded-xl border px-4 py-4 text-left transition ${
                     isSelected
                       ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                       : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] text-[var(--workspace-muted)] hover:border-[var(--workspace-accent)]/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="workspace-icon-chip rounded-2xl p-2.5">
+                    <div className="workspace-icon-chip rounded-lg p-2.5">
                       <Globe2 className="h-4 w-4" />
                     </div>
                     <div>
@@ -147,7 +147,7 @@ export function BusinessSettingsPanel({
           </p>
         </div>
 
-        <div className="workspace-soft-card rounded-[24px] p-4">
+        <div className="workspace-soft-card rounded-xl p-4">
           <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
             <div>
               <p className="text-sm font-semibold text-[var(--workspace-text)]">
@@ -212,7 +212,7 @@ export function BusinessSettingsPanel({
         <button
           type="submit"
           disabled={isPending || !hasChanges}
-          className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+          className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending
             ? isSpanish

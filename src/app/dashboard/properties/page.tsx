@@ -173,7 +173,7 @@ export default async function PropertiesPage() {
             }
           >
             <div className="grid gap-4 lg:grid-cols-3">
-              <div className="workspace-soft-card rounded-[24px] p-4">
+              <div className="workspace-soft-card rounded-xl p-4">
                 <p className="text-sm font-semibold text-[var(--workspace-text)]">{isSpanish ? "Casa completa" : "Single house"}</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                   {isSpanish
@@ -181,7 +181,7 @@ export default async function PropertiesPage() {
                     : "Choose this when you rent the full home as one listing. No extra listings are required."}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-4">
+              <div className="workspace-soft-card rounded-xl p-4">
                 <p className="text-sm font-semibold text-[var(--workspace-text)]">{isSpanish ? "Propiedad con varios listings" : "Multi-listing property"}</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                   {isSpanish
@@ -189,7 +189,7 @@ export default async function PropertiesPage() {
                     : "Tell GoHostlyx how many listings you operate there, and we will create them automatically for you."}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-4">
+              <div className="workspace-soft-card rounded-xl p-4">
                 <p className="text-sm font-semibold text-[var(--workspace-text)]">{isSpanish ? "Qué se desbloquea después" : "What unlocks next"}</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                   {isSpanish
@@ -204,7 +204,7 @@ export default async function PropertiesPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <SectionCard title={isSpanish ? "Propiedades" : "Properties"}>
             <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <Building2 className="h-5 w-5" />
               </div>
               <p className="text-2xl font-semibold text-[var(--workspace-text)]">
@@ -214,7 +214,7 @@ export default async function PropertiesPage() {
           </SectionCard>
           <SectionCard title={isSpanish ? "Listings" : "Listings"}>
             <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <Layers3 className="h-5 w-5" />
               </div>
               <p className="text-2xl font-semibold text-[var(--workspace-text)]">

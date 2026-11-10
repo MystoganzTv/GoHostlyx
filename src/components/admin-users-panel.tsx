@@ -127,7 +127,7 @@ export function AdminUsersPanel({
   return (
     <div className="space-y-5">
       {error ? (
-        <div className="rounded-[22px] border border-rose-300/16 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+        <div className="rounded-lg border border-rose-300/16 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
           {error}
         </div>
       ) : null}
@@ -136,7 +136,7 @@ export function AdminUsersPanel({
         const rowBusy = isPending && pendingKey?.startsWith(user.ownerEmail);
 
         return (
-          <section key={user.ownerEmail} className="workspace-card rounded-[28px] p-5 sm:p-6">
+          <section key={user.ownerEmail} className="workspace-card rounded-xl p-5 sm:p-6">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
@@ -158,19 +158,19 @@ export function AdminUsersPanel({
                 <p className="text-sm text-[var(--workspace-muted)]">{user.ownerEmail}</p>
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <div className="workspace-soft-card rounded-[20px] p-4">
+                  <div className="workspace-soft-card rounded-lg p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Properties</p>
                     <p className="mt-2 text-lg font-semibold text-[var(--workspace-text)]">{user.propertiesCount}</p>
                   </div>
-                  <div className="workspace-soft-card rounded-[20px] p-4">
+                  <div className="workspace-soft-card rounded-lg p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Imports</p>
                     <p className="mt-2 text-lg font-semibold text-[var(--workspace-text)]">{user.importsCount}</p>
                   </div>
-                  <div className="workspace-soft-card rounded-[20px] p-4">
+                  <div className="workspace-soft-card rounded-lg p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Bookings</p>
                     <p className="mt-2 text-lg font-semibold text-[var(--workspace-text)]">{user.bookingsCount}</p>
                   </div>
-                  <div className="workspace-soft-card rounded-[20px] p-4">
+                  <div className="workspace-soft-card rounded-lg p-4">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">Expenses</p>
                     <p className="mt-2 text-lg font-semibold text-[var(--workspace-text)]">{user.expensesCount}</p>
                   </div>
@@ -194,7 +194,7 @@ export function AdminUsersPanel({
                         type="button"
                         disabled={rowBusy}
                         onClick={() => runAction(`${user.ownerEmail}-${plan}`, () => updatePlan(user.ownerEmail, plan))}
-                        className={`rounded-2xl px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                        className={`rounded-lg px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           user.subscription.status === "active" && user.subscription.plan === plan
                             ? "workspace-button-primary"
                             : "workspace-button-secondary"
@@ -210,7 +210,7 @@ export function AdminUsersPanel({
                       type="button"
                       disabled={rowBusy || user.isAdmin}
                       onClick={() => runAction(`${user.ownerEmail}-revoke`, () => revokeAccess(user.ownerEmail))}
-                      className="rounded-2xl border border-amber-300/16 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-50 transition hover:bg-amber-400/14 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-lg border border-amber-300/16 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-50 transition hover:bg-amber-400/14 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       Revoke paid access
                     </button>
@@ -224,7 +224,7 @@ export function AdminUsersPanel({
 
                         runAction(`${user.ownerEmail}-delete`, () => deleteUser(user.ownerEmail));
                       }}
-                      className="rounded-2xl border border-rose-300/16 bg-rose-400/10 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/14 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-lg border border-rose-300/16 bg-rose-400/10 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/14 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       Delete user
                     </button>

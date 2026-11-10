@@ -132,13 +132,13 @@ export default async function SharedReportPage({
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href={backHref}
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
           >
             Back to reports
           </Link>
           <ShareReportPrintButton
             href={pdfHref}
-            className="rounded-2xl border border-[#7bd8ca] bg-[#8ce6d8] px-5 py-3 text-sm font-semibold text-[#0b2e2a] shadow-[0_12px_30px_rgba(74,222,200,0.18)] transition hover:border-[#6fd1c2] hover:bg-[#9aede0]"
+            className="rounded-lg border border-[#7bd8ca] bg-[#8ce6d8] px-5 py-3 text-sm font-semibold text-[#0b2e2a] shadow-[0_12px_30px_rgba(74,222,200,0.18)] transition hover:border-[#6fd1c2] hover:bg-[#9aede0]"
           />
         </div>
       </div>

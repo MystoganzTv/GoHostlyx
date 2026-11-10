@@ -42,7 +42,7 @@ function formatTooltipValue(
 
 function EmptyChartState({ label }: { label: string }) {
   return (
-    <div className="workspace-soft-card flex h-[280px] items-center justify-center rounded-[22px] border-dashed text-sm text-[var(--workspace-muted)]">
+    <div className="workspace-soft-card flex h-[280px] items-center justify-center rounded-lg border-dashed text-sm text-[var(--workspace-muted)]">
       {label}
     </div>
   );
@@ -289,7 +289,7 @@ export function ChartsPanel({
                 </ResponsiveContainer>
               </div>
 
-              <div className="workspace-soft-card rounded-[22px] p-5">
+              <div className="workspace-soft-card rounded-lg p-5">
                 <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
                   <div>
                     <p className="text-sm font-semibold text-[var(--workspace-text)]">Cost Table</p>
@@ -301,7 +301,7 @@ export function ChartsPanel({
                   </span>
                 </div>
 
-                <div className="mt-3 overflow-hidden rounded-[18px] border border-white/8">
+                <div className="mt-3 overflow-hidden rounded-lg border border-white/8">
                   <div className="grid grid-cols-[minmax(0,1fr)_96px] gap-6 bg-white/[0.04] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                     <span>Category</span>
                     <span className="text-right">Share</span>
@@ -385,7 +385,7 @@ export function ChartsPanel({
         >
           <div className="space-y-3">
             {monthlySummary.length === 0 ? (
-              <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
+              <div className="workspace-soft-card rounded-lg p-5 text-sm text-[var(--workspace-muted)]">
                 No monthly performance data yet.
               </div>
             ) : (
@@ -393,7 +393,7 @@ export function ChartsPanel({
                 .sort((left, right) => right.profit - left.profit)
                 .slice(0, 5)
                 .map((month) => (
-                  <article key={month.label} className="workspace-soft-card rounded-[22px] p-4">
+                  <article key={month.label} className="workspace-soft-card rounded-lg p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-base font-semibold text-[var(--workspace-text)]">{month.label}</p>
@@ -417,12 +417,12 @@ export function ChartsPanel({
         >
           <div className="space-y-3">
             {costStructure.length === 0 ? (
-              <div className="workspace-soft-card rounded-[22px] p-5 text-sm text-[var(--workspace-muted)]">
+              <div className="workspace-soft-card rounded-lg p-5 text-sm text-[var(--workspace-muted)]">
                 No cost structure yet.
               </div>
             ) : (
               costStructure.slice(0, 5).map((item) => (
-                <article key={item.label} className="workspace-soft-card rounded-[22px] p-4">
+                <article key={item.label} className="workspace-soft-card rounded-lg p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-base font-semibold text-[var(--workspace-text)]">{item.label}</p>

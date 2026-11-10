@@ -181,11 +181,11 @@ export function CalendarFeedsManager({
 
       <div className="grid gap-4 xl:grid-cols-2">
         {feeds.map((feed) => (
-          <article key={feed.id} className="workspace-soft-card rounded-[24px] p-5">
+          <article key={feed.id} className="workspace-soft-card rounded-xl p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <div className="workspace-icon-chip rounded-2xl p-2.5">
+                  <div className="workspace-icon-chip rounded-lg p-2.5">
                     <Link2 className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
@@ -238,7 +238,7 @@ export function CalendarFeedsManager({
             </p>
 
             {feed.lastError ? (
-              <div className="mt-4 rounded-[18px] border border-rose-300/18 bg-rose-400/10 px-3 py-3 text-sm text-rose-50">
+              <div className="mt-4 rounded-lg border border-rose-300/18 bg-rose-400/10 px-3 py-3 text-sm text-rose-50">
                 {feed.lastError}
               </div>
             ) : null}
@@ -248,7 +248,7 @@ export function CalendarFeedsManager({
                 type="button"
                 onClick={() => refreshFeed(Number(feed.id))}
                 disabled={isPending || !feed.id}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
                 {isSpanish ? "Refrescar ahora" : "Refresh now"}
@@ -257,7 +257,7 @@ export function CalendarFeedsManager({
                 type="button"
                 onClick={() => disconnectFeed(Number(feed.id))}
                 disabled={isPending || !feed.id}
-                className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/16 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/16 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Trash2 className="h-4 w-4" />
                 {isSpanish ? "Desconectar" : "Disconnect"}
@@ -305,7 +305,7 @@ export function CalendarFeedsPanel({
   }
 
   return (
-    <div className={embedded ? "" : "workspace-card rounded-[24px] p-5"}>
+    <div className={embedded ? "" : "workspace-card rounded-xl p-5"}>
       <div className="space-y-3">
         <div>
           <p className="text-lg font-semibold text-[var(--workspace-text)]">

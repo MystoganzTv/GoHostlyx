@@ -14,21 +14,17 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <section
-      className={`workspace-card p-6 sm:p-7 ${className}`}
-    >
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold tracking-[-0.02em] text-[var(--workspace-text)]">
-            {title}
-          </h2>
+    <section className={`workspace-card section-card overflow-hidden ${className}`}>
+      <header className="section-card-head flex flex-col gap-3 border-b border-[var(--workspace-border)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-semibold tracking-tight text-[var(--workspace-text)]">{title}</h2>
           {subtitle ? (
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">{subtitle}</p>
+            <p className="mt-0.5 max-w-3xl text-xs leading-5 text-[var(--workspace-muted)]">{subtitle}</p>
           ) : null}
         </div>
-        {action ? <div>{action}</div> : null}
-      </div>
-      {children}
+        {action ? <div className="flex shrink-0 items-center gap-2">{action}</div> : null}
+      </header>
+      <div className="section-card-body px-5 py-5">{children}</div>
     </section>
   );
 }

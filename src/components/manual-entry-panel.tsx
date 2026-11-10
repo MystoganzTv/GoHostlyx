@@ -8,7 +8,7 @@ import { WorkspaceDateField } from "@/components/workspace-date-field";
 import type { PropertyDefinition } from "@/lib/types";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function ManualEntryPanel({
@@ -82,7 +82,7 @@ export function ManualEntryPanel({
   }
 
   return (
-    <div className="workspace-card rounded-[30px] p-5 sm:p-6">
+    <div className="workspace-card rounded-xl p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
@@ -92,7 +92,7 @@ export function ManualEntryPanel({
             Add bookings and expenses directly in the app.
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-3xl p-3">
+        <div className="workspace-icon-chip rounded-xl p-3">
           <PencilLine className="h-6 w-6" />
         </div>
       </div>
@@ -102,14 +102,14 @@ export function ManualEntryPanel({
           <button
             type="button"
             onClick={() => setActiveEntryType("booking")}
-            className={`rounded-[24px] border p-4 text-left transition ${
+            className={`rounded-xl border p-4 text-left transition ${
               activeEntryType === "booking"
                 ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                 : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/30"
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
+              <div className="workspace-icon-chip rounded-lg p-3">
                 <ScrollText className="h-5 w-5" />
               </div>
               <div>
@@ -124,14 +124,14 @@ export function ManualEntryPanel({
           <button
             type="button"
             onClick={() => setActiveEntryType("expense")}
-            className={`rounded-[24px] border p-4 text-left transition ${
+            className={`rounded-xl border p-4 text-left transition ${
               activeEntryType === "expense"
                 ? "border-rose-300/30 bg-rose-400/10 shadow-[0_0_0_1px_rgba(236,143,150,0.12)]"
                 : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-rose-300/20"
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-rose-400/12 p-3 text-rose-200">
+              <div className="rounded-lg bg-rose-400/12 p-3 text-rose-200">
                 <ReceiptText className="h-5 w-5" />
               </div>
               <div>
@@ -145,7 +145,7 @@ export function ManualEntryPanel({
         </div>
 
         {activeEntryType === "booking" ? (
-        <form action={handleBookingSubmit} className="workspace-soft-card rounded-[26px] p-4 sm:p-5 space-y-4">
+        <form action={handleBookingSubmit} className="workspace-soft-card rounded-xl p-4 sm:p-5 space-y-4">
           <div>
             <p className="text-sm font-semibold text-[var(--workspace-text)]">Booking details</p>
             <p className="mt-1 text-sm text-[var(--workspace-muted)]">Use this when you want to add a stay manually.</p>
@@ -206,7 +206,7 @@ export function ManualEntryPanel({
           <button
             type="submit"
             disabled={isPending}
-            className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+            className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPending ? "Saving booking..." : "Add booking"}
           </button>
@@ -216,7 +216,7 @@ export function ManualEntryPanel({
           </div>
         </form>
         ) : (
-        <form action={handleExpenseSubmit} className="workspace-soft-card rounded-[26px] p-4 sm:p-5 space-y-4">
+        <form action={handleExpenseSubmit} className="workspace-soft-card rounded-xl p-4 sm:p-5 space-y-4">
           <div>
             <p className="text-sm font-semibold text-[var(--workspace-text)]">Expense details</p>
             <p className="mt-1 text-sm text-[var(--workspace-muted)]">Use this for bills, cleaning, supplies, repairs, and operating costs.</p>
@@ -252,7 +252,7 @@ export function ManualEntryPanel({
           <button
             type="submit"
             disabled={isPending}
-            className="workspace-button-secondary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+            className="workspace-button-secondary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPending ? "Saving expense..." : "Add expense"}
           </button>

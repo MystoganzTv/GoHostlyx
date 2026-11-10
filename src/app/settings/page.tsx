@@ -57,9 +57,9 @@ export default async function SettingsPage() {
           }
         >
           <div className="space-y-4">
-            <div className="workspace-soft-card rounded-[24px] p-4">
+            <div className="workspace-soft-card rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="workspace-icon-chip rounded-2xl p-3">
+                <div className="workspace-icon-chip rounded-lg p-3">
                   <UserCircle2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -69,9 +69,9 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[24px] p-4">
+            <div className="workspace-soft-card rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="workspace-icon-chip rounded-2xl p-3">
+                <div className="workspace-icon-chip rounded-lg p-3">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -83,9 +83,9 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[24px] p-4">
+            <div className="workspace-soft-card rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="workspace-icon-chip rounded-2xl p-3">
+                <div className="workspace-icon-chip rounded-lg p-3">
                   <Globe2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -101,9 +101,9 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[24px] p-4">
+            <div className="workspace-soft-card rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="workspace-icon-chip rounded-2xl p-3">
+                <div className="workspace-icon-chip rounded-lg p-3">
                   <ReceiptText className="h-5 w-5" />
                 </div>
                 <div>
@@ -123,9 +123,9 @@ export default async function SettingsPage() {
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[24px] p-4">
+            <div className="workspace-soft-card rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="workspace-icon-chip rounded-2xl p-3">
+                <div className="workspace-icon-chip rounded-lg p-3">
                   <DatabaseZap className="h-5 w-5" />
                 </div>
                 <div>

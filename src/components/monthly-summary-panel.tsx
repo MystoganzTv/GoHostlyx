@@ -96,7 +96,7 @@ export function MonthlySummaryPanel({
         }
       >
         <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="workspace-soft-card rounded-[22px] p-5">
+          <div className="workspace-soft-card rounded-lg p-5">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Ventana de reporte" : "Reporting window"}
             </p>
@@ -109,7 +109,7 @@ export function MonthlySummaryPanel({
                 : "GoHostlyx groups your saved bookings and expenses month by month so you can compare seasonality, pace, and profitability."}
             </p>
           </div>
-          <div className="workspace-soft-card rounded-[22px] p-5">
+          <div className="workspace-soft-card rounded-lg p-5">
             <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Consejo de lectura" : "Reading tip"}
             </p>
@@ -144,7 +144,7 @@ export function MonthlySummaryPanel({
               : "Select one market to see exact money values by month."
           }
         >
-          <div className="workspace-soft-card rounded-[22px] p-4 text-sm leading-6 text-[var(--workspace-muted)]">
+          <div className="workspace-soft-card rounded-lg p-4 text-sm leading-6 text-[var(--workspace-muted)]">
             {isSpanish
               ? "“All markets” mezcla monedas reales, así que GoHostlyx solo muestra aquí datos mensuales no monetarios hasta que elijas un mercado."
               : "“All markets” mixes real currencies, so GoHostlyx only shows non-monetary monthly data here until you choose one market."}
@@ -162,7 +162,7 @@ export function MonthlySummaryPanel({
           }
         >
           <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="workspace-soft-card rounded-[22px] p-5">
+            <div className="workspace-soft-card rounded-lg p-5">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Mes top" : "Top month"}
               </p>
@@ -176,7 +176,7 @@ export function MonthlySummaryPanel({
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Ingresos" : "Revenue"}
                 </p>
@@ -184,7 +184,7 @@ export function MonthlySummaryPanel({
                   {formatCurrency(topMonth.revenue, false, currencyCode, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Beneficio" : "Profit"}
                 </p>
@@ -192,7 +192,7 @@ export function MonthlySummaryPanel({
                   {formatCurrency(topMonth.profit, false, currencyCode, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   Payout
                 </p>
@@ -200,7 +200,7 @@ export function MonthlySummaryPanel({
                   {formatCurrency(topMonth.payout, false, currencyCode, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Margen" : "Margin"}
                 </p>
@@ -228,7 +228,7 @@ export function MonthlySummaryPanel({
             return (
               <article
                 key={month.label}
-                className="workspace-soft-card rounded-[22px] p-4"
+                className="workspace-soft-card rounded-lg p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>

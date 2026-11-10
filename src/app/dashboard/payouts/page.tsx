@@ -131,7 +131,7 @@ export default async function PayoutsPage({
                 <ReconcileStatementLauncher properties={properties} />
                 <Link
                   href="/dashboard/reconcile"
-                  className="workspace-button-secondary inline-flex rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                  className="workspace-button-secondary inline-flex rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   {isSpanish ? "Ver conciliación bancaria" : "View bank reconcile"}
                 </Link>

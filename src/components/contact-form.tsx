@@ -191,7 +191,7 @@ export function ContactForm() {
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="workspace-button-primary inline-flex min-h-[54px] items-center justify-center gap-2 self-start whitespace-nowrap rounded-2xl px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 lg:self-center"
+              className="workspace-button-primary inline-flex items-center justify-center gap-2 self-start whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 lg:self-center"
             >
               {status === "submitting" ? (
                 <>

@@ -647,10 +647,10 @@ function MonthCalendar({
     >
       <div className="flex flex-col gap-3 border-b border-white/6 pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--workspace-text)]">
             {monthLabel}
           </h2>
-          <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
+          <p className="mt-0.5 text-xs text-[var(--workspace-muted)]">
             {formatNumber(checkIns.length, locale)} {isSpanish ? "check-ins" : "check-ins"},{" "}
             {formatNumber(checkOuts.length, locale)} {isSpanish ? "check-outs" : "check-outs"},{" "}
             {formatNumber(blockedDateSet.size, locale)} {isSpanish ? "días cerrados" : "closed days"}
@@ -698,10 +698,10 @@ function MonthCalendar({
                     return (
                       <article
                         key={dayKey}
-                        className={`rounded-[22px] px-3 py-2.5 ${
+                        className={`rounded-lg px-3 py-2.5 ${
                           dayClosure
                             ? "border-amber-300/14 bg-[linear-gradient(180deg,rgba(244,198,105,0.08)_0%,rgba(15,24,38,0.92)_100%)]"
-                            : "workspace-soft-card"
+                            : "calendar-day"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
@@ -735,7 +735,7 @@ function MonthCalendar({
                             onSelectCalendarEvent(segment.item.calendarEvent);
                           }
                         }}
-                        className={`flex min-w-0 items-center gap-2 overflow-hidden rounded-2xl border px-3 text-left shadow-[0_10px_24px_rgba(2,6,23,0.22)] transition ${
+                        className={`flex min-w-0 items-center gap-2 overflow-hidden rounded-lg border px-3 text-left shadow-[0_10px_24px_rgba(2,6,23,0.22)] transition ${
                           segment.item.booking || segment.item.calendarEvent
                             ? "hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[var(--workspace-accent)]/70"
                             : "cursor-default"
@@ -860,7 +860,7 @@ export function CalendarPanel({
 
   return (
     <div ref={panelRef} className="space-y-6">
-      <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+      <div className="workspace-card rounded-xl p-6 sm:p-7">
         {monthAnchors.map((anchorDate) => {
           const monthKey = format(anchorDate, "yyyy-MM");
           const monthCalendarEvents = calendarEvents.filter((event) => {
@@ -951,7 +951,7 @@ export function CalendarPanel({
             ) : null}
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Resumen de la estancia" : "Stay summary"}</p>
                 <h3 className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">
                   {selectedBooking.guestName}
@@ -1008,7 +1008,7 @@ export function CalendarPanel({
                 </div>
               </div>
 
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Detalles de la reserva" : "Booking details"}</p>
                 <div className="mt-4 space-y-3 text-sm">
                   <div className="flex items-center justify-between gap-3">
@@ -1063,7 +1063,7 @@ export function CalendarPanel({
 
             {linkedCalendarEvent ? (
               <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-                <div className="workspace-soft-card rounded-[24px] p-5">
+                <div className="workspace-soft-card rounded-xl p-5">
                   <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                     {isSpanish ? "Datos enriquecidos desde iCal" : "Enriched from iCal"}
                   </p>
@@ -1104,7 +1104,7 @@ export function CalendarPanel({
                 </div>
 
                 {extractReservationUrl(linkedCalendarEvent.description) ? (
-                  <div className="workspace-soft-card rounded-[24px] p-5">
+                  <div className="workspace-soft-card rounded-xl p-5">
                     <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                       {isSpanish ? "Reserva sincronizada" : "Synced reservation"}
                     </p>
@@ -1127,31 +1127,31 @@ export function CalendarPanel({
             ) : null}
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Ingresos brutos" : "Gross revenue"}</p>
                 <p className="mt-2 text-xl font-semibold text-[var(--workspace-text)]">
                   {formatCurrency(selectedBooking.totalRevenue, false, currencyCode)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Payout neto" : "Net payout"}</p>
                 <p className="mt-2 text-xl font-semibold text-[var(--workspace-text)]">
                   {formatCurrency(selectedBooking.payout, false, currencyCode)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Fee del anfitrión" : "Host fee"}</p>
                 <p className="mt-2 text-xl font-semibold text-[var(--workspace-text)]">
                   {formatCurrency(selectedBooking.hostFee, false, currencyCode)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Impuestos" : "Taxes"}</p>
                 <p className="mt-2 text-xl font-semibold text-[var(--workspace-text)]">
                   {formatCurrency(selectedBooking.taxAmount, false, currencyCode)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[22px] p-4">
+              <div className="workspace-soft-card rounded-lg p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Tarifa de limpieza" : "Cleaning fee"}</p>
                 <p className="mt-2 text-xl font-semibold text-[var(--workspace-text)]">
                   {formatCurrency(selectedBooking.cleaningFee, false, currencyCode)}
@@ -1162,14 +1162,14 @@ export function CalendarPanel({
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Link
                 href={`/dashboard/bookings?booking=${encodeURIComponent(getBookingSelectionKey(selectedBooking))}`}
-                className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 {isSpanish ? "Abrir página de reservas" : "Open bookings page"}
               </Link>
               <button
                 type="button"
                 onClick={() => setSelectedBooking(null)}
-                className="workspace-button-primary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-primary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 {isSpanish ? "Cerrar detalles" : "Close details"}
               </button>
@@ -1190,7 +1190,7 @@ export function CalendarPanel({
             </div>
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Ventana de estancia" : "Stay window"}</p>
                 <h3 className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">
                   {getCalendarEventStayTitle(selectedCalendarEvent)}
@@ -1233,7 +1233,7 @@ export function CalendarPanel({
                 </div>
               </div>
 
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Detalles de sincronización" : "Sync details"}</p>
                 <div className="mt-4 space-y-3 text-sm">
                   <div className="flex items-center justify-between gap-3">
@@ -1271,7 +1271,7 @@ export function CalendarPanel({
             </div>
 
             {extractReservationUrl(selectedCalendarEvent.description) ? (
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Enlace de reserva" : "Reservation link"}</p>
                 <a
                   href={extractReservationUrl(selectedCalendarEvent.description)}
@@ -1285,7 +1285,7 @@ export function CalendarPanel({
             ) : null}
 
             {getCalendarEventNotes(selectedCalendarEvent.description).length > 0 ? (
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">{isSpanish ? "Notas importadas" : "Imported notes"}</p>
                 <div className="mt-3 space-y-2 text-sm leading-6 text-[var(--workspace-text)]">
                   {getCalendarEventNotes(selectedCalendarEvent.description).map((note) => (
@@ -1299,7 +1299,7 @@ export function CalendarPanel({
               <button
                 type="button"
                 onClick={() => setSelectedCalendarEvent(null)}
-                className="workspace-button-primary rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-primary rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 {isSpanish ? "Cerrar detalles" : "Close details"}
               </button>
