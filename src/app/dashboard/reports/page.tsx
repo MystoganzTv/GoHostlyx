@@ -120,25 +120,20 @@ export default async function ReportsPage({
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
       subscriptionBadge={subscriptionBadge}
+      toolbar={
+        <FilterBar
+          channels={view.availableChannels}
+          countries={view.availableCountries}
+          rangeShortcutYears={view.availableYears}
+          selectedRangePreset={view.filters.rangePreset}
+          selectedStartDate={view.filters.startDate}
+          selectedEndDate={view.filters.endDate}
+          selectedChannel={view.filters.channel}
+          selectedCountryCode={view.filters.countryCode}
+        />
+      }
       actions={
-        <div className="flex flex-col gap-3 xl:items-end">
-          <div className="py-3 border-t border-[var(--workspace-border)]">
-            <FilterBar
-              channels={view.availableChannels}
-              countries={view.availableCountries}
-              rangeShortcutYears={view.availableYears}
-              selectedRangePreset={view.filters.rangePreset}
-              selectedStartDate={view.filters.startDate}
-              selectedEndDate={view.filters.endDate}
-              selectedChannel={view.filters.channel}
-              selectedCountryCode={view.filters.countryCode}
-              embedded
-            />
-          </div>
-          <ExportReportLink
-            className="h-[72px] rounded-[28px] border border-[var(--workspace-accent)]/32 bg-[linear-gradient(180deg,rgba(31,83,93,0.92)_0%,rgba(22,65,74,0.92)_100%)] px-7 text-[15px] font-semibold text-slate-100 shadow-[0_18px_34px_rgba(6,20,35,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] transition hover:border-[var(--workspace-accent)]/46 hover:bg-[linear-gradient(180deg,rgba(37,94,104,0.94)_0%,rgba(26,72,82,0.94)_100%)]"
-          />
-        </div>
+        <ExportReportLink className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition" />
       }
     >
       <div className="space-y-6">

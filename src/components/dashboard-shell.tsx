@@ -417,7 +417,17 @@ export function DashboardShell({
             </div>
           ) : null}
           <section className="space-y-5">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <FilterBar
+              channels={view.availableChannels}
+              countries={view.availableCountries}
+              rangeShortcutYears={view.availableYears}
+              selectedRangePreset={view.filters.rangePreset}
+              selectedStartDate={view.filters.startDate}
+              selectedEndDate={view.filters.endDate}
+              selectedChannel={view.filters.channel}
+              selectedCountryCode={view.filters.countryCode}
+            />
+            <div>
               <div className="space-y-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Resumen de rendimiento" : "Performance Overview"}
@@ -432,18 +442,6 @@ export function DashboardShell({
                 </div>
               </div>
 
-              <div className="xl:flex xl:flex-1 xl:justify-end">
-                <FilterBar
-                  channels={view.availableChannels}
-                  countries={view.availableCountries}
-                  rangeShortcutYears={view.availableYears}
-                  selectedRangePreset={view.filters.rangePreset}
-                  selectedStartDate={view.filters.startDate}
-                  selectedEndDate={view.filters.endDate}
-                  selectedChannel={view.filters.channel}
-                  selectedCountryCode={view.filters.countryCode}
-                />
-              </div>
             </div>
 
             {view.mixedCurrencyMode ? (

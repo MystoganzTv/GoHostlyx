@@ -276,22 +276,22 @@ export default async function CalendarPage({
       userEmail={ownerEmail}
       currencyCode={currencyCode}
       latestImport={latestImport}
+      toolbar={
+        <FilterBar
+          mode="calendar"
+          years={availableCalendarYears}
+          channels={Array.from(new Set(bookings.map((booking) => booking.channel))).sort((a, b) =>
+            a.localeCompare(b),
+          )}
+          countries={Array.from(new Set(properties.map((property) => property.countryCode)))}
+          selectedYear={selectedCalendarYear}
+          selectedMonth={selectedCalendarMonth}
+          selectedChannel={filters.channel}
+          selectedCountryCode={filters.countryCode}
+        />
+      }
       actions={
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <FilterBar
-            mode="calendar"
-            years={availableCalendarYears}
-            channels={Array.from(new Set(bookings.map((booking) => booking.channel))).sort((a, b) =>
-              a.localeCompare(b),
-            )}
-            countries={Array.from(new Set(properties.map((property) => property.countryCode)))}
-            selectedYear={selectedCalendarYear}
-            selectedMonth={selectedCalendarMonth}
-            selectedChannel={filters.channel}
-            selectedCountryCode={filters.countryCode}
-          />
-          <CalendarIcalLauncher properties={properties} feeds={icalFeeds} />
-        </div>
+        <CalendarIcalLauncher properties={properties} feeds={icalFeeds} />
       }
     >
       <div className="space-y-6">

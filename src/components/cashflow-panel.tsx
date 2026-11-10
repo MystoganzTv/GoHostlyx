@@ -28,7 +28,7 @@ export function CashflowPanel({
 
   return (
     <div className="space-y-6">
-      <div className={`grid gap-4 ${view.mixedCurrencyMode ? "md:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
+      <div className={`metric-strip grid ${view.mixedCurrencyMode ? "md:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
         <MetricCard
           label={isSpanish ? "Payout de entrada" : "Payout In"}
           value={view.metrics.netPayout}

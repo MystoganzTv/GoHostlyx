@@ -122,7 +122,7 @@ export function MonthlySummaryPanel({
         </div>
       </SectionCard>
 
-      <div className={`grid gap-4 ${view.mixedCurrencyMode ? "md:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
+      <div className={`metric-strip grid ${view.mixedCurrencyMode ? "md:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
         {cards.map((card) => (
           <MetricCard
             key={card.label}

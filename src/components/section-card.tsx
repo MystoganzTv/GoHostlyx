@@ -15,7 +15,7 @@ export function SectionCard({
 }) {
   return (
     <section
-      className={`workspace-card pt-8 ${className}`}
+      className={`workspace-card p-6 sm:p-7 ${className}`}
     >
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>

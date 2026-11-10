@@ -81,7 +81,7 @@ export function LatestImportDangerCard({
               setIsConfirmOpen(true);
             }}
             disabled={isPending}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Trash2 className="h-4 w-4" />
             {isPending ? "Deleting..." : "Delete latest import"}
@@ -122,7 +122,7 @@ export function LatestImportDangerCard({
         onClose={() => setIsConfirmOpen(false)}
       >
         <div className="space-y-5">
-          <div className="rounded-[22px] border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-700">
+          <div className="rounded-[22px] border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
             <div className="flex items-start gap-3">
               <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
               <p>
@@ -167,7 +167,7 @@ export function LatestImportDangerCard({
               type="button"
               disabled={isPending}
               onClick={handleDelete}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Trash2 className="h-4 w-4" />
               {isPending ? "Deleting import..." : "Delete latest import"}

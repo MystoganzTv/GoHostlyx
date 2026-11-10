@@ -1,10 +1,11 @@
 import { requireDashboardAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
-import { BookOpenText, Home } from "lucide-react";
+import { BookOpenText, CircleAlert, Home } from "lucide-react";
 import { BookingsManager } from "@/components/bookings-manager";
 import { FilterBar } from "@/components/filter-bar";
 import { OperationalImportLauncher } from "@/components/operational-import-launcher";
 import { SectionCard } from "@/components/section-card";
+import { StatStrip } from "@/components/stat-strip";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
 import {
@@ -110,75 +111,46 @@ export default async function BookingsPage({
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
+      toolbar={
+      <FilterBar
+        channels={view.availableChannels}
+        countries={view.availableCountries}
+        rangeShortcutYears={view.availableYears}
+        selectedRangePreset={view.filters.rangePreset}
+        selectedStartDate={view.filters.startDate}
+        selectedEndDate={view.filters.endDate}
+        selectedChannel={view.filters.channel}
+        selectedCountryCode={view.filters.countryCode}
+      />
+      }
+      actions={
+        <OperationalImportLauncher
+          properties={properties}
+          context="bookings"
+          buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+        />
+      }
     >
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-          <SectionCard
-            title={isSpanish ? "Importar desde archivo" : "Import from a file"}
-            subtitle={
-              isSpanish
-                ? "Sube la exportación de Airbnb o Booking.com. Verás una vista previa antes de guardar nada."
-                : "Upload your Airbnb or Booking.com export. You will see a preview before anything is saved."
-            }
-            className="max-w-xl"
-            action={
-              <OperationalImportLauncher
-                properties={properties}
-                context="bookings"
-                buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
-              />
-            }
-          >
-            <p className="text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Ideal para exports de Airbnb o Booking.com con huéspedes, fechas, nights y payout por estancia."
-                : "Best for Airbnb or Booking.com exports with guests, dates, nights, and payout per stay."}
-            </p>
-          </SectionCard>
-          <FilterBar
-            channels={view.availableChannels}
-            countries={view.availableCountries}
-            rangeShortcutYears={view.availableYears}
-            selectedRangePreset={view.filters.rangePreset}
-            selectedStartDate={view.filters.startDate}
-            selectedEndDate={view.filters.endDate}
-            selectedChannel={view.filters.channel}
-            selectedCountryCode={view.filters.countryCode}
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <SectionCard title={isSpanish ? "Reservas en vista" : "Bookings in view"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
-                <BookOpenText className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(filteredBookings.length)}
-              </p>
-            </div>
-          </SectionCard>
-          <SectionCard title={isSpanish ? "Necesitan revisión" : "Need review"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
-                <BookOpenText className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(reviewCount)}
-              </p>
-            </div>
-          </SectionCard>
-          <SectionCard title={isSpanish ? "Propiedades en vista" : "Properties in view"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
-                <Home className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(propertyCount)}
-              </p>
-            </div>
-          </SectionCard>
-        </div>
+        <StatStrip
+          items={[
+            {
+              label: isSpanish ? "Reservas en vista" : "Bookings in view",
+              value: formatNumber(filteredBookings.length),
+              icon: <BookOpenText className="h-4 w-4" />,
+            },
+            {
+              label: isSpanish ? "Necesitan revisión" : "Need review",
+              value: formatNumber(reviewCount),
+              icon: <CircleAlert className="h-4 w-4" />,
+            },
+            {
+              label: isSpanish ? "Propiedades en vista" : "Properties in view",
+              value: formatNumber(propertyCount),
+              icon: <Home className="h-4 w-4" />,
+            },
+          ]}
+        />
 
         <SectionCard
           title={isSpanish ? "Todas las reservas" : "All Bookings"}

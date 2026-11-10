@@ -401,30 +401,34 @@ textarea {
 }
 
 /* ---------------------------------------------------------------------------
-   Flat workspace style.
-   Structure comes from spacing and hairline dividers instead of boxes: no
-   gradients, shadows or cards inside cards. These rules are unlayered, so they
-   take precedence over the Tailwind utilities still present on the elements.
+   Workspace style "A · Balanced": one card per section, never a card inside a
+   card. Top-level cards get a single quiet surface (no gradient or shadow);
+   anything that was a card nested inside another card renders flat, separated
+   by a hairline. These rules are unlayered, so they win over the Tailwind
+   utilities still present on the elements.
    --------------------------------------------------------------------------- */
-.workspace-card {
+.workspace-card,
+.workspace-soft-card {
+  background: var(--workspace-panel-soft);
+  border: 1px solid var(--workspace-border);
+  border-radius: 16px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.workspace-card .workspace-card,
+.workspace-card .workspace-soft-card,
+.workspace-soft-card .workspace-soft-card,
+.workspace-soft-card .workspace-card,
+.modal-surface .workspace-card,
+.modal-surface .workspace-soft-card {
   background: none;
   border: 0;
   border-top: 1px solid var(--workspace-border);
   border-radius: 0;
-  box-shadow: none;
-  backdrop-filter: none;
   padding-left: 0;
   padding-right: 0;
   padding-bottom: 0;
-}
-
-.workspace-soft-card {
-  background: none;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .workspace-icon-chip {
@@ -459,4 +463,29 @@ textarea {
 .modal-surface > .workspace-card {
   border-top: 0;
   padding-top: 0;
+}
+
+/* One card holding several stats, separated by hairlines instead of separate boxes. */
+.stat-strip {
+  gap: 1px;
+  background: var(--workspace-border);
+}
+
+.stat-strip > .stat-strip-item {
+  background: var(--workspace-panel-soft);
+}
+
+/* A grid of MetricCards reads as one card split by hairlines. */
+.metric-strip {
+  gap: 1px;
+  overflow: hidden;
+  background: var(--workspace-border);
+  border: 1px solid var(--workspace-border);
+  border-radius: 16px;
+}
+
+.metric-strip > .workspace-card {
+  border: 0;
+  border-radius: 0;
+  background: var(--workspace-panel-soft);
 }

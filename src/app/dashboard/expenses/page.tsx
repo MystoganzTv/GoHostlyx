@@ -1,10 +1,11 @@
 import { requireDashboardAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
-import { ReceiptText, Wallet } from "lucide-react";
+import { Home, ReceiptText, Wallet } from "lucide-react";
 import { ExpensesManager } from "@/components/expenses-manager";
 import { FilterBar } from "@/components/filter-bar";
 import { OperationalImportLauncher } from "@/components/operational-import-launcher";
 import { SectionCard } from "@/components/section-card";
+import { StatStrip } from "@/components/stat-strip";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
 import {
@@ -85,6 +86,9 @@ export default async function ExpensesPage({
   });
 
   const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const propertyCount = new Set(
+    filteredExpenses.map((expense) => expense.propertyName).filter(Boolean),
+  ).size;
 
   return (
     <WorkspaceShell
@@ -101,73 +105,47 @@ export default async function ExpensesPage({
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
+      toolbar={
+      <FilterBar
+        channels={view.availableChannels}
+        countries={view.availableCountries}
+        rangeShortcutYears={view.availableYears}
+        selectedRangePreset={view.filters.rangePreset}
+        selectedStartDate={view.filters.startDate}
+        selectedEndDate={view.filters.endDate}
+        selectedChannel={view.filters.channel}
+        selectedCountryCode={view.filters.countryCode}
+        showChannelSelect={false}
+      />
+      }
+      actions={
+        <OperationalImportLauncher
+          properties={properties}
+          context="expenses"
+          buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+        />
+      }
     >
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-          <SectionCard
-            title={isSpanish ? "Importar gastos" : "Import expenses"}
-            subtitle={
-              isSpanish
-                ? "Sube una hoja de gastos o un Excel mixto. Verás una vista previa antes de guardar nada."
-                : "Upload an expense sheet or a mixed Excel file. You will see a preview before anything is saved."
-            }
-            className="max-w-xl"
-            action={
-              <OperationalImportLauncher
-                properties={properties}
-                context="expenses"
-                buttonClassName="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
-              />
-            }
-          >
-            <p className="text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Ideal para hojas de coste, extractos operativos y archivos mixtos donde los gastos son la prioridad."
-                : "Best for cost sheets, operating extracts, and mixed workbooks where expenses are the priority."}
-            </p>
-          </SectionCard>
-          <FilterBar
-            channels={view.availableChannels}
-            countries={view.availableCountries}
-            rangeShortcutYears={view.availableYears}
-            selectedRangePreset={view.filters.rangePreset}
-            selectedStartDate={view.filters.startDate}
-            selectedEndDate={view.filters.endDate}
-            selectedChannel={view.filters.channel}
-            selectedCountryCode={view.filters.countryCode}
-            showChannelSelect={false}
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <SectionCard title={isSpanish ? "Gastos en vista" : "Expenses in view"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
-                <Wallet className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatCurrency(totalExpenses, false, view.displayCurrencyCode)}
-              </p>
-            </div>
-          </SectionCard>
-          <SectionCard title={isSpanish ? "Filas de gasto" : "Expense rows"}>
-            <div className="flex items-center gap-3">
-              <div className="workspace-icon-chip rounded-2xl p-3">
-                <ReceiptText className="h-5 w-5" />
-              </div>
-              <p className="text-2xl font-semibold text-[var(--workspace-text)]">
-                {formatNumber(filteredExpenses.length)}
-              </p>
-            </div>
-          </SectionCard>
-          <SectionCard title={isSpanish ? "Edición" : "Editing"}>
-            <p className="text-sm leading-6 text-[var(--workspace-muted)]">
-              {isSpanish
-                ? "Reclasifica categorías, mueve gastos a la propiedad correcta y limpia notas directamente dentro de la app."
-                : "Reclassify categories, move expenses to the right property, and clean notes directly inside the app."}
-            </p>
-          </SectionCard>
-        </div>
+        <StatStrip
+          items={[
+            {
+              label: isSpanish ? "Gastos en vista" : "Expenses in view",
+              value: formatCurrency(totalExpenses, false, view.displayCurrencyCode),
+              icon: <Wallet className="h-4 w-4" />,
+            },
+            {
+              label: isSpanish ? "Filas de gasto" : "Expense rows",
+              value: formatNumber(filteredExpenses.length),
+              icon: <ReceiptText className="h-4 w-4" />,
+            },
+            {
+              label: isSpanish ? "Propiedades con gasto" : "Properties with spend",
+              value: formatNumber(propertyCount),
+              icon: <Home className="h-4 w-4" />,
+            },
+          ]}
+        />
 
         <SectionCard
           title={isSpanish ? "Todos los gastos" : "All Expenses"}

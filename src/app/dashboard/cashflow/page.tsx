@@ -86,7 +86,7 @@ export default async function CashflowPage({
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
-      actions={
+      toolbar={
         <FilterBar
           channels={view.availableChannels}
           countries={view.availableCountries}

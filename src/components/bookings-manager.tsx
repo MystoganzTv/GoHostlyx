@@ -405,7 +405,7 @@ export function BookingsManager({
                   <td className="py-4 pr-4">{formatCurrency(booking.totalRevenue, false, currencyCode)}</td>
                   <td className="py-4 pr-4">{formatCurrency(booking.payout, false, currencyCode)}</td>
                   <td className="py-4">
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-nowrap gap-2 whitespace-nowrap">
                       {booking.reviewStatus === "needs_review" ? (
                         <button
                           type="button"
@@ -434,7 +434,7 @@ export function BookingsManager({
                         type="button"
                         onClick={() => setBookingToDelete(booking)}
                         disabled={isPending}
-                        className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="inline-flex items-center gap-2 rounded-xl border border-rose-400/25 bg-transparent px-3 py-2 text-xs font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         {isSpanish ? "Eliminar" : "Delete"}
@@ -611,7 +611,7 @@ export function BookingsManager({
       >
         {bookingToDelete ? (
           <div className="space-y-5">
-            <div className="rounded-[22px] border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-700">
+            <div className="rounded-[22px] border border-rose-400/25 bg-rose-500/10 p-4 text-sm leading-6 text-rose-100">
               {isSpanish ? (
                 <>
                   Esto eliminará la reserva de <span className="font-semibold text-rose-900">{bookingToDelete.guestName}</span> de tu espacio de trabajo.
@@ -653,7 +653,7 @@ export function BookingsManager({
                 type="button"
                 onClick={confirmDeleteBooking}
                 disabled={isPending}
-                className="inline-flex items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-2xl border border-rose-400/25 bg-transparent px-4 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-400/45 hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending
                   ? isSpanish

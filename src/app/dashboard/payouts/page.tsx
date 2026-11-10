@@ -90,20 +90,20 @@ export default async function PayoutsPage({
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
+      toolbar={
+        <FilterBar
+          channels={view.availableChannels}
+          countries={view.availableCountries}
+          rangeShortcutYears={view.availableYears}
+          selectedRangePreset={view.filters.rangePreset}
+          selectedStartDate={view.filters.startDate}
+          selectedEndDate={view.filters.endDate}
+          selectedChannel={view.filters.channel}
+          selectedCountryCode={view.filters.countryCode}
+        />
+      }
       actions={
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <FilterBar
-            channels={view.availableChannels}
-            countries={view.availableCountries}
-            rangeShortcutYears={view.availableYears}
-            selectedRangePreset={view.filters.rangePreset}
-            selectedStartDate={view.filters.startDate}
-            selectedEndDate={view.filters.endDate}
-            selectedChannel={view.filters.channel}
-            selectedCountryCode={view.filters.countryCode}
-          />
-          <ReconcileStatementLauncher properties={properties} />
-        </div>
+        <ReconcileStatementLauncher properties={properties} />
       }
     >
       <div className="space-y-6">

@@ -125,6 +125,7 @@ export function WorkspaceShell({
   stickyContent,
   contentScrollable = true,
   actions,
+  toolbar,
   children,
 }: {
   activePage: ActivePage;
@@ -141,6 +142,8 @@ export function WorkspaceShell({
   stickyContent?: ReactNode;
   contentScrollable?: boolean;
   actions?: ReactNode;
+  /** Full-width row under the title, used for filters. */
+  toolbar?: ReactNode;
   children: ReactNode;
 }) {
   const { locale } = useLocale();
@@ -440,6 +443,8 @@ export function WorkspaceShell({
                   <div className="flex flex-wrap items-center gap-3 xl:justify-end">{actions}</div>
                 ) : null}
               </div>
+
+              {toolbar ? <div className="mt-6">{toolbar}</div> : null}
 
               {stickyContent ? (
                 <div className="mt-6 space-y-6">
