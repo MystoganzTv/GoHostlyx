@@ -23,6 +23,7 @@ import { formatCurrency, formatDateLabel, formatNumber } from "@/lib/format";
 import { getBookingStatusState } from "@/lib/booking-status";
 import { getDateFnsLocale } from "@/lib/i18n";
 import { Modal } from "@/components/modal";
+import { buildNightPriceComparisons, type NightPriceComparison } from "@/lib/nightly-price-compare";
 import type {
   BookingRecord,
   CalendarEventRecord,
@@ -601,11 +602,89 @@ function buildTrimmedWeekBookingSegments(
   };
 }
 
+// Room under the booking bars for a night's price and last year's.
+const PRICE_BLOCK_HEIGHT = 44;
+
+function hasPriceInfo(info: NightPriceComparison | undefined) {
+  return Boolean(
+    info &&
+      (info.price !== null ||
+        info.lastYear.price !== null ||
+        info.lastYear.paid !== null ||
+        info.lastYear.closed),
+  );
+}
+
+function NightPriceLines({
+  info,
+  currencyCode,
+}: {
+  info: NightPriceComparison;
+  currencyCode: CurrencyCode;
+}) {
+  const { locale } = useLocale();
+  const isSpanish = locale === "es";
+  const money = (value: number) => formatCurrency(Math.round(value), false, currencyCode, locale);
+  const { lastYear } = info;
+  const lastYearLabel = isSpanish ? "Año pasado" : "Last year";
+  let lastYearDetail: string | null = null;
+
+  if (lastYear.closed) {
+    lastYearDetail = isSpanish ? "cerrado" : "closed";
+  } else if (lastYear.paid !== null) {
+    lastYearDetail = `${isSpanish ? "cobrado" : "paid"} ${money(lastYear.paid)}`;
+  } else if (lastYear.price !== null) {
+    lastYearDetail = isSpanish ? "sin reservar" : "not booked";
+  }
+
+  const title = [
+    info.price !== null
+      ? `${isSpanish ? "Precio puesto" : "Asking price"}: ${money(info.price)}`
+      : null,
+    lastYear.price !== null
+      ? `${isSpanish ? "Precio puesto hace un año" : "Asking price a year ago"}: ${money(lastYear.price)}`
+      : null,
+    lastYear.paid !== null
+      ? `${isSpanish ? "Cobrado por noche hace un año" : "Paid per night a year ago"}: ${money(lastYear.paid)}${
+          lastYear.channel ? ` (${lastYear.channel})` : ""
+        }`
+      : null,
+    lastYear.closed ? (isSpanish ? "Hace un año estaba cerrado" : "Closed a year ago") : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return (
+    <div className="mt-auto min-w-0 text-right leading-tight" title={title}>
+      {info.price !== null ? (
+        <p className="text-xs font-semibold tabular-nums text-[var(--workspace-text)]">{money(info.price)}</p>
+      ) : null}
+      {lastYear.price !== null || lastYearDetail ? (
+        <p className="truncate text-[10px] tabular-nums text-[var(--workspace-muted)]">
+          {lastYearLabel}
+          {lastYear.price !== null ? ` ${money(lastYear.price)}` : ""}
+        </p>
+      ) : null}
+      {lastYearDetail ? (
+        <p
+          className={`truncate text-[10px] tabular-nums ${
+            lastYear.paid !== null ? "font-semibold text-[var(--workspace-text)]" : "text-[var(--workspace-muted)]"
+          }`}
+        >
+          {lastYearDetail}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function MonthCalendar({
   anchorDate,
   calendarEvents,
   closures,
   timelineItems,
+  nightPrices,
+  currencyCode,
   compact = false,
   abbreviatedTitle = false,
   onSelectBooking,
@@ -615,6 +694,8 @@ function MonthCalendar({
   calendarEvents: CalendarEventRecord[];
   closures: CalendarClosureRecord[];
   timelineItems: CalendarTimelineItem[];
+  nightPrices: Map<string, NightPriceComparison>;
+  currencyCode: CurrencyCode;
   compact?: boolean;
   abbreviatedTitle?: boolean;
   onSelectBooking: (booking: BookingRecord) => void;
@@ -638,6 +719,7 @@ function MonthCalendar({
   const checkIns = monthTimelineItems.filter((item) => item.startDate.startsWith(monthKey));
   const checkOuts = monthTimelineItems.filter((item) => item.endDate.startsWith(monthKey));
   const blockedDateSet = buildBlockedDateSet(anchorDate, closures, calendarEvents);
+  const showPrices = !compact && days.some((day) => hasPriceInfo(nightPrices.get(format(day, "yyyy-MM-dd"))));
 
   return (
     <section
@@ -679,7 +761,9 @@ function MonthCalendar({
         <div className="space-y-2.5">
           {weeks.map((weekDays) => {
             const { segments, maxTracks } = buildTrimmedWeekBookingSegments(weekDays, monthTimelineItems, anchorDate);
-            const rowHeight = compact ? Math.max(88, 38 + maxTracks * 26) : Math.max(124, 48 + maxTracks * 32);
+            const rowHeight =
+              (compact ? Math.max(88, 38 + maxTracks * 26) : Math.max(124, 48 + maxTracks * 32)) +
+              (showPrices ? PRICE_BLOCK_HEIGHT : 0);
             const barHeight = compact ? 22 : 28;
             const overlayTop = compact ? 34 : 40;
 
@@ -695,10 +779,12 @@ function MonthCalendar({
                       return <div key={dayKey} aria-hidden="true" className="h-full" />;
                     }
 
+                    const priceInfo = showPrices ? nightPrices.get(dayKey) : undefined;
+
                     return (
                       <article
                         key={dayKey}
-                        className={`rounded-lg px-3 py-2.5 ${
+                        className={`flex flex-col rounded-lg px-3 py-2.5 ${
                           dayClosure
                             ? "border-amber-300/14 bg-[linear-gradient(180deg,rgba(244,198,105,0.08)_0%,rgba(15,24,38,0.92)_100%)]"
                             : "calendar-day"
@@ -714,6 +800,9 @@ function MonthCalendar({
                             <span className="h-2.5 w-2.5 rounded-full bg-amber-200/80" />
                           ) : null}
                         </div>
+                        {priceInfo ? (
+                          <NightPriceLines info={priceInfo} currencyCode={currencyCode} />
+                        ) : null}
                       </article>
                     );
                   })}
@@ -780,12 +869,15 @@ export function CalendarPanel({
   closures,
   monthAnchors,
   currencyCode,
+  nightlyPrices = {},
 }: {
   bookings: BookingRecord[];
   calendarEvents: CalendarEventRecord[];
   closures: CalendarClosureRecord[];
   monthAnchors: Date[];
   currencyCode: CurrencyCode;
+  /** Asking price per night ("YYYY-MM-DD" → price) for the listing shown. */
+  nightlyPrices?: Record<string, number>;
 }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
@@ -807,6 +899,23 @@ export function CalendarPanel({
     return monthAnchors[0] ? format(monthAnchors[0], "yyyy-MM") : "";
   }, [monthAnchors]);
   const timelineBuildResult = useMemo(() => buildTimelineItems(bookings, calendarEvents), [bookings, calendarEvents]);
+  const nightPrices = useMemo(() => {
+    const prices = new Map(Object.entries(nightlyPrices));
+    const hasPriceData = prices.size > 0;
+
+    // Prices are opt-in: the lines only appear once a price file is uploaded.
+    if (!hasPriceData) {
+      return new Map<string, NightPriceComparison>();
+    }
+
+    const dateKeys = monthAnchors.flatMap((anchorDate) =>
+      eachDayOfInterval({ start: startOfMonth(anchorDate), end: endOfMonth(anchorDate) }).map((day) =>
+        format(day, "yyyy-MM-dd"),
+      ),
+    );
+
+    return buildNightPriceComparisons({ dateKeys, prices, bookings, closures });
+  }, [nightlyPrices, monthAnchors, bookings, closures]);
   const linkedCalendarEvent =
     selectedBooking ? timelineBuildResult.linkedCalendarEventByBookingKey.get(getBookingSelectionKey(selectedBooking)) ?? null : null;
 
@@ -892,6 +1001,8 @@ export function CalendarPanel({
                   const stayEnd = parseISO(item.endDate);
                   return stayStart <= endOfMonth(anchorDate) && stayEnd > startOfMonth(anchorDate);
                 })}
+                nightPrices={nightPrices}
+                currencyCode={currencyCode}
                 onSelectBooking={setSelectedBooking}
                 onSelectCalendarEvent={setSelectedCalendarEvent}
               />

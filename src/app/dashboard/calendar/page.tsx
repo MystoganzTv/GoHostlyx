@@ -11,6 +11,7 @@ import { CalendarAutoSync } from "@/components/calendar-auto-sync";
 import { CalendarFeedsPanel } from "@/components/calendar-feeds-panel";
 import { CalendarPanel } from "@/components/calendar-panel";
 import { CalendarIcalLauncher } from "@/components/calendar-ical-launcher";
+import { NightlyPricesLauncher } from "@/components/nightly-prices-launcher";
 import { FilterBar } from "@/components/filter-bar";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getAuthSession } from "@/lib/auth";
@@ -22,11 +23,13 @@ import {
   getCalendarClosures,
   getIcalFeeds,
   getLatestImport,
+  getNightlyPrices,
   getPropertyDefinitions,
   getUserSettings,
 } from "@/lib/db";
 import { getDateFnsLocale } from "@/lib/i18n";
 import { getCurrencyForCountry } from "@/lib/markets";
+import { pickCalendarPrices } from "@/lib/nightly-price-compare";
 import { getRequestLocale } from "@/lib/server-locale";
 
 export const runtime = "nodejs";
@@ -171,7 +174,7 @@ export default async function CalendarPage({
     redirect("/dashboard/properties?setup=1");
   }
 
-  const [bookings, calendarEvents, closures, latestImport, userSettings, resolvedSearchParams, icalFeeds] = await Promise.all([
+  const [bookings, calendarEvents, closures, latestImport, userSettings, resolvedSearchParams, icalFeeds, nightlyPrices] = await Promise.all([
     getBookings(ownerEmail),
     getCalendarEvents(ownerEmail),
     getCalendarClosures(ownerEmail),
@@ -179,6 +182,7 @@ export default async function CalendarPage({
     getUserSettings(ownerEmail, userName),
     searchParams,
     getIcalFeeds(ownerEmail),
+    getNightlyPrices(ownerEmail),
   ]);
 
   const filters = getDashboardFilters(
@@ -233,6 +237,13 @@ export default async function CalendarPage({
     selectedCalendarYear,
     selectedCalendarMonth,
   );
+  const calendarPrices = pickCalendarPrices({
+    prices: nightlyPrices,
+    propertyNames: properties
+      .filter((property) => filters.countryCode === "all" || property.countryCode === filters.countryCode)
+      .map((property) => property.name),
+    channel: filters.channel,
+  });
   const calendarViewKey = `${selectedCalendarYear}-${selectedCalendarMonth}-${filters.countryCode}-${filters.channel}`;
   const hasLegacySyncedEventDetails = calendarEvents.some(
     (event) => event.icalFeedId && !event.description.trim(),
@@ -291,7 +302,15 @@ export default async function CalendarPage({
         />
       }
       actions={
-        <CalendarIcalLauncher properties={properties} feeds={icalFeeds} />
+        <div className="flex flex-wrap items-center gap-2">
+          <NightlyPricesLauncher
+            properties={properties}
+            savedNights={nightlyPrices.length}
+            shownPropertyName={calendarPrices.propertyName}
+            shownChannel={calendarPrices.channel}
+          />
+          <CalendarIcalLauncher properties={properties} feeds={icalFeeds} />
+        </div>
       }
     >
       <div className="space-y-6">
@@ -343,6 +362,7 @@ export default async function CalendarPage({
           closures={countryClosures}
           monthAnchors={monthAnchors}
           currencyCode={currencyCode}
+          nightlyPrices={calendarPrices.byDate}
         />
       </div>
     </WorkspaceShell>
