@@ -13,12 +13,12 @@ function inputClassName() {
   return "w-full bg-transparent text-base text-slate-700 outline-none placeholder:text-slate-400";
 }
 
-export function EmailAuthForm() {
+export function EmailAuthForm({ initialMode = "sign-in" }: { initialMode?: Mode }) {
   const { locale } = useLocale();
   const isSpanish = locale === "es";
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [mode, setMode] = useState<Mode>("sign-in");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [stage, setStage] = useState<Stage>("form");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");

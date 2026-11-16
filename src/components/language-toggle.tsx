@@ -38,7 +38,7 @@ export function LanguageToggle({
 
   return (
     <div
-      className={`inline-flex items-center gap-1 rounded-full border border-white/10 bg-[rgba(10,18,31,0.82)] p-1 shadow-[0_12px_28px_rgba(2,6,23,0.18)] ${compact ? "" : ""} ${className}`}
+      className={`language-toggle inline-flex items-center gap-1 rounded-full border border-white/10 bg-[rgba(10,18,31,0.82)] p-1 shadow-[0_12px_28px_rgba(2,6,23,0.18)] ${compact ? "" : ""} ${className}`}
     >
       {!compact ? (
         <span className="inline-flex items-center gap-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -46,7 +46,7 @@ export function LanguageToggle({
           {isSpanish ? "Idioma" : "Language"}
         </span>
       ) : (
-        <span className="inline-flex items-center px-2 text-slate-400">
+        <span className="language-toggle-icon inline-flex items-center px-2 text-slate-400">
           <Languages className="h-3.5 w-3.5" />
         </span>
       )}

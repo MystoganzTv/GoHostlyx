@@ -30,8 +30,13 @@ function GoogleMark() {
   );
 }
 
-export default async function LoginPage() {
-  const locale = await getRequestLocale();
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string | string[] }>;
+}) {
+  const [locale, { mode }] = await Promise.all([getRequestLocale(), searchParams]);
+  const isSignUp = mode === "sign-up";
   const isSpanish = locale === "es";
   const session = await getAuthSession();
   const authReady = hasAuthSecretConfig;
@@ -60,7 +65,11 @@ export default async function LoginPage() {
           <h1 className="text-4xl font-semibold tracking-[-0.06em] text-slate-950">
             {isSpanish ? "Bienvenido a GoHostlyx" : "Welcome to GoHostlyx"}
           </h1>
-          <p className="mt-3 text-lg text-slate-500">{isSpanish ? "Inicia sesión para continuar" : "Sign in to continue"}</p>
+          <p className="mt-3 text-lg text-slate-600">
+            {isSignUp
+              ? (isSpanish ? "Crea tu cuenta para empezar la prueba" : "Create an account to start your trial")
+              : (isSpanish ? "Inicia sesión para continuar" : "Sign in to continue")}
+          </p>
         </div>
 
         <div className="mt-10 space-y-6">
@@ -79,7 +88,7 @@ export default async function LoginPage() {
             <span className="h-px flex-1 bg-slate-200" />
           </div>
 
-          {authReady ? <EmailAuthForm /> : null}
+          {authReady ? <EmailAuthForm key={String(isSignUp)} initialMode={isSignUp ? "sign-up" : "sign-in"} /> : null}
 
           {!authReady ? (
             <div className="rounded-[18px] border border-amber-400/25 bg-amber-400/12 px-4 py-3 text-sm leading-6 text-amber-900">
