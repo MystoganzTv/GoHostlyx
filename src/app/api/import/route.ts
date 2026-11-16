@@ -7,6 +7,7 @@ import {
   getBookings,
   getCalendarEvents,
   getPropertyDefinitions,
+  syncPropertyDefinitionsFromRecords,
 } from "@/lib/db";
 import { buildImportPreview, mapPreviewToGoHostlyxRecords } from "@/lib/import/importPipeline";
 import type { ImportManualMapping, ImportRowResolution } from "@/lib/import/types";
@@ -181,6 +182,8 @@ export async function POST(request: Request) {
         },
       });
 
+      await syncPropertyDefinitionsFromRecords(ownerEmail);
+
       return NextResponse.json({
         message: `Imported 1 payout statement into ${targetPropertyName}.`,
         committed: {
@@ -218,6 +221,8 @@ export async function POST(request: Request) {
       closures: [],
       allowDuplicateBookings: false,
     });
+
+    await syncPropertyDefinitionsFromRecords(ownerEmail);
 
     return NextResponse.json({
       message: `Imported ${result.bookingsCount} bookings and ${result.expensesCount} expenses into ${targetPropertyName}.`,

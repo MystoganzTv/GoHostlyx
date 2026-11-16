@@ -369,7 +369,7 @@ function buildPropertyDefinition(
   };
 }
 
-async function syncPropertyDefinitionsFromRecords(ownerEmail: string) {
+export async function syncPropertyDefinitionsFromRecords(ownerEmail: string) {
   await ensureDatabase();
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
   const fallbackCountryCode: CountryCode = "US";
@@ -2853,7 +2853,9 @@ export async function disconnectIcalFeed({
 export async function getPropertyDefinitions(
   ownerEmail: string,
 ): Promise<PropertyDefinition[]> {
-  await syncPropertyDefinitionsFromRecords(ownerEmail);
+  // Property auto-creation from imported records runs on the import path
+  // (see syncPropertyDefinitionsFromRecords usage in /api/import), not on
+  // every read — reads stay cheap. Manual entries pick existing properties.
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
 
   if (isPostgresConfigured()) {
