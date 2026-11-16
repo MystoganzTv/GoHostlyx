@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import { redirect } from "next/navigation";
 import { buildDashboardView, getDashboardFilters } from "@/lib/dashboard";
 import { getAuthSession } from "@/lib/auth";
@@ -32,6 +33,8 @@ export default async function MonthlyPage({
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);
@@ -83,7 +86,7 @@ export default async function MonthlyPage({
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
-      actions={
+      toolbar={
         <FilterBar
           channels={view.availableChannels}
           countries={view.availableCountries}
@@ -99,7 +102,6 @@ export default async function MonthlyPage({
       <MonthlySummaryPanel
         view={view}
         currencyCode={view.displayCurrencyCode}
-        rangeLabel={view.rangeLabel}
       />
     </WorkspaceShell>
   );

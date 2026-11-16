@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { localizedJson } from "@/lib/server-messages";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const limit = await rateLimit({ key: `contact:ip:${ip}`, limit: 5, windowSec: 3600 });
 
   if (!limit.success) {
-    return NextResponse.json(
+    return await localizedJson(
       { error: "Too many messages. Please try again later." },
       { status: 429 },
     );
@@ -39,11 +39,11 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as ContactPayload | null;
 
   if (!body) {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return await localizedJson({ error: "Invalid request body." }, { status: 400 });
   }
 
   if (body.company) {
-    return NextResponse.json({ ok: true });
+    return await localizedJson({ ok: true });
   }
 
   const name = body.name?.trim() ?? "";
@@ -53,18 +53,18 @@ export async function POST(request: Request) {
   const message = body.message?.trim() ?? "";
 
   if (!name || !email || !message) {
-    return NextResponse.json(
+    return await localizedJson(
       { error: "Name, email, and message are required." },
       { status: 400 },
     );
   }
 
   if (!isValidEmail(email)) {
-    return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+    return await localizedJson({ error: "Enter a valid email address." }, { status: 400 });
   }
 
   if (message.length < 10) {
-    return NextResponse.json(
+    return await localizedJson(
       { error: "Add a little more detail so we can help properly." },
       { status: 400 },
     );
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
   const fromEmail = process.env.CONTACT_FORM_FROM_EMAIL ?? "GoHostlyx <onboarding@resend.dev>";
 
   if (!resendApiKey) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           "Contact email is not configured yet. Please write directly to hello@gohostlyx.com for now.",
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
   if (!response.ok) {
     const errorText = await response.text().catch(() => "");
     console.error("Contact form delivery failed", errorText);
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
           "GoHostlyx could not send your message right now. Please try again or email hello@gohostlyx.com directly.",
@@ -135,5 +135,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  return await localizedJson({ ok: true });
 }

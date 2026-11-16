@@ -88,27 +88,3 @@ export type StoredPropertyUnit = {
   ownerEmail: string;
   name: string;
 };
-
-export type MemoryStore = {
-  nextImportId: number;
-  nextBookingId: number;
-  nextExpenseId: number;
-  nextClosureId: number;
-  nextCalendarEventId: number;
-  nextIcalFeedId: number;
-  nextFinancialDocumentId: number;
-  nextPropertyId: number;
-  nextPropertyUnitId: number;
-  imports: StoredImport[];
-  bookings: StoredBooking[];
-  expenses: StoredExpense[];
-  closures: StoredCalendarClosure[];
-  calendarEvents: StoredCalendarEvent[];
-  icalFeeds: StoredIcalFeed[];
-  financialDocuments: StoredFinancialDocument[];
-  settings: StoredUserSettings[];
-  authUsers: StoredAuthUser[];
-  subscriptions: StoredSubscription[];
-  properties: StoredProperty[];
-  propertyUnits: StoredPropertyUnit[];
-};

@@ -46,10 +46,16 @@ export function parseMoney(value: ImportCellValue) {
         ? cleaned.replace(/\./g, "").replace(",", ".")
         : cleaned.replace(/,/g, "");
   } else if (cleaned.includes(",")) {
+    // A single comma followed by exactly three digits is a thousands separator
+    // ("$1,234"); money never has three decimals. Otherwise it is a decimal
+    // comma ("1234,50").
     cleaned =
-      cleaned.split(",").length - 1 === 1
+      cleaned.split(",").length - 1 === 1 && !/,\d{3}$/.test(cleaned)
         ? cleaned.replace(",", ".")
         : cleaned.replace(/,/g, "");
+  } else if ((cleaned.match(/\./g) ?? []).length > 1 || /^-?\d{1,3}\.\d{3}$/.test(cleaned)) {
+    // "1.234.567" or "1.234" use the dot as a thousands separator.
+    cleaned = cleaned.replace(/\./g, "");
   }
 
   const amount = Number(cleaned);

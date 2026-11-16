@@ -15,7 +15,7 @@ import { ExportReportLink } from "@/components/export-report-link";
 import { SectionCard } from "@/components/section-card";
 import { SubscriptionUpgradeCard } from "@/components/subscription-upgrade-card";
 import { WorkspaceShell } from "@/components/workspace-shell";
-import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
+import { formatCurrency, formatNumber, formatPercent, formatMonthLabel } from "@/lib/format";
 import { getReconcileSidebarBadge } from "@/lib/reconcile";
 import { getRequestLocale } from "@/lib/server-locale";
 import { canAccessReports, getSubscriptionBadge } from "@/lib/subscription";
@@ -54,7 +54,7 @@ export default async function ReportsPage({
     searchParams,
     getSubscriptionState(ownerEmail),
   ]);
-  const subscriptionBadge = getSubscriptionBadge(subscription);
+  const subscriptionBadge = getSubscriptionBadge(subscription, locale);
 
   if (!canAccessReports(subscription)) {
     return (
@@ -120,25 +120,20 @@ export default async function ReportsPage({
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
       subscriptionBadge={subscriptionBadge}
+      toolbar={
+        <FilterBar
+          channels={view.availableChannels}
+          countries={view.availableCountries}
+          rangeShortcutYears={view.availableYears}
+          selectedRangePreset={view.filters.rangePreset}
+          selectedStartDate={view.filters.startDate}
+          selectedEndDate={view.filters.endDate}
+          selectedChannel={view.filters.channel}
+          selectedCountryCode={view.filters.countryCode}
+        />
+      }
       actions={
-        <div className="flex flex-col gap-3 xl:items-end">
-          <div className="rounded-[28px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-3 shadow-[0_12px_28px_rgba(15,23,42,0.04)]">
-            <FilterBar
-              channels={view.availableChannels}
-              countries={view.availableCountries}
-              rangeShortcutYears={view.availableYears}
-              selectedRangePreset={view.filters.rangePreset}
-              selectedStartDate={view.filters.startDate}
-              selectedEndDate={view.filters.endDate}
-              selectedChannel={view.filters.channel}
-              selectedCountryCode={view.filters.countryCode}
-              embedded
-            />
-          </div>
-          <ExportReportLink
-            className="h-[72px] rounded-[28px] border border-[var(--workspace-accent)]/32 bg-[linear-gradient(180deg,rgba(31,83,93,0.92)_0%,rgba(22,65,74,0.92)_100%)] px-7 text-[15px] font-semibold text-slate-100 shadow-[0_18px_34px_rgba(6,20,35,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] transition hover:border-[var(--workspace-accent)]/46 hover:bg-[linear-gradient(180deg,rgba(37,94,104,0.94)_0%,rgba(26,72,82,0.94)_100%)]"
-          />
-        </div>
+        <ExportReportLink className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition" />
       }
     >
       <div className="space-y-6">
@@ -171,11 +166,11 @@ export default async function ReportsPage({
                       key={`${month.label}-${index}`}
                       className="border-t border-[var(--workspace-border)] text-[var(--workspace-text)]"
                     >
-                      <td className="py-4 pr-4 font-medium">{month.label}</td>
+                      <td className="py-4 pr-4 font-medium">{formatMonthLabel(month, locale)}</td>
                       <td className="py-4 pr-4">{formatNumber(month.bookings, locale)}</td>
-                      <td className="py-4 pr-4">{formatCurrency(month.revenue, false, view.displayCurrencyCode, locale)}</td>
-                      <td className="py-4 pr-4">{formatCurrency(month.expenses, false, view.displayCurrencyCode, locale)}</td>
-                      <td className={`py-4 pr-4 ${month.profit >= 0 ? "text-emerald-300" : "text-rose-200"}`}>
+                      <td className="tnum py-4 pr-4 font-medium text-info">{formatCurrency(month.revenue, false, view.displayCurrencyCode, locale)}</td>
+                      <td className="tnum py-4 pr-4 font-medium text-neg">{formatCurrency(month.expenses, false, view.displayCurrencyCode, locale)}</td>
+                      <td className={`py-4 pr-4 ${month.profit >= 0 ? "text-pos" : "text-neg"}`}>
                         {formatCurrency(month.profit, false, view.displayCurrencyCode, locale)}
                       </td>
                       <td className="py-4">{formatPercent(margin, locale)}</td>
@@ -198,7 +193,7 @@ export default async function ReportsPage({
           >
             <div className="space-y-3">
               {view.revenueByChannel.map((channel) => (
-                <div key={channel.label} className="workspace-soft-card rounded-[22px] p-4">
+                <div key={channel.label} className="workspace-soft-card rounded-lg p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold text-[var(--workspace-text)]">{channel.label}</p>
@@ -229,7 +224,7 @@ export default async function ReportsPage({
                 const share = totalExpenses > 0 ? item.value / totalExpenses : 0;
 
                 return (
-                  <div key={item.label} className="workspace-soft-card rounded-[22px] p-4">
+                  <div key={item.label} className="workspace-soft-card rounded-lg p-4">
                     <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold text-[var(--workspace-text)]">{item.label}</p>

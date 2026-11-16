@@ -1,5 +1,5 @@
 // Pure row-mapping layer for the data access module.
-// Translates raw DB rows (SQLite/Postgres/memory) into domain records.
+// Translates raw Postgres rows into domain records.
 // Extracted from db.ts; these functions have no module state or side effects.
 
 import { differenceInCalendarDays, formatISO, isValid, parseISO, setYear } from "date-fns";

@@ -27,7 +27,7 @@ export function MarketingFooter({ locale = "en" }: { locale?: AppLocale }) {
 
           <div className="space-y-3 lg:max-w-[520px] lg:text-right">
             <div className="flex flex-col gap-3 lg:items-end">
-              <LanguageToggle compact />
+              <LanguageToggle compact variant="marketing" />
               <p className="marketing-footer-label text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                 {isSpanish ? "Legal y contacto" : "Legal & Contact"}
               </p>

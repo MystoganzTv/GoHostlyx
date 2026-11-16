@@ -48,7 +48,7 @@ they actually keep after platform fees, operating costs, and estimated taxes.
 - Next.js 16 App Router, React 19, and TypeScript
 - Tailwind CSS 4 and Recharts
 - NextAuth with Google and email/password authentication
-- PostgreSQL in production and SQLite for local development
+- PostgreSQL on Supabase in every environment, with schema migrations in `supabase/migrations`
 - Stripe Checkout and subscription webhooks
 - `xlsx` for workbook imports and `pdf-lib` for report exports
 - Vercel for production deployment
@@ -67,7 +67,12 @@ npm install
 cp .env.example .env.local
 ```
 
-Configure the values you need in `.env.local`, then start the app:
+Set `DATABASE_URL` in `.env.local` to a Supabase database. Use a persistent
+development branch of the GoHostlyx Supabase project (Supabase → Branches →
+create a branch named `develop` and enable "Persistent"), and copy its
+Transaction pooler URL. Never point local development at production.
+
+Configure the other values you need in `.env.local`, then start the app:
 
 ```bash
 npm run dev
@@ -83,8 +88,13 @@ The application will be available at `http://localhost:3000`.
 | `NEXTAUTH_SECRET` | Yes | Encrypts and signs authentication sessions |
 | `GOOGLE_CLIENT_ID` | Optional | Enables Google authentication |
 | `GOOGLE_CLIENT_SECRET` | Optional | Enables Google authentication |
-| `ADMIN_EMAILS` | Optional | Comma-separated admin allowlist |
-| `DATABASE_URL` | Production | PostgreSQL connection string |
+| `ALLOWED_EMAILS` | Optional | Comma-separated sign-up allowlist; empty means open registration |
+| `ADMIN_EMAILS` | Optional | Comma-separated admin accounts (admin panel and Pro access) |
+| `DATABASE_URL` | Yes | Supabase Transaction pooler URL (production; local development uses a dev branch) |
+| `DATABASE_CA_CERT` | Production | PEM of the database provider's CA, used to verify TLS (Supabase: Database settings → SSL) |
+| `DATABASE_SSL_INSECURE` | Optional | `true` disables TLS certificate checks; last resort only |
+| `UPSTASH_REDIS_REST_URL` | Production | Shared rate-limit store (in-memory limits are per instance) |
+| `UPSTASH_REDIS_REST_TOKEN` | Production | Token for the rate-limit store |
 | `STRIPE_SECRET_KEY` | Billing | Stripe server API key |
 | `STRIPE_WEBHOOK_SECRET` | Billing | Verifies Stripe webhook events |
 | `STRIPE_PRICE_STARTER` | Billing | Stripe price ID for Starter |
@@ -112,10 +122,26 @@ Google authentication additionally requires `GOOGLE_CLIENT_ID` and
 
 ## Persistence
 
-- Local development without `DATABASE_URL` uses SQLite at `data/gohostlyx.sqlite`.
-- Production uses PostgreSQL through `DATABASE_URL`.
-- When no production database is configured, the application uses an in-memory
-  fallback and data will not persist between deployments.
+- All data lives in PostgreSQL on Supabase: production, preview deployments and
+  local development. There is no SQLite or in-memory fallback; without a database
+  URL the app stops with a clear error.
+- The app reads `DATABASE_URL`, then `POSTGRES_URL` (the variable the
+  Supabase ↔ Vercel integration sets for preview branches).
+- Functions run in `pdx1` (Oregon) to sit next to the Supabase database in
+  `us-west-2`; see `vercel.json`.
+
+## Database Migrations
+
+The schema lives in `supabase/migrations`. The Supabase GitHub integration:
+
+- creates a preview database branch for every pull request, applies the
+  migrations, and hands its URL to the Vercel preview deployment;
+- applies new migrations to production when the pull request merges into `main`.
+
+To change the schema, add a new timestamped file, for example
+`supabase/migrations/20261201000000_add_cleaning_fee.sql`. Never edit a
+migration that has already been applied. New tables need
+`ENABLE ROW LEVEL SECURITY` like the existing ones.
 
 ## Stripe Setup
 
@@ -124,6 +150,10 @@ Configure Stripe Checkout prices and subscribe the production webhook to:
 ```text
 https://gohostlyx.vercel.app/api/stripe/webhook
 ```
+
+Enable the Stripe Customer Portal (Settings → Billing → Customer portal) and allow
+plan switching and cancellation. Subscribers change plans there; the app no longer
+opens a second Checkout for someone who already pays.
 
 Recommended webhook events:
 
@@ -136,6 +166,7 @@ Recommended webhook events:
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
 

@@ -123,12 +123,12 @@ export function PropertyUnitFieldGroup({
                 ? "Esta propiedad ya tiene listings guardados que puedes reutilizar."
                 : "This property already has saved listings you can reuse."
               : isSpanish
-                ? "Esta propiedad todavía no tiene listings extra. Mantén `Listing principal` para el flujo de vivienda completa."
-                : "This property has no extra listings yet. Keep `Primary listing` for the full-home flow."
+                ? "Esta propiedad todavía no tiene listings extra. Mantén “Listing principal” para el flujo de vivienda completa."
+                : "This property has no extra listings yet. Keep “Primary listing” for the full-home flow."
             : properties.length > 0
               ? isSpanish
-                ? "Los listings son opcionales. Mantén `Listing principal` para propiedades de vivienda única."
-                : "Listings are optional. Keep `Primary listing` for single-home properties."
+                ? "Los listings son opcionales. Mantén “Listing principal” para propiedades de vivienda única."
+                : "Listings are optional. Keep “Primary listing” for single-home properties."
               : isSpanish
                 ? "Crea tu primera propiedad antes de añadir reservas o gastos."
                 : "Create your first property before adding bookings or expenses."

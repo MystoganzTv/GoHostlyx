@@ -71,7 +71,7 @@ export function WorkspaceSelect({
   return (
     <div ref={rootRef} className={`relative space-y-2 ${className}`}>
       {label ? (
-        <span className="block text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+        <span className="block text-xs font-medium text-[var(--workspace-muted)]">
           {label}
         </span>
       ) : null}
@@ -82,8 +82,8 @@ export function WorkspaceSelect({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen((current) => !current)}
-        className={`input-surface flex w-full items-center justify-between gap-3 rounded-2xl text-left transition disabled:cursor-not-allowed disabled:opacity-60 ${
-          compact ? "min-w-[150px] px-4 py-3 text-sm font-medium" : "px-4 py-3 text-sm"
+        className={`input-surface flex w-full items-center justify-between gap-2 text-left transition disabled:cursor-not-allowed disabled:opacity-60 ${
+          compact ? "h-8 min-w-[140px] rounded-md px-3 text-xs font-medium" : "h-10 rounded-lg px-3 text-sm"
         }`}
       >
         <div className="min-w-0">
@@ -96,13 +96,13 @@ export function WorkspaceSelect({
             </p>
           ) : null}
         </div>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-[var(--workspace-muted)] transition ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-[var(--workspace-muted)] transition ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {helper ? <p className="text-xs text-slate-500">{helper}</p> : null}
 
       {isOpen ? (
-        <div className="absolute left-0 top-full z-30 mt-2 w-full overflow-hidden rounded-[22px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,28,46,0.98)_0%,rgba(10,19,31,0.98)_100%)] p-2 shadow-[0_24px_60px_rgba(2,6,23,0.48)]">
+        <div className="absolute left-0 top-full z-30 mt-2 w-full overflow-hidden rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-popover)] p-1 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
           <div className="max-h-72 overflow-y-auto">
             {options.map((option) => {
               const isSelected = option.value === value;
@@ -115,7 +115,7 @@ export function WorkspaceSelect({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={`flex w-full items-start justify-between gap-3 rounded-[18px] px-3 py-3 text-left transition ${
+                  className={`flex w-full items-start justify-between gap-3 rounded-md px-2.5 py-2 text-left transition ${
                     isSelected
                       ? "bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)]"
                       : "text-[var(--workspace-text)] hover:bg-white/[0.05]"

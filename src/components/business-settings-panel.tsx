@@ -4,11 +4,11 @@ import { type FormEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Globe2, Settings2 } from "lucide-react";
 import { useLocale } from "@/components/locale-provider";
-import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
+import { marketDefinitions, getMarketLabels } from "@/lib/markets";
 import type { CountryCode } from "@/lib/types";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function BusinessSettingsPanel({
@@ -26,7 +26,7 @@ export function BusinessSettingsPanel({
   const [primaryCountryCode, setPrimaryCountryCode] = useState<CountryCode>(initialPrimaryCountryCode);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const selectedMarket = getMarketDefinition(primaryCountryCode);
+  const selectedMarket = getMarketLabels(primaryCountryCode, locale);
   const hasChanges =
     businessName.trim() !== initialBusinessName.trim() ||
     primaryCountryCode !== initialPrimaryCountryCode;
@@ -68,7 +68,7 @@ export function BusinessSettingsPanel({
   }
 
   return (
-    <div className="workspace-card rounded-[30px] p-5 sm:p-6">
+    <div className="workspace-card rounded-xl p-5 sm:p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--workspace-muted)]">
@@ -80,7 +80,7 @@ export function BusinessSettingsPanel({
               : "Each account keeps its own business identity, reporting market, imports, and manual entries."}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-3xl p-3">
+        <div className="workspace-icon-chip rounded-xl p-3">
           <Settings2 className="h-6 w-6" />
         </div>
       </div>
@@ -109,7 +109,7 @@ export function BusinessSettingsPanel({
             {isSpanish ? "Mercado principal de reporting" : "Primary reporting market"}
           </span>
           <div className="grid gap-3 sm:grid-cols-3">
-            {marketDefinitions.map((market) => {
+            {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((market) => {
               const isSelected = primaryCountryCode === market.countryCode;
 
               return (
@@ -117,14 +117,14 @@ export function BusinessSettingsPanel({
                   key={market.countryCode}
                   type="button"
                   onClick={() => setPrimaryCountryCode(market.countryCode)}
-                  className={`rounded-[24px] border px-4 py-4 text-left transition ${
+                  className={`rounded-xl border px-4 py-4 text-left transition ${
                     isSelected
                       ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] text-[var(--workspace-text)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                       : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] text-[var(--workspace-muted)] hover:border-[var(--workspace-accent)]/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="workspace-icon-chip rounded-2xl p-2.5">
+                    <div className="workspace-icon-chip rounded-lg p-2.5">
                       <Globe2 className="h-4 w-4" />
                     </div>
                     <div>
@@ -147,7 +147,7 @@ export function BusinessSettingsPanel({
           </p>
         </div>
 
-        <div className="workspace-soft-card rounded-[24px] p-4">
+        <div className="workspace-soft-card rounded-xl p-4">
           <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
             <div>
               <p className="text-sm font-semibold text-[var(--workspace-text)]">
@@ -165,7 +165,7 @@ export function BusinessSettingsPanel({
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-3">
-            <div className="rounded-[18px] bg-white/[0.03] p-4">
+            <div className="py-4 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Moneda por defecto" : "Default currency"}
               </p>
@@ -179,7 +179,7 @@ export function BusinessSettingsPanel({
               </p>
             </div>
 
-            <div className="rounded-[18px] bg-white/[0.03] p-4">
+            <div className="py-4 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Vista todos los países" : "All-countries view"}
               </p>
@@ -188,12 +188,12 @@ export function BusinessSettingsPanel({
               </p>
               <p className="mt-2 text-xs leading-5 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Cuando los filtros están en `All countries`, GoHostlyx usa este mercado como valor por defecto de cartera para labels y resúmenes."
-                  : "When filters are on `All countries`, GoHostlyx uses this market as the portfolio default for labels and summaries."}
+                  ? "Cuando ves todos los mercados a la vez, GoHostlyx usa este como mercado por defecto en etiquetas y resúmenes."
+                  : "When you view all markets at once, GoHostlyx uses this one as the default for labels and summaries."}
               </p>
             </div>
 
-            <div className="rounded-[18px] bg-white/[0.03] p-4">
+            <div className="py-4 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Nuevo valor por defecto para propiedad" : "New property default"}
               </p>
@@ -212,7 +212,7 @@ export function BusinessSettingsPanel({
         <button
           type="submit"
           disabled={isPending || !hasChanges}
-          className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+          className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending
             ? isSpanish
@@ -229,8 +229,8 @@ export function BusinessSettingsPanel({
       </form>
 
       <div className="mt-4 min-h-6">
-        {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {message ? <p className="text-sm text-pos">{message}</p> : null}
+        {error ? <p className="text-sm text-neg">{error}</p> : null}
       </div>
     </div>
   );

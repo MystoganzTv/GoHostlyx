@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { clientErrorMessage } from "@/lib/client-error";
+import { localizedJson } from "@/lib/server-messages";
 import { getAuthUserByEmail, markAuthUserVerified } from "@/lib/db";
 import { hashVerificationCode } from "@/lib/email-verification";
 import { normalizeAuthEmail } from "@/lib/password";
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
     const code = String(formData.get("code") ?? "").trim();
 
     if (!email || !email.includes("@")) {
-      return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+      return await localizedJson({ error: "Enter a valid email address." }, { status: 400 });
     }
 
     // Throttle code guesses hard: a 6-digit code must not be brute-forceable
@@ -25,14 +26,14 @@ export async function POST(request: Request) {
     ]);
 
     if (!byEmail.success || !byIp.success) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Too many attempts. Wait a few minutes and try again." },
         { status: 429 },
       );
     }
 
     if (!/^\d{6}$/.test(code)) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Enter the 6-digit verification code." },
         { status: 400 },
       );
@@ -41,34 +42,34 @@ export async function POST(request: Request) {
     const authUser = await getAuthUserByEmail(email);
 
     if (!authUser) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "We could not find a pending account for that email." },
         { status: 404 },
       );
     }
 
     if (authUser.isVerified) {
-      return NextResponse.json({
+      return await localizedJson({
         message: "Your email is already verified. You can sign in now.",
       });
     }
 
     if (!authUser.verificationCodeHash || !authUser.verificationExpiresAt) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "This account does not have an active verification code." },
         { status: 400 },
       );
     }
 
     if (new Date(authUser.verificationExpiresAt).getTime() < Date.now()) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "That verification code has expired. Request a new one." },
         { status: 400 },
       );
     }
 
     if (authUser.verificationCodeHash !== hashVerificationCode(code)) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "That verification code is incorrect." },
         { status: 400 },
       );
@@ -76,17 +77,15 @@ export async function POST(request: Request) {
 
     await markAuthUserVerified({ email });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: "Email verified. Signing you in now.",
       verified: true,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The verification could not be completed.",
+          clientErrorMessage(error, "The verification could not be completed."),
       },
       { status: 400 },
     );

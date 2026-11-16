@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { clientErrorMessage } from "@/lib/client-error";
+import { localizedJson } from "@/lib/server-messages";
+import { requireApiAccess } from "@/lib/access";
 import { getPropertyDefinitions, insertManualExpense } from "@/lib/db";
 import { normalizeManualExpense } from "@/lib/manual-entry";
 
@@ -7,16 +8,18 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const properties = await getPropertyDefinitions(ownerEmail);
 
     if (properties.length === 0) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Create your first property before adding expenses." },
         { status: 400 },
       );
@@ -29,16 +32,14 @@ export async function POST(request: Request) {
       expense,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Expense "${expense.description}" added successfully.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The expense could not be saved.",
+          clientErrorMessage(error, "The expense could not be saved."),
       },
       { status: 400 },
     );

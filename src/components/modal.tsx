@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+
+const noopSubscribe = () => () => {};
 
 export function Modal({
   open,
@@ -22,6 +24,10 @@ export function Modal({
 }) {
   const modalCardRef = useRef<HTMLDivElement | null>(null);
   const modalViewportRef = useRef<HTMLDivElement | null>(null);
+  // False on the server and during hydration, true afterwards. A modal that is
+  // open on first render (e.g. "Create your first property") used to render a
+  // portal on the client but nothing on the server: a hydration mismatch.
+  const isClient = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   useEffect(() => {
     if (!open || !modalCardRef.current) {
@@ -41,7 +47,7 @@ export function Modal({
     };
   }, [open]);
 
-  if (!open) {
+  if (!open || !isClient) {
     return null;
   }
 
@@ -52,19 +58,19 @@ export function Modal({
           <button
             type="button"
             aria-label="Close modal"
-            className="absolute inset-0 bg-slate-950/78"
+            className="absolute inset-0 bg-[rgba(3,8,16,0.86)] backdrop-blur-sm"
             onClick={onClose}
           />
         ) : (
-          <div className="absolute inset-0 bg-slate-950/78" />
+          <div className="absolute inset-0 bg-[rgba(3,8,16,0.86)] backdrop-blur-sm" />
         )}
         <div
           ref={modalCardRef}
           tabIndex={-1}
           className={
             bare
-              ? "relative z-10 w-full max-w-6xl max-h-[calc(100vh-2rem)] overflow-y-auto outline-none sm:max-h-[calc(100vh-3rem)]"
-              : "workspace-card relative z-10 my-auto max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-[30px] p-5 outline-none sm:p-6"
+              ? "modal-surface relative z-10 w-full max-w-5xl max-h-[calc(100vh-2rem)] overflow-y-auto px-5 pb-6 outline-none sm:max-h-[calc(100vh-3rem)] sm:px-8 sm:pb-8"
+              : "modal-surface relative z-10 my-auto max-h-[90vh] w-full max-w-5xl overflow-y-auto p-5 outline-none sm:p-8"
           }
         >
           {bare && dismissible ? (
@@ -97,10 +103,6 @@ export function Modal({
       </div>
     </div>
   );
-
-  if (typeof document === "undefined") {
-    return null;
-  }
 
   return createPortal(modalContent, document.body);
 }

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { clientErrorMessage } from "@/lib/client-error";
+import { localizedJson } from "@/lib/server-messages";
 import { getAuthSession, requireUserEmail } from "@/lib/auth";
 import {
   getSubscriptionState,
@@ -16,7 +17,7 @@ import {
 export const runtime = "nodejs";
 
 function sanitizeReturnPath(value: string | undefined) {
-  if (!value || !value.startsWith("/")) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
     return "/pricing";
   }
 
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     const ownerEmail = await requireUserEmail();
 
     if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return await localizedJson({ error: "Unauthorized" }, { status: 401 });
     }
 
     const session = await getAuthSession();
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     const returnPath = sanitizeReturnPath(payload.returnPath);
 
     if (plan === "trial") {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Choose a paid plan to continue." },
         { status: 400 },
       );
@@ -47,13 +48,13 @@ export async function POST(request: Request) {
       if (process.env.NODE_ENV !== "production") {
         await updateSubscriptionPlan({ ownerEmail, plan });
 
-        return NextResponse.json({
+        return await localizedJson({
           redirectTo: returnPath,
           mode: "local",
         });
       }
 
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Stripe billing is not configured yet." },
         { status: 500 },
       );
@@ -63,13 +64,30 @@ export async function POST(request: Request) {
     const priceId = getStripePriceIdForPlan(plan);
 
     if (!stripe || !priceId) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Stripe billing is not configured yet." },
         { status: 500 },
       );
     }
 
     const subscription = await getSubscriptionState(ownerEmail);
+
+    // A customer with a live paid subscription must change plans through the
+    // Stripe Customer Portal. Creating another Checkout session here would open
+    // a second, concurrent subscription and bill the customer twice.
+    if (
+      subscription.status === "active" &&
+      subscription.plan !== "trial" &&
+      subscription.stripeCustomerId &&
+      subscription.stripeSubscriptionId
+    ) {
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: subscription.stripeCustomerId,
+        return_url: buildAppUrl(returnPath),
+      });
+
+      return await localizedJson({ url: portalSession.url, mode: "portal" });
+    }
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -105,23 +123,21 @@ export async function POST(request: Request) {
     }
 
     if (!checkoutSession.url) {
-      return NextResponse.json(
+      return await localizedJson(
         { error: "Stripe checkout could not be created." },
         { status: 500 },
       );
     }
 
-    return NextResponse.json({
+    return await localizedJson({
       url: checkoutSession.url,
       email: session?.user?.email ?? ownerEmail,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The subscription checkout could not be created.",
+          clientErrorMessage(error, "The subscription checkout could not be created."),
       },
       { status: 400 },
     );

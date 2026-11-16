@@ -10,7 +10,7 @@ import { PropertyUnitFieldGroup } from "@/components/property-unit-field-group";
 import type { IcalFeedRecord, PropertyDefinition } from "@/lib/types";
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 export function CalendarIcalLauncher({
@@ -76,7 +76,7 @@ export function CalendarIcalLauncher({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+        className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
       >
         <Link2 className="h-4 w-4" />
         {hasFeeds
@@ -112,7 +112,7 @@ export function CalendarIcalLauncher({
           ) : null}
 
           <section className={hasFeeds ? "space-y-5 border-t border-white/8 pt-6" : "space-y-5"}>
-            <div className="workspace-soft-card rounded-[24px] p-5">
+            <div className="workspace-soft-card rounded-xl p-5">
               <p className="text-sm font-semibold text-[var(--workspace-text)]">
                 {hasFeeds
                   ? isSpanish
@@ -124,8 +124,8 @@ export function CalendarIcalLauncher({
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
                 {isSpanish
-                  ? "Pega la URL pública `.ics` de Airbnb, Booking.com, Vrbo u otro canal. GoHostlyx guardará ese feed en el listing seleccionado y lo sincronizará en eventos del calendario."
-                  : "Paste the public `.ics` URL from Airbnb, Booking.com, Vrbo, or another channel. GoHostlyx will save that feed on the selected listing and sync it into calendar events."}
+                  ? "Pega la URL pública “.ics” de Airbnb, Booking.com, Vrbo u otro canal. GoHostlyx guardará ese feed en el listing seleccionado y lo sincronizará en eventos del calendario."
+                  : "Paste the public “.ics” URL from Airbnb, Booking.com, Vrbo, or another channel. GoHostlyx will save that feed on the selected listing and sync it into calendar events."}
               </p>
             </div>
 
@@ -159,7 +159,7 @@ export function CalendarIcalLauncher({
                 </label>
               </div>
 
-              <div className="rounded-[22px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
+              <div className="py-4 text-sm leading-6 text-[var(--workspace-muted)] border-t border-[var(--workspace-border)]">
                 {isSpanish
                   ? "iCal es ideal para la visibilidad del calendario. Normalmente trae check-ins, check-outs, reservas y días bloqueados, pero no datos financieros completos como payout, comisiones o impuestos."
                   : "iCal is great for calendar visibility. It usually brings check-ins, check-outs, reservations, and blocked days, but not full payout statement data like payout, fees, or taxes."}
@@ -168,7 +168,7 @@ export function CalendarIcalLauncher({
               <button
                 type="submit"
                 disabled={isPending}
-                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex w-full items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending
                   ? isSpanish
@@ -180,8 +180,8 @@ export function CalendarIcalLauncher({
               </button>
 
               <div className="min-h-6">
-                {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
-                {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+                {message ? <p className="text-sm text-pos">{message}</p> : null}
+                {error ? <p className="text-sm text-neg">{error}</p> : null}
               </div>
             </form>
           </section>

@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { clientErrorMessage } from "@/lib/client-error";
+import { localizedJson } from "@/lib/server-messages";
 import { deleteImportBatch } from "@/lib/db";
-import { requireUserEmail } from "@/lib/auth";
+import { requireApiAccess } from "@/lib/access";
 
 export const runtime = "nodejs";
 
@@ -11,11 +12,13 @@ export async function DELETE(
   { params }: { params: Params },
 ) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const { id } = await params;
     const importId = Number(id);
@@ -25,16 +28,14 @@ export async function DELETE(
       importId,
     });
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Deleted ${result.deletedFileName} from ${result.deletedPropertyName}. Removed the data linked to that import batch.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
-          error instanceof Error
-            ? error.message
-            : "The import could not be deleted.",
+          clientErrorMessage(error, "The import could not be deleted."),
       },
       { status: 400 },
     );

@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FilterBar } from "@/components/filter-bar";
@@ -35,6 +36,8 @@ export default async function PayoutsPage({
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);
@@ -87,20 +90,20 @@ export default async function PayoutsPage({
       currencyCode={view.displayCurrencyCode}
       latestImport={latestImport}
       reconcileBadge={getReconcileSidebarBadge(view.reconcile, view.displayCurrencyCode)}
+      toolbar={
+        <FilterBar
+          channels={view.availableChannels}
+          countries={view.availableCountries}
+          rangeShortcutYears={view.availableYears}
+          selectedRangePreset={view.filters.rangePreset}
+          selectedStartDate={view.filters.startDate}
+          selectedEndDate={view.filters.endDate}
+          selectedChannel={view.filters.channel}
+          selectedCountryCode={view.filters.countryCode}
+        />
+      }
       actions={
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <FilterBar
-            channels={view.availableChannels}
-            countries={view.availableCountries}
-            rangeShortcutYears={view.availableYears}
-            selectedRangePreset={view.filters.rangePreset}
-            selectedStartDate={view.filters.startDate}
-            selectedEndDate={view.filters.endDate}
-            selectedChannel={view.filters.channel}
-            selectedCountryCode={view.filters.countryCode}
-          />
-          <ReconcileStatementLauncher properties={properties} />
-        </div>
+        <ReconcileStatementLauncher properties={properties} />
       }
     >
       <div className="space-y-6">
@@ -128,7 +131,7 @@ export default async function PayoutsPage({
                 <ReconcileStatementLauncher properties={properties} />
                 <Link
                   href="/dashboard/reconcile"
-                  className="workspace-button-secondary inline-flex rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                  className="workspace-button-secondary inline-flex rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   {isSpanish ? "Ver conciliación bancaria" : "View bank reconcile"}
                 </Link>

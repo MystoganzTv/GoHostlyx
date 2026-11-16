@@ -60,7 +60,7 @@ export function ReconcileSummaryCard({
   const { locale } = useLocale();
   const isSpanish = locale === "es";
   return (
-    <article className="workspace-soft-card rounded-[26px] border-[var(--workspace-accent)]/12 bg-[linear-gradient(180deg,rgba(125,211,197,0.06)_0%,rgba(10,20,34,0.92)_100%)] p-5">
+    <article className="workspace-soft-card border-[var(--workspace-accent)]/12 py-5 border-t border-[var(--workspace-border)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--workspace-muted)]">
@@ -73,13 +73,13 @@ export function ReconcileSummaryCard({
             {reconcile.message}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-[18px] p-3">
+        <div className="workspace-icon-chip rounded-lg p-3">
           <Scale className="h-4 w-4" />
         </div>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-3">
-        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+        <div className="py-4 border-t border-[var(--workspace-border)]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
             {isSpanish ? "Payout esperado" : "Expected payout"}
           </p>
@@ -87,7 +87,7 @@ export function ReconcileSummaryCard({
             {formatCurrency(reconcile.expectedPayout, false, currencyCode, locale)}
           </p>
         </div>
-        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+        <div className="py-4 border-t border-[var(--workspace-border)]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
             {isSpanish ? "Payout real" : "Actual payout"}
           </p>
@@ -95,7 +95,7 @@ export function ReconcileSummaryCard({
             {formatCurrency(reconcile.actualPayout, false, currencyCode, locale)}
           </p>
         </div>
-        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+        <div className="py-4 border-t border-[var(--workspace-border)]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
             {isSpanish ? "Diferencia" : "Difference"}
           </p>
@@ -112,7 +112,7 @@ export function ReconcileSummaryCard({
         <p className="text-sm leading-6 text-[var(--workspace-muted)]">{reconcile.trustLabel}</p>
         <Link
           href="/dashboard/payouts"
-          className="workspace-button-secondary inline-flex rounded-2xl px-4 py-3 text-sm font-semibold transition"
+          className="workspace-button-secondary inline-flex rounded-lg px-3.5 py-2 text-sm font-semibold transition"
         >
           {isSpanish ? "Ver detalles" : "View details"}
         </Link>
@@ -140,7 +140,7 @@ export function ReconcilePanel({
   );
 
   return (
-    <article className="workspace-soft-card rounded-[30px] border-[var(--workspace-accent)]/12 bg-[radial-gradient(circle_at_top,rgba(125,211,197,0.14),transparent_44%),linear-gradient(180deg,rgba(17,31,47,0.98)_0%,rgba(9,19,32,0.98)_100%)] p-6 sm:p-7">
+    <article className="workspace-soft-card border-[var(--workspace-accent)]/12 py-6 sm:py-7 border-t border-[var(--workspace-border)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-3">
@@ -163,13 +163,13 @@ export function ReconcilePanel({
             {reconcile.trustLabel}
           </p>
         </div>
-        <div className="workspace-icon-chip rounded-[18px] p-3">
+        <div className="workspace-icon-chip rounded-lg p-3">
           <Scale className="h-4 w-4" />
         </div>
       </div>
 
       {reconcile.alertMessage ? (
-        <div className="mt-5 flex items-start gap-3 rounded-[22px] border border-amber-200/14 bg-[linear-gradient(135deg,rgba(245,158,11,0.12)_0%,rgba(31,41,55,0.1)_100%)] px-4 py-4">
+        <div className="mt-5 flex items-start gap-3 rounded-lg border border-amber-200/14 bg-[linear-gradient(135deg,rgba(245,158,11,0.12)_0%,rgba(31,41,55,0.1)_100%)] px-4 py-4">
           <div className="mt-0.5 rounded-full bg-amber-300/12 p-2 text-amber-100">
             <TriangleAlert className="h-4 w-4" />
           </div>
@@ -185,7 +185,7 @@ export function ReconcilePanel({
       ) : null}
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <div className="rounded-[28px] border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(125,211,197,0.08)_0%,rgba(255,255,255,0.02)_100%)] p-6">
+        <div className="py-6 border-t border-[var(--workspace-border)]">
           <p className="text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--workspace-muted)]">
             {isSpanish ? "Payout real" : "Actual payout"}
           </p>
@@ -193,7 +193,7 @@ export function ReconcilePanel({
             {formatCurrency(reconcile.actualPayout, false, currencyCode, locale)}
           </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <div className="rounded-[20px] border border-white/7 bg-white/[0.02] px-4 py-4 text-center">
+            <div className="py-4 text-center border-t border-[var(--workspace-border)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Payout esperado" : "Expected payout"}
               </p>
@@ -201,7 +201,7 @@ export function ReconcilePanel({
                 {formatCurrency(reconcile.expectedPayout, false, currencyCode, locale)}
               </p>
             </div>
-            <div className="rounded-[20px] border border-white/7 bg-white/[0.02] px-4 py-4 text-center">
+            <div className="py-4 text-center border-t border-[var(--workspace-border)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Diferencia" : "Difference"}
               </p>
@@ -209,7 +209,7 @@ export function ReconcilePanel({
                 {formatSignedCurrency(reconcile.difference, currencyCode, locale)}
               </p>
             </div>
-            <div className="rounded-[20px] border border-white/7 bg-white/[0.02] px-4 py-4 text-center sm:col-span-2 xl:col-span-1">
+            <div className="py-4 text-center sm:col-span-2 xl:col-span-1 border-t border-[var(--workspace-border)]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                 {isSpanish ? "Desajuste" : "Mismatch"}
               </p>
@@ -220,7 +220,7 @@ export function ReconcilePanel({
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-[var(--workspace-border)] bg-white/[0.02] p-5">
+        <div className="py-5 border-t border-[var(--workspace-border)]">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -293,7 +293,7 @@ export function ReconcilePanel({
       </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.92fr)]">
-        <div className="rounded-[28px] border border-[var(--workspace-border)] bg-white/[0.02] p-5">
+        <div className="py-5 border-t border-[var(--workspace-border)]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
             {isSpanish ? "Desglose" : "Breakdown"}
           </p>
@@ -352,7 +352,7 @@ export function ReconcilePanel({
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-[28px] border border-[var(--workspace-border)] bg-white/[0.02] p-5">
+          <div className="py-5 border-t border-[var(--workspace-border)]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Análisis de brecha" : "Gap analysis"}
             </p>
@@ -360,7 +360,7 @@ export function ReconcilePanel({
               {reconcile.insights.map((insight) => (
                 <article
                   key={`${insight.title}-${insight.body}`}
-                  className={`rounded-[22px] border px-4 py-4 ${
+                  className={`rounded-lg border px-4 py-4 ${
                     insight.tone === "positive"
                       ? "border-emerald-300/12 bg-emerald-400/[0.06]"
                       : insight.tone === "caution"
@@ -379,7 +379,7 @@ export function ReconcilePanel({
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(125,211,197,0.07)_0%,rgba(255,255,255,0.02)_100%)] p-5">
+          <div className="py-5 border-t border-[var(--workspace-border)]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
               {isSpanish ? "Bloque de confianza" : "Trust block"}
             </p>

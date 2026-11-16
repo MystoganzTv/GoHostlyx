@@ -1,15 +1,12 @@
 "use client";
 
 import { type FormEvent, useEffect, useState, useTransition } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
   Building2,
-  CalendarDays,
   FileSpreadsheet,
-  Globe2,
   House,
   LayoutDashboard,
   Layers3,
@@ -17,55 +14,26 @@ import {
   Sparkles,
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
+import { useLocale } from "@/components/locale-provider";
 import { UploadPanel } from "@/components/upload-panel";
 import { formatCurrency } from "@/lib/format";
-import { getMarketDefinition, marketDefinitions } from "@/lib/markets";
+import { getMarketLabels, marketDefinitions } from "@/lib/markets";
 import { getDefaultTaxRateByCountry, normalizeTaxRate } from "@/lib/tax";
 import type { CountryCode, CurrencyCode, PropertyDefinition, UserSettings } from "@/lib/types";
 
 const onboardingPropertyName = "Main Property";
 
 const steps = [
-  {
-    id: "welcome",
-    label: "Welcome",
-    title: "Get GoHostlyx ready in a few quick steps.",
-    icon: Sparkles,
-  },
-  {
-    id: "workspace",
-    label: "Workspace",
-    title: "Set the workspace basics.",
-    icon: Building2,
-  },
-  {
-    id: "property",
-    label: "Property",
-    title: "Create the home that calendars and finances belong to.",
-    icon: House,
-  },
-  {
-    id: "finance",
-    label: "Finance",
-    title: "Bring in statements or spreadsheets only if you want them now.",
-    icon: FileSpreadsheet,
-  },
-  {
-    id: "tax",
-    label: "Tax",
-    title: "Choose the estimate GoHostlyx should use.",
-    icon: ReceiptText,
-  },
-  {
-    id: "dashboard",
-    label: "Dashboard",
-    title: "You are ready to see the numbers.",
-    icon: LayoutDashboard,
-  },
+  { id: "welcome", label: { en: "Welcome", es: "Bienvenida" }, icon: Sparkles },
+  { id: "workspace", label: { en: "Workspace", es: "Espacio" }, icon: Building2 },
+  { id: "property", label: { en: "Property", es: "Propiedad" }, icon: House },
+  { id: "finance", label: { en: "Finance", es: "Finanzas" }, icon: FileSpreadsheet },
+  { id: "tax", label: { en: "Tax", es: "Impuestos" }, icon: ReceiptText },
+  { id: "dashboard", label: { en: "Dashboard", es: "Dashboard" }, icon: LayoutDashboard },
 ] as const;
 
 function inputClassName() {
-  return "input-surface w-full rounded-2xl px-4 py-3 text-sm";
+  return "input-surface w-full rounded-lg px-4 py-3 text-sm";
 }
 
 type OnboardingPreview = {
@@ -88,7 +56,12 @@ export function OnboardingFlow({
   defaultPropertyName?: string;
 }) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
+  const { locale } = useLocale();
+  const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
+  // Step 0 (welcome) was an explainer with no input; the flow starts on the
+  // workspace step instead.
+  const [currentStep, setCurrentStep] = useState(1);
   const [isWorkspacePending, startWorkspaceTransition] = useTransition();
   const [isPropertyPending, startPropertyTransition] = useTransition();
   const [isTaxPending, startTaxTransition] = useTransition();
@@ -116,15 +89,13 @@ export function OnboardingFlow({
   const [previewState, setPreviewState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [preview, setPreview] = useState<OnboardingPreview | null>(null);
 
-  const market = getMarketDefinition(countryCode);
-  const selectedTaxMarket = getMarketDefinition(taxCountryCode);
+  const selectedTaxMarket = getMarketLabels(taxCountryCode, locale);
   const normalizedTaxRate = normalizeTaxRate(taxRate);
   const previewCurrencyCode = preview?.currencyCode ?? initialSettings.currencyCode;
   const previewNetProfit = preview?.netProfit ?? 0;
   const previewSetAside =
     previewNetProfit > 0 ? previewNetProfit * (normalizedTaxRate / 100) : 0;
   const previewYouKeep = previewNetProfit - previewSetAside;
-  const stepsCompleted = currentStep;
 
   useEffect(() => {
     if (!hasUploadedData || previewVersion === 0) {
@@ -173,16 +144,15 @@ export function OnboardingFlow({
   function renderValueMoment() {
     if (!hasUploadedData) {
       return (
-        <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+        <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            Financial snapshot
+            {t("Financial snapshot", "Resumen financiero")}
           </p>
-          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-            Calendar first is completely fine.
+          <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+            {t("Calendar first is completely fine.", "Empezar por el calendario está perfecto.")}
           </h3>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-            Skip spreadsheets for now if iCal will bring your bookings. You can add statements,
-            expenses, or Excel data later whenever you want richer financial reporting.
+            {t("Skip spreadsheets for now if iCal will bring your bookings. You can add statements, expenses, or Excel data later whenever you want richer financial reporting.", "Sáltate los archivos si el iCal va a traer tus reservas. Puedes añadir extractos, gastos o Excel más adelante cuando quieras informes más completos.")}
           </p>
         </div>
       );
@@ -190,15 +160,15 @@ export function OnboardingFlow({
 
     if (previewState === "loading" || previewState === "idle") {
       return (
-        <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+        <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            First look
+            {t("First look", "Primer vistazo")}
           </p>
-          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-            Here’s what your business looks like right now.
+          <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+            {t("Here’s what your business looks like right now.", "Así se ve tu negocio ahora mismo.")}
           </h3>
           <p className="mt-4 text-sm leading-7 text-[var(--workspace-muted)]">
-            Reading the imported numbers and preparing your first summary.
+            {t("Reading the imported numbers and preparing your first summary.", "Leyendo los números importados y preparando tu primer resumen.")}
           </p>
         </div>
       );
@@ -206,15 +176,15 @@ export function OnboardingFlow({
 
     if (previewState === "error" || !preview?.hasData) {
       return (
-        <div className="workspace-card rounded-[30px] p-6 sm:p-7">
+        <div className="workspace-card rounded-xl p-6 sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            First look
+            {t("First look", "Primer vistazo")}
           </p>
-          <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-            Here’s what your business looks like right now.
+          <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+            {t("Here’s what your business looks like right now.", "Así se ve tu negocio ahora mismo.")}
           </h3>
           <p className="mt-4 text-sm leading-7 text-[var(--workspace-muted)]">
-            GoHostlyx imported your file, but there is not enough clean financial data yet to show this summary.
+            {t("GoHostlyx imported your file, but there is not enough clean financial data yet to show this summary.", "GoHostlyx importó tu archivo, pero todavía no hay suficientes datos limpios para mostrar este resumen.")}
           </p>
         </div>
       );
@@ -226,61 +196,61 @@ export function OnboardingFlow({
       <div className="space-y-5">
         <div className="space-y-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-            First look
+            {t("First look", "Primer vistazo")}
           </p>
-          <h3 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)] sm:text-4xl">
-            Here’s what your business looks like right now.
+          <h3 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)] sm:text-4xl">
+            {t("Here’s what your business looks like right now.", "Así se ve tu negocio ahora mismo.")}
           </h3>
           <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-            The estimate below updates as you adjust the tax rate, so the first number you see is what you keep.
+            {t("The estimate below updates as you adjust the tax rate, so the first number you see is what you keep.", "La estimación se actualiza al cambiar la tasa, así que el primer número que ves es lo que te quedas.")}
           </p>
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(260px,0.7fr)]">
           <article
-            className={`workspace-card rounded-[32px] p-6 sm:p-7 ring-1 ${
+            className={`workspace-card rounded-xl p-6 sm:p-7 ring-1 ${
               youKeepPositive
                 ? "bg-[linear-gradient(180deg,rgba(29,78,60,0.2)_0%,rgba(11,22,38,0.98)_100%)] ring-emerald-300/14"
                 : "bg-[linear-gradient(180deg,rgba(120,28,50,0.16)_0%,rgba(11,22,38,0.98)_100%)] ring-rose-300/12"
             }`}
           >
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              You Keep
+              {t("You Keep", "Te quedas")}
             </p>
             <p
-              className={`mt-5 text-5xl font-semibold tracking-[-0.06em] sm:text-6xl ${
+              className={`mt-5 text-5xl font-semibold tracking-[-0.04em] sm:text-6xl ${
                 youKeepPositive ? "text-white" : "text-rose-200"
               }`}
             >
               {formatCurrency(previewYouKeep, false, previewCurrencyCode)}
             </p>
             <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300">
-              This is roughly what you keep after setting aside estimated taxes.
+              {t("This is roughly what you keep after setting aside estimated taxes.", "Es aproximadamente lo que te quedas después de reservar los impuestos estimados.")}
             </p>
           </article>
 
           <div className="grid gap-4">
-            <article className="workspace-soft-card rounded-[26px] p-5">
+            <article className="workspace-soft-card rounded-xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                Set Aside
+                {t("Set Aside", "Reserva")}
               </p>
               <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)]">
                 {formatCurrency(previewSetAside, false, previewCurrencyCode)}
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                Based on the tax rate in this setup.
+                {t("Based on the tax rate in this setup.", "Según la tasa de impuestos de esta configuración.")}
               </p>
             </article>
 
-            <article className="workspace-soft-card rounded-[26px] p-5">
+            <article className="workspace-soft-card rounded-xl p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                Net Profit
+                {t("Net Profit", "Beneficio neto")}
               </p>
               <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)]">
                 {formatCurrency(previewNetProfit, false, previewCurrencyCode)}
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--workspace-muted)]">
-                Before estimated taxes are set aside.
+                {t("Before estimated taxes are set aside.", "Antes de reservar los impuestos estimados.")}
               </p>
             </article>
           </div>
@@ -296,7 +266,7 @@ export function OnboardingFlow({
     const normalizedBusinessName = businessName.trim();
 
     if (!normalizedBusinessName) {
-      setWorkspaceError("Add a workspace name before continuing.");
+      setWorkspaceError(t("Add a workspace name before continuing.", "Añade un nombre de espacio antes de continuar."));
       return;
     }
 
@@ -314,7 +284,7 @@ export function OnboardingFlow({
           const settingsPayload = (await settingsResponse.json()) as { error?: string };
 
           if (!settingsResponse.ok) {
-            setWorkspaceError(settingsPayload.error ?? "The workspace could not be saved.");
+            setWorkspaceError(settingsPayload.error ?? t("The workspace could not be saved.", "No se pudo guardar el espacio de trabajo."));
             return;
           }
 
@@ -329,7 +299,7 @@ export function OnboardingFlow({
 
           setCurrentStep(2);
         } catch {
-          setWorkspaceError("The workspace could not be saved.");
+          setWorkspaceError(t("The workspace could not be saved.", "No se pudo guardar el espacio de trabajo."));
         }
       })();
     });
@@ -343,7 +313,7 @@ export function OnboardingFlow({
     const normalizedUnitCount = Math.max(2, Math.trunc(Number(unitCount) || 0));
 
     if (!normalizedPropertyName) {
-      setPropertyError("Add a property name before continuing.");
+      setPropertyError(t("Add a property name before continuing.", "Añade un nombre de propiedad antes de continuar."));
       return;
     }
 
@@ -369,7 +339,7 @@ export function OnboardingFlow({
           };
 
           if (!propertyResponse.ok) {
-            setPropertyError(propertyPayload.error ?? "The property could not be created.");
+            setPropertyError(propertyPayload.error ?? t("The property could not be created.", "No se pudo crear la propiedad."));
             return;
           }
 
@@ -413,7 +383,7 @@ export function OnboardingFlow({
           ]);
           setCurrentStep(3);
         } catch {
-          setPropertyError("The property could not be created.");
+          setPropertyError(t("The property could not be created.", "No se pudo crear la propiedad."));
         }
       })();
     });
@@ -437,125 +407,50 @@ export function OnboardingFlow({
           const payload = (await response.json()) as { error?: string };
 
           if (!response.ok) {
-            setTaxError(payload.error ?? "The tax rate could not be saved.");
+            setTaxError(payload.error ?? t("The tax rate could not be saved.", "No se pudo guardar la tasa de impuestos."));
             return;
           }
 
           setCurrentStep(5);
         } catch {
-          setTaxError("The tax rate could not be saved.");
+          setTaxError(t("The tax rate could not be saved.", "No se pudo guardar la tasa de impuestos."));
         }
       })();
     });
   }
 
   function renderStep() {
-    if (currentStep === 0) {
-      return (
-        <section className="space-y-8">
-          <div className="space-y-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Welcome
-            </p>
-            <h1 className="text-4xl font-semibold tracking-[-0.06em] text-[var(--workspace-text)] sm:text-5xl">
-              Set up the structure first, then decide how much data to add.
-            </h1>
-            <p className="max-w-2xl text-base leading-8 text-[var(--workspace-muted)]">
-              We will name the workspace, create the first property, leave room for calendar sync at
-              the property or unit level, and keep spreadsheets optional.
-            </p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">1. Set the workspace</p>
-              <p className="mt-2 text-sm leading-7 text-[var(--workspace-muted)]">
-                Save the business name and reporting market that should guide the rest of the app.
-              </p>
-            </div>
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">2. Create the property</p>
-              <p className="mt-2 text-sm leading-7 text-[var(--workspace-muted)]">
-                Calendars and financial data should attach to a property, and to listings when the property has more than one rentable listing.
-              </p>
-            </div>
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">3. Add data only if useful</p>
-              <p className="mt-2 text-sm leading-7 text-[var(--workspace-muted)]">
-                Upload statements, spreadsheets, or expenses later. The calendar path does not need a booking file first.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(1)}
-              className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
-            >
-              Start onboarding
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <Link
-              href="/"
-              className="workspace-button-secondary inline-flex items-center rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
-            >
-              Back home
-            </Link>
-          </div>
-        </section>
-      );
-    }
-
     if (currentStep === 1) {
       return (
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Workspace setup
+              {t("Workspace setup", "Espacio de trabajo")}
             </p>
-            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-              Give GoHostlyx the right home base.
+            <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+              {t("Name your workspace and pick your market.", "Ponle nombre a tu espacio y elige tu mercado.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              Keep this simple. The selected market becomes the default reporting context for the workspace,
-              while properties and listings come next.
+              {t("The market sets your default currency and tax context. You can change both later in Settings.", "El mercado define tu moneda y tus impuestos por defecto. Puedes cambiar ambos después en Ajustes.")}
             </p>
           </div>
 
           <form onSubmit={handleWorkspaceSubmit} className="space-y-5">
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <label className="space-y-2">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                  Workspace name
-                </span>
-                <input
-                  className={inputClassName()}
-                  value={businessName}
-                  onChange={(event) => setBusinessName(event.target.value)}
-                  placeholder="GoHostlyx Capital, My Rental Portfolio..."
-                  required
-                />
-              </label>
-            </div>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-[var(--workspace-text)]">{t("Workspace name", "Nombre del espacio")}</span>
+              <input
+                className={inputClassName()}
+                value={businessName}
+                onChange={(event) => setBusinessName(event.target.value)}
+                placeholder={t("My rental business", "Mi negocio de alquiler")}
+                required
+              />
+            </label>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Market
-                  </p>
-                  <p className="mt-2 text-sm text-[var(--workspace-muted)]">
-                    Country and currency stay linked so reporting stays consistent.
-                  </p>
-                </div>
-                <span className="rounded-full border border-white/8 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[var(--workspace-text)]">
-                  {market.currencyCode}
-                </span>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                {marketDefinitions.map((entry) => {
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-[var(--workspace-text)]">{t("Market", "Mercado")}</p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((entry) => {
                   const isSelected = entry.countryCode === countryCode;
 
                   return (
@@ -563,16 +458,16 @@ export function OnboardingFlow({
                       key={entry.countryCode}
                       type="button"
                       onClick={() => setCountryCode(entry.countryCode)}
-                      className={`rounded-[26px] border p-5 text-left transition ${
+                      className={`rounded-lg border p-4 text-left transition ${
                         isSelected
                           ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                           : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="workspace-icon-chip rounded-[18px] p-3">
-                          <Globe2 className="h-4 w-4" />
-                        </div>
+                        <span className="workspace-icon-chip flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-semibold">
+                          {entry.countryCode}
+                        </span>
                         <div>
                           <p className="text-sm font-semibold text-[var(--workspace-text)]">
                             {entry.countryName}
@@ -588,54 +483,17 @@ export function OnboardingFlow({
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <div className="grid gap-4 md:grid-cols-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Workspace
-                  </p>
-                  <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
-                    {businessName.trim() || "Your workspace"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Default market
-                  </p>
-                  <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
-                    {market.countryName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Next up
-                  </p>
-                  <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
-                    Create your first property
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {workspaceError ? (
               <p className="text-sm text-rose-400">{workspaceError}</p>
             ) : null}
 
             <div className="flex flex-wrap items-center gap-3">
               <button
-                type="button"
-                onClick={() => setCurrentStep(0)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </button>
-              <button
                 type="submit"
                 disabled={isWorkspacePending}
-                className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isWorkspacePending ? "Saving workspace..." : "Continue to property"}
+                {isWorkspacePending ? "Saving workspace..." : t("Continue to property", "Continuar a la propiedad")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -645,88 +503,53 @@ export function OnboardingFlow({
     }
 
     if (currentStep === 2) {
-      const propertyMarket = getMarketDefinition(propertyCountryCode);
-      const calendarTargetLabel =
-        propertyMode === "multi"
-          ? `${Math.max(2, Math.trunc(Number(unitCount) || 0))} future iCal targets`
-          : "1 future iCal target";
-
       return (
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Property setup
+              {t("Property setup", "Propiedad")}
             </p>
-            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-              Create the home that calendars should attach to.
+            <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+              {t("Add your first property.", "Añade tu primera propiedad.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              The business name stays at workspace level. Each future iCal feed should belong to a
-              property, or to one of its listings if you rent multiple rentable listings.
+              {t("Bookings, expenses and calendars are tracked per property. You can add more properties later.", "Reservas, gastos y calendarios se organizan por propiedad. Puedes añadir más después.")}
             </p>
-          </div>
-
-          <div className="workspace-card rounded-[28px] p-5">
-            <div className="flex items-start gap-4">
-              <div className="workspace-icon-chip rounded-[18px] p-3">
-                <CalendarDays className="h-4 w-4" />
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-[var(--workspace-text)]">
-                  Calendar connection rule
-                </p>
-                <p className="max-w-3xl text-sm leading-7 text-[var(--workspace-muted)]">
-                  The workspace is just the company shell. iCal should connect here at the property
-                  level, or one level deeper at each listing when the property has multiple rentable listings.
-                </p>
-              </div>
-            </div>
           </div>
 
           <form onSubmit={handlePropertySubmit} className="space-y-5">
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <label className="space-y-2">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                  Property name
-                </span>
-                <input
-                  className={inputClassName()}
-                  value={propertyName}
-                  onChange={(event) => setPropertyName(event.target.value)}
-                  placeholder={defaultPropertyName}
-                  required
-                />
-              </label>
-            </div>
+            <label className="block space-y-2">
+              <span className="text-sm font-medium text-[var(--workspace-text)]">{t("Property name", "Nombre de la propiedad")}</span>
+              <input
+                className={inputClassName()}
+                value={propertyName}
+                onChange={(event) => setPropertyName(event.target.value)}
+                placeholder={defaultPropertyName}
+                required
+              />
+            </label>
 
-            <div className="space-y-3">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                  Rental structure
-                </p>
-                <p className="mt-2 text-sm text-[var(--workspace-muted)]">
-                  Choose whether one iCal feed should cover the whole property or whether each listing needs its own feed.
-                </p>
-              </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-[var(--workspace-text)]">{t("How do you rent it?", "¿Cómo la alquilas?")}</p>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-3 md:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => setPropertyMode("single")}
-                  className={`rounded-[26px] border p-5 text-left transition ${
+                  className={`rounded-lg border p-4 text-left transition ${
                     propertyMode === "single"
                       ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                       : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="workspace-icon-chip rounded-[18px] p-3">
+                    <div className="workspace-icon-chip rounded-lg p-3">
                       <House className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[var(--workspace-text)]">Single home</p>
+                      <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("As one listing", "Como un solo listing")}</p>
                       <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-                        One listing, one calendar connection, no extra listings required.
+                        {t("The whole home is rented as a single unit.", "La vivienda entera se alquila como una unidad.")}
                       </p>
                     </div>
                   </div>
@@ -735,20 +558,20 @@ export function OnboardingFlow({
                 <button
                   type="button"
                   onClick={() => setPropertyMode("multi")}
-                  className={`rounded-[26px] border p-5 text-left transition ${
+                  className={`rounded-lg border p-4 text-left transition ${
                     propertyMode === "multi"
                       ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                       : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="workspace-icon-chip rounded-[18px] p-3">
+                    <div className="workspace-icon-chip rounded-lg p-3">
                       <Layers3 className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[var(--workspace-text)]">Multi-listing</p>
+                      <p className="text-sm font-semibold text-[var(--workspace-text)]">{t("As several listings", "Como varios listings")}</p>
                       <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-                        Rooms, suites, apartments, or any setup where each listing may need its own iCal.
+                        {t("Rooms or units listed separately, each with its own calendar.", "Habitaciones o unidades anunciadas por separado, cada una con su calendario.")}
                       </p>
                     </div>
                   </div>
@@ -757,11 +580,9 @@ export function OnboardingFlow({
             </div>
 
             {propertyMode === "multi" ? (
-              <div className="workspace-soft-card rounded-[26px] p-5">
-                <label className="space-y-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    How many listings?
-                  </span>
+              <div>
+                <label className="block space-y-2">
+                  <span className="text-sm font-medium text-[var(--workspace-text)]">{t("How many listings?", "¿Cuántos listings?")}</span>
                   <input
                     className={inputClassName()}
                     type="number"
@@ -774,23 +595,11 @@ export function OnboardingFlow({
               </div>
             ) : null}
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Property market
-                  </p>
-                  <p className="mt-2 text-sm text-[var(--workspace-muted)]">
-                    This can match the workspace market, or differ if the property is in another country.
-                  </p>
-                </div>
-                <span className="rounded-full border border-white/8 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[var(--workspace-text)]">
-                  {propertyMarket.currencyCode}
-                </span>
-              </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-[var(--workspace-text)]">{t("Where is it?", "¿Dónde está?")}</p>
 
-              <div className="grid gap-4 sm:grid-cols-3">
-                {marketDefinitions.map((entry) => {
+              <div className="grid gap-3 sm:grid-cols-3">
+                {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((entry) => {
                   const isSelected = entry.countryCode === propertyCountryCode;
 
                   return (
@@ -798,16 +607,16 @@ export function OnboardingFlow({
                       key={`property-market-${entry.countryCode}`}
                       type="button"
                       onClick={() => setPropertyCountryCode(entry.countryCode)}
-                      className={`rounded-[26px] border p-5 text-left transition ${
+                      className={`rounded-lg border p-4 text-left transition ${
                         isSelected
                           ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)] shadow-[0_0_0_1px_rgba(88,196,182,0.16)]"
                           : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)] hover:border-[var(--workspace-accent)]/40"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="workspace-icon-chip rounded-[18px] p-3">
-                          <Globe2 className="h-4 w-4" />
-                        </div>
+                        <span className="workspace-icon-chip flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-semibold">
+                          {entry.countryCode}
+                        </span>
                         <div>
                           <p className="text-sm font-semibold text-[var(--workspace-text)]">
                             {entry.countryName}
@@ -823,52 +632,23 @@ export function OnboardingFlow({
               </div>
             </div>
 
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <div className="grid gap-4 md:grid-cols-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Property
-                  </p>
-                  <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
-                    {propertyName.trim() || defaultPropertyName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Market
-                  </p>
-                  <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
-                    {propertyMarket.countryName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Calendar-ready shape
-                  </p>
-                  <p className="mt-3 text-base font-semibold text-[var(--workspace-text)]">
-                    {calendarTargetLabel}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {propertyError ? <p className="text-sm text-rose-400">{propertyError}</p> : null}
 
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                {t("Back", "Atrás")}
               </button>
               <button
                 type="submit"
                 disabled={isPropertyPending}
-                className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isPropertyPending ? "Creating property..." : "Continue to optional data"}
+                {isPropertyPending ? "Creating property..." : t("Continue", "Continuar")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -882,36 +662,19 @@ export function OnboardingFlow({
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Optional financial data
+              {t("Optional financial data", "Datos financieros opcionales")}
             </p>
-            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-              Add spreadsheets only if they help right now.
+            <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+              {t("Import your numbers, or skip for now.", "Importa tus números o sáltalo por ahora.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              Use uploads for bookings, expenses, or payout statements if you want richer numbers
-              immediately. If iCal will supply the calendar later, you can skip this step.
+              {t("Upload an Airbnb or Booking.com export, an expenses sheet or a payout statement to see real numbers right away. If your bookings will come in through calendar sync, skip this.", "Sube una exportación de Airbnb o Booking.com, una hoja de gastos o un extracto de payout para ver números reales enseguida. Si tus reservas llegarán por el calendario, sáltalo.")}
             </p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">Useful uploads</p>
-              <p className="mt-2 text-sm leading-7 text-[var(--workspace-muted)]">
-                Booking spreadsheets, expenses, and payout statements are great when you want financial reporting before calendar sync is connected.
-              </p>
-            </div>
-            <div className="workspace-soft-card rounded-[26px] p-5">
-              <p className="text-sm font-semibold text-[var(--workspace-text)]">Safe to skip</p>
-              <p className="mt-2 text-sm leading-7 text-[var(--workspace-muted)]">
-                If the same bookings will arrive through iCal, do not force an upload now just to get through onboarding.
-              </p>
-            </div>
           </div>
 
           <UploadPanel
             properties={properties}
-            title="Optional financial data"
-            subtitle="Upload Airbnb, Booking.com, or Excel files only if you want GoHostlyx to start with real financial numbers now."
+            hideHeader
             refreshOnSuccess={false}
             onImportComplete={({ hasRemainingIssues }) => {
               setHasUploadedData(true);
@@ -924,24 +687,23 @@ export function OnboardingFlow({
           />
 
           {hasUploadedData && uploadNeedsReview ? (
-            <div className="workspace-card rounded-[28px] border border-amber-300/18 bg-[rgba(122,97,14,0.08)] p-5">
+            <div className="workspace-card rounded-xl border border-amber-300/18 bg-[rgba(122,97,14,0.08)] p-5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-100/80">
-                Import review
+                {t("Import review", "Revisión de la importación")}
               </p>
               <h3 className="mt-3 text-xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)]">
-                Clean rows are already in GoHostlyx.
+                {t("Clean rows are already in GoHostlyx.", "Las filas limpias ya están en GoHostlyx.")}
               </h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-                You can keep reviewing this file here, replace it, or move on. Upload is optional now,
-                not a blocker.
+                {t("You can keep reviewing this file here, replace it, or move on. Upload is optional now, not a blocker.", "Puedes seguir revisando este archivo, reemplazarlo o continuar. Subir archivos es opcional.")}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(4)}
-                  className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                  className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
-                  Continue to tax
+                  {t("Continue to tax", "Continuar a impuestos")}
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -952,17 +714,17 @@ export function OnboardingFlow({
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+              className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back
+              {t("Back", "Atrás")}
             </button>
             <button
               type="button"
               onClick={() => setCurrentStep(4)}
-              className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+              className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
-              Skip for now
+              {t("Skip for now", "Saltar por ahora")}
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
@@ -976,29 +738,28 @@ export function OnboardingFlow({
 
       return (
         <section className="space-y-6">
-          {renderValueMoment()}
+          {hasUploadedData ? renderValueMoment() : null}
 
           <div className="space-y-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Optional tax setup
+              {t("Optional tax setup", "Impuestos (opcional)")}
             </p>
-            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-              Keep the estimate lightweight.
+            <h2 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl text-[var(--workspace-text)]">
+              {t("Set your tax estimate.", "Configura tu estimación de impuestos.")}
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
-              This only helps the dashboard show what to set aside and what you keep. You can skip it
-              now and change it later in Settings.
+              {t("This only helps the dashboard show what to set aside and what you keep. You can skip it now and change it later in Settings.", "Solo sirve para que el dashboard muestre cuánto reservar y cuánto te quedas. Puedes saltarlo y cambiarlo después en Ajustes.")}
             </p>
           </div>
 
           <form onSubmit={handleTaxSubmit} className="space-y-5">
             <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
-              <div className="workspace-soft-card rounded-[26px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                  Tax market
+                  {t("Tax market", "Mercado fiscal")}
                 </p>
                 <div className="mt-4 grid gap-3">
-                  {marketDefinitions.map((entry) => {
+                  {marketDefinitions.map((definition) => getMarketLabels(definition.countryCode, locale)).map((entry) => {
                     const isSelected = entry.countryCode === taxCountryCode;
 
                     return (
@@ -1010,7 +771,7 @@ export function OnboardingFlow({
                           setTaxRate(String(getDefaultTaxRateByCountry(entry.countryCode)));
                           setTaxError(null);
                         }}
-                        className={`rounded-[20px] border px-4 py-4 text-left transition ${
+                        className={`rounded-lg border px-4 py-4 text-left transition ${
                           isSelected
                             ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)]"
                             : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)]"
@@ -1027,10 +788,10 @@ export function OnboardingFlow({
               </div>
 
               <div className="space-y-4">
-                <div className="workspace-soft-card rounded-[26px] p-5">
+                <div className="workspace-soft-card rounded-xl p-5">
                   <label className="space-y-2">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                      Tax rate
+                      {t("Tax rate", "Tasa de impuestos")}
                     </span>
                     <div className="relative">
                       <input
@@ -1052,9 +813,9 @@ export function OnboardingFlow({
                   </label>
                 </div>
 
-                <div className="workspace-card rounded-[28px] p-6">
+                <div className="workspace-card rounded-xl p-6">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                    Preview
+                    {t("Preview", "Vista previa")}
                   </p>
                   <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)]">
                     {selectedTaxMarket.countryName} • {normalizedTaxRate}%
@@ -1072,25 +833,25 @@ export function OnboardingFlow({
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                {t("Back", "Atrás")}
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentStep(5)}
-                className="workspace-button-secondary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
-                Skip for now
+                {t("Skip for now", "Saltar por ahora")}
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
                 type="submit"
                 disabled={isTaxPending}
-                className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isTaxPending ? "Saving tax rate..." : "Continue to dashboard"}
+                {isTaxPending ? "Saving tax rate..." : t("Continue to dashboard", "Continuar al dashboard")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -1101,125 +862,94 @@ export function OnboardingFlow({
 
     return (
       <section className="space-y-8">
-        <div className="inline-flex rounded-full border border-emerald-400/18 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-100">
-          GoHostlyx is ready
-        </div>
-
-        {renderValueMoment()}
-
-        <div className="workspace-soft-card rounded-[26px] p-5">
-          <p className="text-sm font-semibold text-[var(--workspace-text)]">What is ready now</p>
-          <p className="mt-2 text-sm leading-7 text-[var(--workspace-muted)]">
-            Your workspace and first property are saved. Financial files and tax defaults can be added anytime,
-            and future iCal feeds should connect to the property or its listings, not to the company record itself.
-          </p>
-        </div>
+        {hasUploadedData ? (
+          renderValueMoment()
+        ) : (
+          <div className="space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
+              {t("All set", "Todo listo")}
+            </p>
+            <h2 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--workspace-text)] sm:text-3xl">
+              {t("Your workspace is ready.", "Tu espacio está listo.")}
+            </h2>
+            <p className="max-w-2xl text-sm leading-7 text-[var(--workspace-muted)]">
+              {t("Next, connect your Airbnb or Booking.com calendar from the Calendar page, or upload a file from the dashboard. Your numbers appear as soon as bookings come in.", "Ahora conecta tu calendario de Airbnb o Booking.com desde la página Calendario, o sube un archivo desde el dashboard. Tus números aparecen en cuanto entren reservas.")}
+            </p>
+          </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="workspace-button-primary inline-flex items-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
+            className="workspace-button-primary inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
           >
-            Go to dashboard
+            {t("Go to dashboard", "Ir al dashboard")}
             <ArrowRight className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => setCurrentStep(4)}
-            className="workspace-button-secondary inline-flex items-center rounded-2xl px-5 py-3.5 text-sm font-semibold transition"
+            className="workspace-button-secondary inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
           >
-            Review tax rate
+            {t("Review tax rate", "Revisar tasa de impuestos")}
           </button>
         </div>
       </section>
     );
   }
 
+  const visibleSteps = steps.slice(1);
+  const visibleIndex = Math.max(0, currentStep - 1);
+  const firstName = userName.split(" ")[0] || (isSpanish ? "" : "there");
+
   return (
-    <main className="min-h-screen bg-[var(--workspace-bg)] px-4 py-6 sm:px-6 xl:px-8">
-      <div className="mx-auto grid w-full max-w-[1480px] gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <aside className="workspace-card rounded-[34px] p-6 sm:p-7 xl:sticky xl:top-6 xl:h-fit">
-          <div className="flex items-center gap-3">
-            <BrandLogo href="/" compact />
-          </div>
+    <main className="min-h-screen bg-[var(--workspace-bg)] px-4 pb-16 pt-6 sm:px-6">
+      <div className="mx-auto w-full max-w-3xl">
+        <header className="flex items-center justify-between gap-4">
+          <BrandLogo href="/" compact />
+          <p className="text-sm font-medium text-[var(--workspace-muted)]">
+            {t("Step", "Paso")} {visibleIndex + 1} {t("of", "de")} {visibleSteps.length}
+          </p>
+        </header>
 
-          <div className="mt-8 space-y-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-              Onboarding
-            </p>
-            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-[var(--workspace-text)]">
-              Hi {userName.split(" ")[0] || "there"}.
-            </h2>
-            <p className="text-sm leading-7 text-[var(--workspace-muted)]">
-              Keep this fast. The goal is one clean setup pass, then straight into your financial dashboard.
-            </p>
-          </div>
+        <ol className="mt-8 grid grid-cols-5 gap-2" aria-label={t("Onboarding progress", "Progreso de la configuración")}>
+          {visibleSteps.map((step, index) => {
+            const isActive = index === visibleIndex;
+            const isDone = index < visibleIndex;
 
-          <div className="mt-8 space-y-3">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = index === currentStep;
-              const isDone = index < stepsCompleted;
-
-              return (
+            return (
+              <li key={step.id} className="space-y-2" aria-current={isActive ? "step" : undefined}>
                 <div
-                  key={step.id}
-                  className={`rounded-[24px] border p-4 transition ${
-                    isActive
-                      ? "border-[var(--workspace-accent)] bg-[var(--workspace-accent-soft)]"
-                      : isDone
-                        ? "border-emerald-400/18 bg-emerald-400/10"
-                        : "border-[var(--workspace-border)] bg-[var(--workspace-panel-soft)]"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`rounded-[18px] p-3 ${isDone ? "bg-emerald-400/14 text-emerald-200" : "workspace-icon-chip"}`}>
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
-                        Step {index + 1}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-[var(--workspace-text)]">
-                        {step.label}
-                      </p>
-                      <p className="mt-1 text-xs leading-6 text-[var(--workspace-muted)]">
-                        {step.title}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </aside>
-
-        <section className="workspace-card rounded-[36px] p-6 sm:p-7 xl:p-9">
-          <div className="mb-8 flex flex-col gap-4 border-b border-white/6 pb-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
-                Step {currentStep + 1} of {steps.length}
-              </p>
-              <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--workspace-text)] sm:text-3xl">
-                {steps[currentStep]?.title}
-              </h1>
-            </div>
-
-            <div className="grid grid-cols-5 gap-2 sm:w-[280px]">
-              {steps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className={`h-2 rounded-full ${
-                    index <= currentStep
-                      ? "bg-[var(--workspace-accent)]"
-                      : "bg-white/8"
+                  className={`h-1.5 rounded-full transition-colors ${
+                    isActive || isDone ? "bg-[var(--workspace-accent)]" : "bg-white/10"
                   }`}
                 />
-              ))}
-            </div>
-          </div>
+                <p
+                  className={`hidden text-xs font-medium sm:block ${
+                    isActive
+                      ? "text-[var(--workspace-text)]"
+                      : isDone
+                        ? "text-[var(--workspace-accent)]"
+                        : "text-[var(--workspace-muted)]"
+                  }`}
+                >
+                  {step.label[locale]}
+                </p>
+              </li>
+            );
+          })}
+        </ol>
 
+        {currentStep === 1 ? (
+          <p className="mt-10 text-sm leading-7 text-[var(--workspace-muted)]">
+            {isSpanish
+              ? `Hola ${firstName}. La configuración lleva unos dos minutos y puedes cambiarlo todo después.`
+              : `Hi ${firstName}. Setup takes about two minutes, and you can change everything later.`}
+          </p>
+        ) : null}
+
+        <section className={`workspace-card rounded-xl p-6 sm:p-8 ${currentStep === 1 ? "mt-4" : "mt-10"}`}>
           {renderStep()}
         </section>
       </div>

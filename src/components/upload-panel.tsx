@@ -19,6 +19,9 @@ import {
 import type { PropertyDefinition } from "@/lib/types";
 import type { ImportEditableBooking } from "@/lib/import/types";
 import { useLocale } from "@/components/locale-provider";
+
+// Keep in sync with MAX_IMPORT_FILE_BYTES in /api/import (Vercel caps bodies at 4.5 MB).
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 import { WorkspaceSelect } from "@/components/workspace-select";
 
 type UploadPhase = "idle" | "previewing" | "ready" | "importing";
@@ -354,6 +357,7 @@ export function UploadPanel({
   subtitle = "Upload your Airbnb, Booking.com, or Excel files to see your real numbers.",
   refreshOnSuccess = true,
   appearance = "default",
+  hideHeader = false,
   onImportComplete,
   onCancel,
 }: {
@@ -362,12 +366,15 @@ export function UploadPanel({
   subtitle?: string;
   refreshOnSuccess?: boolean;
   appearance?: "default" | "compact";
+  /** Hide the title block when the surrounding page already explains the upload. */
+  hideHeader?: boolean;
   onImportComplete?: (payload: ImportCompletePayload) => void;
   onCancel?: () => void;
 }) {
   const router = useRouter();
   const { locale } = useLocale();
   const isSpanish = locale === "es";
+  const t = (en: string, es: string) => (isSpanish ? es : en);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const toastRef = useRef<HTMLDivElement | null>(null);
@@ -430,17 +437,18 @@ export function UploadPanel({
       preview.canImport,
   );
 
+  const financialStatementRawData = preview?.financialStatement?.rawData;
   const financialStatementPreviewData = useMemo<FinancialStatementRawPreview | null>(() => {
-    if (!preview?.financialStatement?.rawData) {
+    if (!financialStatementRawData) {
       return null;
     }
 
     try {
-      return JSON.parse(preview.financialStatement.rawData) as FinancialStatementRawPreview;
+      return JSON.parse(financialStatementRawData) as FinancialStatementRawPreview;
     } catch {
       return null;
     }
-  }, [preview?.financialStatement?.rawData]);
+  }, [financialStatementRawData]);
 
   const isCompactAppearance = appearance === "compact";
 
@@ -600,6 +608,21 @@ export function UploadPanel({
   }
 
   function resetSelection(nextFile: File | null) {
+    if (nextFile && nextFile.size > MAX_UPLOAD_BYTES) {
+      setSelectedFile(null);
+      setPreview(null);
+      setToast({
+        tone: "error",
+        message: isSpanish
+          ? "El archivo supera 4 MB. Exporta un rango de fechas más corto e inténtalo de nuevo."
+          : "That file is larger than 4 MB. Export a shorter date range and try again.",
+      });
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+      return;
+    }
+
     setSelectedFile(nextFile);
     setPreview(null);
     setManualMapping(null);
@@ -854,11 +877,11 @@ export function UploadPanel({
   if (committed) {
     return (
       <div className="relative">
-        <div className="workspace-card overflow-hidden rounded-[34px] border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(10,20,38,0.98),rgba(10,18,33,0.96))] p-6 sm:p-7">
+        <div className="workspace-card overflow-hidden rounded-xl border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(10,20,38,0.98),rgba(10,18,33,0.96))] p-6 sm:p-7">
           {toast ? (
             <div
               ref={toastRef}
-              className={`mb-5 rounded-[24px] border px-4 py-4 shadow-[0_24px_60px_rgba(15,23,42,0.22)] ${
+              className={`mb-5 rounded-xl border px-4 py-4 shadow-[0_24px_60px_rgba(15,23,42,0.22)] ${
                 toast.tone === "success"
                   ? "border-emerald-400/24 bg-[rgba(7,28,26,0.96)] text-emerald-100"
                   : "border-rose-400/24 bg-[rgba(40,12,18,0.96)] text-rose-100"
@@ -888,7 +911,7 @@ export function UploadPanel({
             </div>
           ) : null}
 
-          <div className="rounded-[28px] border border-emerald-400/18 bg-[radial-gradient(circle_at_top,rgba(125,211,197,0.18),transparent_58%),rgba(255,255,255,0.02)] p-6 sm:p-8">
+          <div className="rounded-xl border border-emerald-400/18 bg-[radial-gradient(circle_at_top,rgba(125,211,197,0.18),transparent_58%),rgba(255,255,255,0.02)] p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-3">
                 <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/18 bg-emerald-400/[0.08] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-100">
@@ -905,7 +928,7 @@ export function UploadPanel({
                 </div>
               </div>
 
-              <div className="workspace-soft-card rounded-[24px] px-4 py-4 text-sm text-[var(--workspace-muted)]">
+              <div className="workspace-soft-card rounded-xl px-4 py-4 text-sm text-[var(--workspace-muted)]">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   Source
                 </p>
@@ -929,7 +952,7 @@ export function UploadPanel({
               ).map(([label, value, tone]) => (
                 <div
                   key={String(label)}
-                  className="rounded-[24px] border border-[var(--workspace-border)] bg-[rgba(255,255,255,0.03)] px-5 py-5"
+                  className="rounded-xl border border-[var(--workspace-border)] bg-[rgba(255,255,255,0.03)] px-5 py-5"
                 >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                     {label}
@@ -943,7 +966,7 @@ export function UploadPanel({
               <button
                 type="button"
                 onClick={() => router.push("/dashboard")}
-                className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 Go to dashboard
                 <ArrowRight className="h-4 w-4" />
@@ -951,7 +974,7 @@ export function UploadPanel({
               <button
                 type="button"
                 onClick={() => resetSelection(null)}
-                className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 Import another file
               </button>
@@ -972,12 +995,12 @@ export function UploadPanel({
     <div className="relative">
       <div
         ref={panelRef}
-        className="workspace-card overflow-hidden rounded-[34px] border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(10,20,38,0.98),rgba(10,18,33,0.96))] p-5 sm:p-7"
+        className="workspace-card overflow-hidden rounded-xl border border-[var(--workspace-border)] bg-[linear-gradient(180deg,rgba(10,20,38,0.98),rgba(10,18,33,0.96))] p-5 sm:p-7"
       >
         {toast ? (
           <div
             ref={toastRef}
-            className={`mb-5 rounded-[24px] border px-4 py-4 shadow-[0_24px_60px_rgba(15,23,42,0.22)] ${
+            className={`mb-5 rounded-xl border px-4 py-4 shadow-[0_24px_60px_rgba(15,23,42,0.22)] ${
               toast.tone === "success"
                 ? "border-emerald-400/24 bg-[rgba(7,28,26,0.96)] text-emerald-100"
                 : "border-rose-400/24 bg-[rgba(40,12,18,0.96)] text-rose-100"
@@ -1008,6 +1031,7 @@ export function UploadPanel({
         ) : null}
 
         <div className="relative">
+          {hideHeader ? null : (
           <div className={`flex flex-wrap items-start justify-between gap-4 ${isCompactAppearance ? "sm:gap-3" : ""}`}>
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-[var(--workspace-border)] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--workspace-muted)]">
@@ -1033,7 +1057,7 @@ export function UploadPanel({
             </div>
             <div
               className={`workspace-soft-card text-right text-sm text-[var(--workspace-muted)] ${
-                isCompactAppearance ? "rounded-[22px] px-4 py-3" : "rounded-[26px] px-4 py-4"
+                isCompactAppearance ? "rounded-lg px-4 py-3" : "rounded-xl px-4 py-4"
               }`}
             >
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1044,8 +1068,9 @@ export function UploadPanel({
               </p>
             </div>
           </div>
+          )}
 
-        <div className={`${isCompactAppearance ? "mt-6" : "mt-8"} space-y-6`}>
+        <div className={`${hideHeader ? "" : isCompactAppearance ? "mt-6" : "mt-8"} space-y-6`}>
           <input
             ref={inputRef}
             type="file"
@@ -1074,14 +1099,14 @@ export function UploadPanel({
                 placeholder="Select a property"
               />
             ) : (
-              <div className="rounded-[18px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] px-4 py-3 text-sm text-[var(--workspace-text)]">
+              <div className="rounded-lg border border-[var(--workspace-border)] bg-[var(--workspace-panel)] px-4 py-3 text-sm text-[var(--workspace-text)]">
                 {selectedPropertyName}
               </div>
             )}
           </div>
 
           <div
-            className={`workspace-soft-card group cursor-pointer rounded-[28px] border border-dashed p-6 transition sm:p-7 ${
+            className={`workspace-soft-card group cursor-pointer rounded-xl border border-dashed p-6 transition sm:p-7 ${
               isDragging
                 ? "border-[var(--workspace-accent)] bg-[rgba(125,211,197,0.08)]"
                 : "border-[var(--workspace-border)] hover:border-[var(--workspace-accent)]/40 hover:bg-white/[0.03]"
@@ -1109,7 +1134,7 @@ export function UploadPanel({
           >
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] border border-[var(--workspace-border)] bg-[rgba(125,211,197,0.08)] text-[var(--workspace-accent)]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-[rgba(125,211,197,0.08)] text-[var(--workspace-accent)]">
                   {phase === "previewing" || phase === "importing" ? (
                     <LoaderCircle className="h-6 w-6 animate-spin" />
                   ) : (
@@ -1148,7 +1173,7 @@ export function UploadPanel({
                   <button
                     type="button"
                     onClick={() => resetSelection(null)}
-                    className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                    className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                   >
                     Remove
                   </button>
@@ -1156,7 +1181,7 @@ export function UploadPanel({
                 <button
                   type="button"
                   onClick={openFilePicker}
-                  className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                  className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                 >
                   {selectedFile ? "Replace file" : "Browse files"}
                 </button>
@@ -1169,7 +1194,7 @@ export function UploadPanel({
               type="button"
               onClick={handlePreview}
               disabled={!selectedFile || phase === "previewing" || phase === "importing"}
-              className="workspace-button-primary inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="workspace-button-primary inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               {phase === "previewing" ? (
                 <>
@@ -1184,7 +1209,7 @@ export function UploadPanel({
             <button
               type="button"
               onClick={handleCancel}
-              className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition"
+              className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
             >
               Cancel
             </button>
@@ -1194,11 +1219,11 @@ export function UploadPanel({
             <div className="space-y-5">
               <div
                 ref={sourceDetectedRef}
-                className="workspace-soft-card rounded-[28px] border border-[var(--workspace-border)] p-5 sm:p-6"
+                className="workspace-soft-card rounded-xl border border-[var(--workspace-border)] p-5 sm:p-6"
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.04]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-[var(--workspace-border)] bg-white/[0.04]">
                       {(() => {
                         const Icon = getSourcePresentation(preview.source).icon;
                         return <Icon className="h-5 w-5 text-[var(--workspace-accent)]" />;
@@ -1243,7 +1268,7 @@ export function UploadPanel({
                             type="button"
                             onClick={handleImport}
                             disabled={phase === "importing" || phase === "previewing"}
-                            className="workspace-button-primary inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                            className="workspace-button-primary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {phase === "importing" ? "Saving payout statement..." : "Save payout statement"}
                           </button>
@@ -1256,7 +1281,7 @@ export function UploadPanel({
                           <button
                             type="button"
                             onClick={scrollToMapping}
-                            className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition"
+                            className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                           >
                             Map columns manually
                           </button>
@@ -1296,7 +1321,7 @@ export function UploadPanel({
 
               {preview.blocksImport ? (
                 <div
-                  className={`rounded-[28px] border p-5 sm:p-6 ${
+                  className={`rounded-xl border p-5 sm:p-6 ${
                     isBlockedFinancialStatement
                       ? "border-amber-400/18 bg-amber-300/[0.07]"
                       : "border-rose-400/18 bg-rose-300/[0.07]"
@@ -1326,7 +1351,7 @@ export function UploadPanel({
               {shouldShowManualMapping ? (
                 <div
                   ref={mappingRef}
-                  className={`rounded-[28px] border p-5 sm:p-6 ${
+                  className={`rounded-xl border p-5 sm:p-6 ${
                     needsFocusedMapping
                       ? "border-amber-400/20 bg-amber-300/[0.08]"
                       : "border-[var(--workspace-accent)]/20 bg-[rgba(125,211,197,0.06)]"
@@ -1334,7 +1359,7 @@ export function UploadPanel({
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-[var(--workspace-text)]">Map your columns</p>
+                      <p className="text-sm font-medium text-[var(--workspace-text)]">{t("Map your columns", "Asigna tus columnas")}</p>
                       <p className="text-sm leading-6 text-[var(--workspace-muted)]">
                         {needsFocusedMapping
                           ? "GoHostlyx read the file, but key columns still need your review before we can show a clean preview."
@@ -1380,7 +1405,7 @@ export function UploadPanel({
                           <select
                             value={currentManualMapping?.[field] ?? ""}
                             onChange={(event) => updateManualField(field, event.target.value)}
-                            className={`w-full rounded-[18px] border bg-[var(--workspace-panel)] px-4 py-3 text-sm text-[var(--workspace-text)] outline-none transition focus:border-[var(--workspace-accent)] ${
+                            className={`w-full rounded-lg border bg-[var(--workspace-panel)] px-4 py-3 text-sm text-[var(--workspace-text)] outline-none transition focus:border-[var(--workspace-accent)] ${
                               hasError
                                 ? "border-rose-400/30"
                                 : hasWarning
@@ -1388,7 +1413,7 @@ export function UploadPanel({
                                   : "border-[var(--workspace-border)]"
                             }`}
                           >
-                            <option value="">Select a column</option>
+                            <option value="">{t("Select a column", "Elige una columna")}</option>
                             {(preview.manualMapping?.columns ?? []).map((column) => (
                               <option key={`${field}-${column.index}`} value={column.index}>
                                 {column.label}
@@ -1411,7 +1436,7 @@ export function UploadPanel({
                     })}
                   </div>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                     <p className="text-sm text-[var(--workspace-muted)]">
                       {currentManualReady
                         ? "Required fields are mapped. Preview again to continue."
@@ -1421,7 +1446,7 @@ export function UploadPanel({
                       type="button"
                       onClick={handlePreview}
                       disabled={!currentManualReady || phase === "previewing"}
-                      className="workspace-button-primary inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                      className="workspace-button-primary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {phase === "previewing" ? "Analyzing..." : "Preview with mapping"}
                     </button>
@@ -1440,7 +1465,7 @@ export function UploadPanel({
                     ].map(([label, value, tone, surface]) => (
                       <div
                         key={String(label)}
-                        className={`rounded-[22px] border px-4 py-5 ${surface}`}
+                        className={`rounded-lg border px-4 py-5 ${surface}`}
                       >
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                           {label}
@@ -1458,7 +1483,7 @@ export function UploadPanel({
                   </div>
 
                   <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-                    <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
+                    <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                         Payout summary
                       </p>
@@ -1470,7 +1495,7 @@ export function UploadPanel({
                       </p>
 
                       <div className="mt-5 grid gap-4 md:grid-cols-2">
-                        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+                        <div className="rounded-lg border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                             What gets saved
                           </p>
@@ -1478,7 +1503,7 @@ export function UploadPanel({
                             Actual payout, fees, taxes, source, currency, and statement period.
                           </p>
                         </div>
-                        <div className="rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+                        <div className="rounded-lg border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                             Why bookings stay at 0
                           </p>
@@ -1489,7 +1514,7 @@ export function UploadPanel({
                       </div>
 
                       {financialStatementPreviewData?.previewRows?.length ? (
-                        <div className="mt-5 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
+                        <div className="mt-5 rounded-lg border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1539,7 +1564,7 @@ export function UploadPanel({
 
                     <div
                       ref={readyToContinueRef}
-                      className="rounded-[24px] border border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.07)] p-5"
+                      className="rounded-xl border border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.07)] p-5"
                     >
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                         Ready to continue
@@ -1551,7 +1576,7 @@ export function UploadPanel({
                         Nothing will be saved until you confirm this payout statement import.
                       </p>
 
-                      <div className="mt-5 rounded-[18px] border border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.08)] px-4 py-4 text-sm text-[var(--workspace-text)]">
+                      <div className="mt-5 rounded-lg border border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.08)] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         This file will feed Payouts so you can compare expected payout against what Airbnb or Booking.com says it paid out.
                       </div>
 
@@ -1561,7 +1586,7 @@ export function UploadPanel({
                           type="button"
                           onClick={handleImport}
                           disabled={!isFinancialStatementReady || phase === "importing" || phase === "previewing"}
-                          className="workspace-button-primary inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+                          className="workspace-button-primary inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {phase === "importing" ? (
                             <>
@@ -1575,7 +1600,7 @@ export function UploadPanel({
                         <button
                           type="button"
                           onClick={handleCancel}
-                          className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                          className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                         >
                           Cancel
                         </button>
@@ -1585,7 +1610,7 @@ export function UploadPanel({
                 </div>
               ) : !needsFocusedMapping && !preview.blocksImport ? (
                 <div className="space-y-5">
-                  <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
+                  <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1600,7 +1625,7 @@ export function UploadPanel({
                             : "We checked your file against synced calendar data to catch duplicates and conflicts before import."}
                         </p>
                       </div>
-                      <div className="rounded-[18px] border border-[var(--workspace-border)] bg-white/[0.03] px-4 py-4 text-right">
+                      <div className="rounded-lg border border-[var(--workspace-border)] bg-white/[0.03] px-4 py-4 text-right">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                           {hasBookingPreview ? "Rows in file" : "Total rows found"}
                         </p>
@@ -1630,7 +1655,7 @@ export function UploadPanel({
                               ["Auto-fixed", String(preview.autoFixedRows), "border-[var(--workspace-accent)]/18 bg-[rgba(125,211,197,0.08)] text-teal-100"],
                             ]
                       ).map(([label, value, classes]) => (
-                        <div key={String(label)} className={`rounded-[20px] border px-4 py-4 ${classes}`}>
+                        <div key={String(label)} className={`rounded-lg border px-4 py-4 ${classes}`}>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--workspace-muted)]">
                             {label}
                           </p>
@@ -1640,7 +1665,7 @@ export function UploadPanel({
                     </div>
 
                     {hasBookingPreview ? (
-                      <div className="mt-5 rounded-[20px] border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
+                      <div className="mt-5 rounded-lg border border-[var(--workspace-border)] bg-white/[0.02] px-4 py-4 text-sm leading-6 text-[var(--workspace-muted)]">
                         <p>
                           GoHostlyx read <span className="font-medium text-[var(--workspace-text)]">{preview.totalRowsRead}</span> rows from this file.
                           <span className="font-medium text-[var(--workspace-text)]"> {importableBookingRows}</span> can be imported right now.
@@ -1665,7 +1690,7 @@ export function UploadPanel({
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-3">
-                    <div className="rounded-[24px] border border-teal-300/18 bg-teal-300/[0.08] p-5">
+                    <div className="rounded-xl border border-teal-300/18 bg-teal-300/[0.08] p-5">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-100/70">
                         {isSpanish ? "Se importarán ahora" : "Importing now"}
                       </p>
@@ -1678,7 +1703,7 @@ export function UploadPanel({
                           : "Usable bookings GoHostlyx can save right away."}
                       </p>
                     </div>
-                    <div className="rounded-[24px] border border-amber-300/18 bg-amber-300/[0.08] p-5">
+                    <div className="rounded-xl border border-amber-300/18 bg-amber-300/[0.08] p-5">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-100/70">
                         {isSpanish ? "Irán a revisión" : "Going to review"}
                       </p>
@@ -1691,7 +1716,7 @@ export function UploadPanel({
                           : "These will land in Bookings with a note so you can fix them there, not here."}
                       </p>
                     </div>
-                    <div className="rounded-[24px] border border-rose-300/18 bg-rose-300/[0.08] p-5">
+                    <div className="rounded-xl border border-rose-300/18 bg-rose-300/[0.08] p-5">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-100/70">
                         {isSpanish ? "No se importarán" : "Not importing"}
                       </p>
@@ -1706,22 +1731,22 @@ export function UploadPanel({
                     </div>
                   </div>
 
-                  <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
+                  <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                       {isSpanish ? "Qué pasará después" : "What happens next"}
                     </p>
                     <div className="mt-4 grid gap-3 lg:grid-cols-3">
-                      <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
+                      <div className="rounded-lg border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
                           ? "1. GoHostlyx importará todas las filas utilizables sin obligarte a aprobar una por una."
                           : "1. GoHostlyx will import every usable row without forcing you to approve them one by one."}
                       </div>
-                      <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
+                      <div className="rounded-lg border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
                           ? "2. Las reservas dudosas quedarán marcadas en Reservas como 'necesitan revisión'."
                           : "2. Uncertain bookings will be marked in Bookings as 'need review'."}
                       </div>
-                      <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
+                      <div className="rounded-lg border border-white/8 bg-white/[0.03] px-4 py-4 text-sm text-[var(--workspace-text)]">
                         {isSpanish
                           ? "3. Allí podrás editarlas o marcarlas como revisadas sin volver a este modal."
                           : "3. From there you can edit them or mark them reviewed without coming back to this modal."}
@@ -1730,7 +1755,7 @@ export function UploadPanel({
                   </div>
 
                   {preview.previewRows.length > 0 ? (
-                    <div className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
+                    <div className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
@@ -1751,7 +1776,7 @@ export function UploadPanel({
                         {preview.previewRows.map((row, index) => (
                           <div
                             key={`preview-row-${index}-${row.guestName}`}
-                            className="rounded-[20px] border border-white/8 bg-white/[0.03] px-4 py-4"
+                            className="rounded-lg border border-white/8 bg-white/[0.03] px-4 py-4"
                           >
                             <div className="flex flex-wrap items-center gap-3">
                               <p className="text-base font-medium text-[var(--workspace-text)]">
@@ -1783,7 +1808,7 @@ export function UploadPanel({
 
                   <div
                     ref={readyToContinueRef}
-                    className="rounded-[24px] border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5"
+                    className="rounded-xl border border-[var(--workspace-border)] bg-[var(--workspace-panel)] p-5"
                   >
                     <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                       <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center">
@@ -1810,7 +1835,7 @@ export function UploadPanel({
                           type="button"
                           onClick={handleImport}
                           disabled={actionableRows <= 0 || phase === "importing" || phase === "previewing"}
-                          className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[220px]"
+                          className="workspace-button-primary inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[220px]"
                         >
                           {phase === "importing" ? (
                             <>
@@ -1824,7 +1849,7 @@ export function UploadPanel({
                         <button
                           type="button"
                           onClick={handleCancel}
-                          className="workspace-button-secondary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
+                          className="workspace-button-secondary inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold transition"
                         >
                           {isSpanish ? "Cancelar" : "Cancel"}
                         </button>
@@ -1835,7 +1860,7 @@ export function UploadPanel({
               ) : null}
             </div>
           ) : (
-            <div className="workspace-soft-card rounded-[28px] border border-[var(--workspace-border)] px-6 py-6 text-sm text-[var(--workspace-muted)]">
+            <div className="workspace-soft-card rounded-xl border border-[var(--workspace-border)] px-6 py-6 text-sm text-[var(--workspace-muted)]">
               Upload a file to see detected source, a clean import summary, and a preview before anything is saved.
             </div>
           )}

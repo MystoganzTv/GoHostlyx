@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SectionCard } from "@/components/section-card";
@@ -21,6 +22,8 @@ export default async function ReconcilePage() {
   if (!session?.user?.email || !ownerEmail) {
     redirect("/login");
   }
+
+  await requireDashboardAccess(ownerEmail);
 
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);
@@ -66,7 +69,7 @@ export default async function ReconcilePage() {
             </p>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Lo que sí va aquí" : "What belongs here"}
                 </p>
@@ -77,7 +80,7 @@ export default async function ReconcilePage() {
                 </p>
               </div>
 
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Lo que ya movimos" : "What moved out"}
                 </p>
@@ -92,7 +95,7 @@ export default async function ReconcilePage() {
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/dashboard/payouts"
-                className="workspace-button-primary inline-flex rounded-2xl px-4 py-3 text-sm font-semibold transition"
+                className="workspace-button-primary inline-flex rounded-lg px-3.5 py-2 text-sm font-semibold transition"
               >
                 {isSpanish ? "Ir a Payouts" : "Go to Payouts"}
               </Link>

@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import { requireUserEmail } from "@/lib/auth";
+import { clientErrorMessage } from "@/lib/client-error";
+import { localizedJson } from "@/lib/server-messages";
+import { requireApiAccess } from "@/lib/access";
 import { deleteBookingRecord, updateBookingRecord } from "@/lib/db";
 import { normalizeManualBooking } from "@/lib/manual-entry";
 
@@ -10,16 +11,18 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const bookingId = Number((await params).id);
 
     if (!Number.isFinite(bookingId) || bookingId <= 0) {
-      return NextResponse.json({ error: "Invalid booking id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid booking id." }, { status: 400 });
     }
 
     const formData = await request.formData();
@@ -31,17 +34,17 @@ export async function PATCH(
     });
 
     if (!updated) {
-      return NextResponse.json({ error: "Booking not found." }, { status: 404 });
+      return await localizedJson({ error: "Booking not found." }, { status: 404 });
     }
 
-    return NextResponse.json({
+    return await localizedJson({
       message: `Booking for ${booking.guestName} updated successfully.`,
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
-          error instanceof Error ? error.message : "The booking could not be updated.",
+          clientErrorMessage(error, "The booking could not be updated."),
       },
       { status: 400 },
     );
@@ -53,16 +56,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const ownerEmail = await requireUserEmail();
+    const access = await requireApiAccess();
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (access.response) {
+      return access.response;
     }
+
+    const { ownerEmail } = access;
 
     const bookingId = Number((await params).id);
 
     if (!Number.isFinite(bookingId) || bookingId <= 0) {
-      return NextResponse.json({ error: "Invalid booking id." }, { status: 400 });
+      return await localizedJson({ error: "Invalid booking id." }, { status: 400 });
     }
 
     const deleted = await deleteBookingRecord({
@@ -71,17 +76,17 @@ export async function DELETE(
     });
 
     if (!deleted) {
-      return NextResponse.json({ error: "Booking not found." }, { status: 404 });
+      return await localizedJson({ error: "Booking not found." }, { status: 404 });
     }
 
-    return NextResponse.json({
+    return await localizedJson({
       message: "Booking deleted successfully.",
     });
   } catch (error) {
-    return NextResponse.json(
+    return await localizedJson(
       {
         error:
-          error instanceof Error ? error.message : "The booking could not be deleted.",
+          clientErrorMessage(error, "The booking could not be deleted."),
       },
       { status: 400 },
     );

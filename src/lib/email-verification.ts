@@ -35,9 +35,9 @@ export async function sendVerificationEmail({
     process.env.AUTH_VERIFICATION_FROM_EMAIL ?? "GoHostlyx <onboarding@resend.dev>";
 
   if (!resendApiKey) {
-    throw new Error(
-      "Email verification is not configured yet. Add RESEND_API_KEY to enable account sign-up.",
-    );
+    // Do not leak configuration details to visitors; the reason is in the logs.
+    console.error("[email-verification] RESEND_API_KEY is not configured");
+    throw new Error("Email sign-up is not available right now. Please continue with Google.");
   }
 
   const safeName = escapeHtml(fullName || email);

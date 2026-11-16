@@ -1,3 +1,4 @@
+import { requireDashboardAccess } from "@/lib/access";
 import {
   addMonths,
   eachMonthOfInterval,
@@ -161,6 +162,8 @@ export default async function CalendarPage({
     redirect("/login");
   }
 
+  await requireDashboardAccess(ownerEmail);
+
   const userName = session.user.name ?? session.user.email ?? "Host";
   const properties = await getPropertyDefinitions(ownerEmail);
 
@@ -273,26 +276,26 @@ export default async function CalendarPage({
       userEmail={ownerEmail}
       currencyCode={currencyCode}
       latestImport={latestImport}
+      toolbar={
+        <FilterBar
+          mode="calendar"
+          years={availableCalendarYears}
+          channels={Array.from(new Set(bookings.map((booking) => booking.channel))).sort((a, b) =>
+            a.localeCompare(b),
+          )}
+          countries={Array.from(new Set(properties.map((property) => property.countryCode)))}
+          selectedYear={selectedCalendarYear}
+          selectedMonth={selectedCalendarMonth}
+          selectedChannel={filters.channel}
+          selectedCountryCode={filters.countryCode}
+        />
+      }
       actions={
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <FilterBar
-            mode="calendar"
-            years={availableCalendarYears}
-            channels={Array.from(new Set(bookings.map((booking) => booking.channel))).sort((a, b) =>
-              a.localeCompare(b),
-            )}
-            countries={Array.from(new Set(properties.map((property) => property.countryCode)))}
-            selectedYear={selectedCalendarYear}
-            selectedMonth={selectedCalendarMonth}
-            selectedChannel={filters.channel}
-            selectedCountryCode={filters.countryCode}
-          />
-          <CalendarIcalLauncher properties={properties} feeds={icalFeeds} />
-        </div>
+        <CalendarIcalLauncher properties={properties} feeds={icalFeeds} />
       }
     >
       <div className="space-y-6">
-        <div className="workspace-card rounded-[30px] p-5 sm:p-6">
+        <div className="workspace-card rounded-xl p-5 sm:p-6">
           <CalendarAutoSync
             enabled={icalFeeds.some((feed) => feed.isActive)}
             force={hasLegacySyncedEventDetails}
@@ -300,13 +303,13 @@ export default async function CalendarPage({
           <div className="space-y-6">
             <CalendarFeedsPanel feeds={icalFeeds} embedded />
             <div className="grid gap-4 md:grid-cols-4">
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Rango" : "Range"}
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-[var(--workspace-text)]">{rangeLabel}</p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Reservas seguidas" : "Reservations tracked"}
                 </p>
@@ -314,7 +317,7 @@ export default async function CalendarPage({
                   {formatNumber(reservationCount, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Check-ins" : "Check-ins"}
                 </p>
@@ -322,7 +325,7 @@ export default async function CalendarPage({
                   {formatNumber(countryAndChannelBookings.length, locale)}
                 </p>
               </div>
-              <div className="workspace-soft-card rounded-[24px] p-5">
+              <div className="workspace-soft-card rounded-xl p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--workspace-muted)]">
                   {isSpanish ? "Días cerrados" : "Closed days"}
                 </p>

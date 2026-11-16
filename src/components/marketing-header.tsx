@@ -55,7 +55,7 @@ export function MarketingHeader({
         </nav>
 
         <div className="hidden shrink-0 items-center gap-4 lg:flex">
-          <LanguageToggle compact />
+          <LanguageToggle compact variant="marketing" />
           {!signedIn ? (
             <Link href="/login" className="marketing-header-link text-sm font-semibold text-slate-300 hover:text-white">
               {signInLabel}
@@ -98,7 +98,7 @@ export function MarketingHeader({
               {ctaLabel}
               <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
-            <LanguageToggle compact />
+            <LanguageToggle compact variant="marketing" />
           </div>
         </details>
       </div>
