@@ -23,6 +23,7 @@ import type {
 import type { StoredSubscription } from "./db-types";
 import { isAdminOwnerEmail } from "./admin";
 import { copyToTrash } from "./trash";
+import type { NightlyPriceInput, NightlyPriceRecord } from "./nightly-prices";
 import {
   getRowValue,
   mapBookingRecord,
@@ -121,6 +122,7 @@ const propertyLinkedTables = [
   "calendar_events",
   "ical_feeds",
   "financial_documents",
+  "nightly_prices",
 ] as const;
 
 function normalizeFingerprintValue(value: string) {
@@ -911,6 +913,87 @@ export async function getCalendarClosures(ownerEmail: string): Promise<CalendarC
   return result.rows.map((row) => mapCalendarClosureRecord(row as Record<string, unknown>));
 }
 
+export async function getNightlyPrices(ownerEmail: string): Promise<NightlyPriceRecord[]> {
+  await ensureDatabase();
+  const normalizedEmail = normalizeOwnerEmail(ownerEmail);
+
+  const result = await getPostgresPool().query(
+    `
+      SELECT property_name AS "propertyName", channel, date, price
+      FROM nightly_prices
+      WHERE owner_email = $1
+      ORDER BY date ASC
+    `,
+    [normalizedEmail],
+  );
+
+  return result.rows.map((row) => ({
+    propertyName: String(row.propertyName),
+    channel: String(row.channel),
+    date: String(row.date),
+    price: Number(row.price),
+  }));
+}
+
+/** Saves one price per night for a property and channel; a night already saved is overwritten. */
+export async function saveNightlyPrices({
+  ownerEmail,
+  propertyName,
+  channel,
+  prices,
+}: {
+  ownerEmail: string;
+  propertyName: string;
+  channel: string;
+  prices: NightlyPriceInput[];
+}) {
+  await ensureDatabase();
+  const normalizedEmail = normalizeOwnerEmail(ownerEmail);
+
+  if (prices.length === 0) {
+    return 0;
+  }
+
+  const client = await getPostgresPool().connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // Batches of 500 nights. The property link trigger fills property_id from
+    // the name before the conflict check, so the upsert key is complete.
+    // `prices` must hold each date once (one row cannot be updated twice).
+    const chunkSize = 500;
+    for (let start = 0; start < prices.length; start += chunkSize) {
+      const chunk = prices.slice(start, start + chunkSize);
+      await client.query(
+        `
+          INSERT INTO nightly_prices (owner_email, property_name, channel, date, price, source, updated_at)
+          SELECT $1, $2, $3, item.date, item.price, 'upload', NOW()
+          FROM UNNEST($4::text[], $5::double precision[]) AS item(date, price)
+          ON CONFLICT (owner_email, property_id, channel, date)
+          DO UPDATE SET price = EXCLUDED.price, source = EXCLUDED.source, updated_at = EXCLUDED.updated_at
+        `,
+        [
+          normalizedEmail,
+          propertyName,
+          channel,
+          chunk.map((item) => item.date),
+          chunk.map((item) => item.price),
+        ],
+      );
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+
+  return prices.length;
+}
+
 export async function getCalendarEvents(ownerEmail: string): Promise<CalendarEventRecord[]> {
   await ensureDatabase();
   const normalizedEmail = normalizeOwnerEmail(ownerEmail);
@@ -1463,7 +1546,7 @@ export async function deletePropertyDefinition({
   }
 
   const propertyName = String(getRowValue(propertyRow, "name"));
-  const [bookingUsage, expenseUsage, importUsage, closureUsage, eventUsage, feedUsage] = await Promise.all([
+  const [bookingUsage, expenseUsage, importUsage, closureUsage, eventUsage, feedUsage, priceUsage] = await Promise.all([
     pool.query(
       "SELECT COUNT(*) AS count FROM bookings WHERE owner_email = $1 AND property_id = $2",
       [normalizedEmail, propertyId],
@@ -1486,6 +1569,10 @@ export async function deletePropertyDefinition({
     ),
     pool.query(
       "SELECT COUNT(*) AS count FROM ical_feeds WHERE owner_email = $1 AND property_id = $2 AND is_active = TRUE",
+      [normalizedEmail, propertyId],
+    ),
+    pool.query(
+      "SELECT COUNT(*) AS count FROM nightly_prices WHERE owner_email = $1 AND property_id = $2",
       [normalizedEmail, propertyId],
     ),
   ]);
@@ -1511,8 +1598,11 @@ export async function deletePropertyDefinition({
   const feedCount = Number(
     getRowValue(feedUsage.rows[0] as Record<string, unknown>, "count"),
   );
+  const priceCount = Number(
+    getRowValue(priceUsage.rows[0] as Record<string, unknown>, "count"),
+  );
 
-  if ((bookingCount > 0 || expenseCount > 0 || importCount > 0 || closureCount > 0 || eventCount > 0 || feedCount > 0) && !deleteLinkedData) {
+  if ((bookingCount > 0 || expenseCount > 0 || importCount > 0 || closureCount > 0 || eventCount > 0 || feedCount > 0 || priceCount > 0) && !deleteLinkedData) {
     throw new Error("This property still has linked imports, bookings, closed days, calendar feeds, or expenses. Confirm destructive delete to remove everything tied to it.");
   }
 
@@ -2594,6 +2684,7 @@ export async function deleteManagedUser(ownerEmail: string) {
     await client.query("DELETE FROM calendar_events WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM ical_feeds WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM financial_documents WHERE owner_email = $1", [normalizedEmail]);
+    await client.query("DELETE FROM nightly_prices WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM imports WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM property_units WHERE owner_email = $1", [normalizedEmail]);
     await client.query("DELETE FROM properties WHERE owner_email = $1", [normalizedEmail]);

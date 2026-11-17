@@ -25,6 +25,7 @@ const restoreOrder = [
   "calendar_events",
   "ical_feeds",
   "financial_documents",
+  "nightly_prices",
 ] as const;
 
 export type TrashTable = (typeof restoreOrder)[number];

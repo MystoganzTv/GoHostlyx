@@ -151,6 +151,12 @@ const spanishMessages: Record<string, string> = {
   "Something went wrong. Please try again.": "Algo salió mal. Inténtalo de nuevo.",
   "The database is not reachable right now. Please try again in a moment.":
     "La base de datos no responde ahora mismo. Inténtalo de nuevo en un momento.",
+  "Attach a price file first.": "Adjunta primero un archivo de precios.",
+  "That file is too large. Price files are limited to 4 MB.":
+    "Ese archivo es demasiado grande. Los archivos de precios tienen un límite de 4 MB.",
+  "GoHostlyx could not find a date column and a price column in this file.":
+    "GoHostlyx no encontró una columna de fecha y una de precio en este archivo.",
+  "The prices could not be saved.": "No se pudieron guardar los precios.",
 };
 
 const plural = (count: string, singular: string, pluralForm: string) => (count === "1" ? singular : pluralForm);
@@ -159,6 +165,10 @@ const plural = (count: string, singular: string, pluralForm: string) => (count =
 const spanishPatterns: Array<[RegExp, (...groups: string[]) => string]> = [
   [/^(.*) Review it before relying on the calendar link\.$/, (rest) => `${localizeMessage(rest, "es")} Revísalo antes de fiarte del enlace del calendario.`],
   [/^Booking for (.+) added successfully\.$/, (guest) => `Reserva de ${guest} añadida.`],
+  [
+    /^Saved (\d+) nightly prices for (.+), from (\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})\.$/,
+    (count, property, from, to) => `Guardados ${count} precios por noche de ${property}, del ${from} al ${to}.`,
+  ],
   [/^Booking for (.+) updated successfully\.$/, (guest) => `Reserva de ${guest} actualizada.`],
   [
     /^Deleted (.+) from (.+)\. Removed the data linked to that import batch\.$/,
